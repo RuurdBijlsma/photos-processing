@@ -11,14 +11,15 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from watchdog.observers import Observer
 
-import constants
-from basic_photos import process_all, NewImageHandler
-from database import get_session, ImageModel, ThumbnailModel
-from interfaces import ImageResponse
+from photos import constants
+from photos.basic_photos import process_all, NewImageHandler
+from photos.database import get_session, ImageModel, ThumbnailModel, run_migrations
+from photos.interfaces import ImageResponse
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
+    run_migrations("alembic", constants.CONNECTION_STRING)
     process_all()
     event_handler = NewImageHandler(constants.THUMBNAIL_SIZES, constants.THUMBNAILS_DIR)
     print("Watching for new files...")

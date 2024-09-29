@@ -4,8 +4,10 @@ For now very basic functionality only.
 
 ## TODO
 * Python
-  * add types
   * add tests
+  * logs not showing in docker compose?
+  * env files for different environments
+  * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * create docker/docker compose configs
 * Add users

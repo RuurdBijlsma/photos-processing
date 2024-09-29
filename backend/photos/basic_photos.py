@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent
 
-import constants
-from database import get_session_maker, ImageModel, ThumbnailModel
+from photos import constants
+from photos.database import ImageModel, ThumbnailModel, get_session_maker
 
 
 # Function to generate thumbnail and save it in WEBP format

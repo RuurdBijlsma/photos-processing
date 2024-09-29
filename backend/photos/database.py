@@ -4,11 +4,13 @@ import uuid
 from collections.abc import Generator
 from functools import lru_cache
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, UUID, Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, Session, Mapped
 
-import constants
+from photos import constants
 
 # SQLAlchemy base model
 Base = declarative_base()
@@ -59,3 +61,11 @@ def get_session() -> Generator[Session, None, None]:
         yield session
     finally:
         session.close()
+
+
+def run_migrations(script_location: str, dsn: str) -> None:
+    print("Running DB migrations")
+    alembic_cfg = Config("alembic.ini")
+    alembic_cfg.set_main_option("script_location", script_location)
+    alembic_cfg.set_main_option("sqlalchemy.url", dsn)
+    command.upgrade(alembic_cfg, "head")
