@@ -1,5 +1,7 @@
 import os
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 from uuid import UUID
 
@@ -16,12 +18,12 @@ from interfaces import ImageResponse
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     process_all()
     event_handler = NewImageHandler(constants.THUMBNAIL_SIZES, constants.THUMBNAILS_DIR)
     print("Watching for new files...")
     observer = Observer()
-    observer.schedule(event_handler, constants.PHOTOS_DIR, recursive=True)
+    observer.schedule(event_handler, str(constants.PHOTOS_DIR), recursive=True)
     observer.start()
     print("Starting server")
     yield
@@ -85,13 +87,13 @@ def get_images(
 
 def get_file_response(
     record: ThumbnailModel | ImageModel | None,
-    base_dir: str,
+    base_dir: Path,
     media_type: str | None = None,
 ) -> FileResponse:
     if not record:
         raise HTTPException(status_code=404, detail="Not found")
 
-    img_path = os.path.join(base_dir, record.filename)
+    img_path = base_dir / record.filename
 
     # Check if the thumbnail file exists on disk
     if not os.path.exists(img_path):

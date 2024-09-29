@@ -1,18 +1,21 @@
 import hashlib
 import os
+from pathlib import Path
 from typing import Any
 
 from PIL import Image
-from sqlalchemy import exists
+from sqlalchemy.orm import Session
 from tqdm import tqdm
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent
 
 import constants
 from database import get_session_maker, ImageModel, ThumbnailModel
 
 
 # Function to generate thumbnail and save it in WEBP format
-def pillow_process(image_path, thumbnail_sizes, output_dir) -> dict[str, Any]:
+def pillow_process(
+    image_path: Path, thumbnail_sizes: list[int], output_dir: Path
+) -> dict[str, Any]:
     # Open the original image
     with Image.open(image_path) as img:
         original_width, original_height = img.size
@@ -51,7 +54,7 @@ def pillow_process(image_path, thumbnail_sizes, output_dir) -> dict[str, Any]:
 
 
 # Function to insert image metadata into the database using SQLAlchemy
-def insert_image_metadata(session, image_info) -> None:
+def insert_image_metadata(image_info: dict[str, Any], session: Session) -> None:
     try:
         # Insert the image record
         image_record = ImageModel(
@@ -84,16 +87,24 @@ def insert_image_metadata(session, image_info) -> None:
 
 
 # Function to check if an image already exists in the database by filename
-def image_exists_in_db(session, filename) -> bool:
-    return session.query(exists().where(ImageModel.filename == filename)).scalar()
+def image_exists_in_db(filename: str, session: Session) -> bool:
+    exists = session.query(
+        session.query(ImageModel).filter_by(filename=filename).exists()
+    ).scalar()
+    assert isinstance(exists, bool)
+    return exists
 
 
-def image_exists_by_hash(session, image_hash) -> str:
-    return session.query(exists().where(ImageModel.hash == image_hash)).scalar()
+def image_exists_by_hash(image_hash: str, session: Session) -> bool:
+    exists = session.query(
+        session.query(ImageModel).filter_by(hash=image_hash).exists()
+    ).scalar()
+    assert isinstance(exists, bool)
+    return exists
 
 
 # Function to hash image content for a unique identifier (optional, but more robust)
-def hash_image(image_path) -> str:
+def hash_image(image_path: Path) -> str:
     hash_md5 = hashlib.md5()
     with open(image_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
@@ -102,15 +113,17 @@ def hash_image(image_path) -> str:
 
 
 # Main function to process the image
-def process_image(image_path, thumbnail_sizes, output_dir, session) -> None:
+def process_image(
+    image_path: Path, thumbnail_sizes: list[int], output_dir: Path, session: Session
+) -> None:
     # Compute the hash of the image
     image_hash = hash_image(image_path)
+    image_filename = os.path.basename(image_path)
 
     # Check if an image with this hash already exists in the database
-    if image_exists_by_hash(session, image_hash) and image_exists_in_db(
-        session, os.path.basename(image_path)
+    if image_exists_by_hash(image_hash, session) and image_exists_in_db(
+        image_filename, session
     ):
-        # print(f"Image '{image_path}' with hash '{image_hash}' already exists in the database. Skipping...")
         session.close()
         return
 
@@ -119,7 +132,7 @@ def process_image(image_path, thumbnail_sizes, output_dir, session) -> None:
 
     # Insert the hash along with the image metadata
     image_info["hash"] = image_hash
-    insert_image_metadata(session, image_info)
+    insert_image_metadata(image_info, session)
 
     # Close the session
     session.close()
@@ -127,14 +140,14 @@ def process_image(image_path, thumbnail_sizes, output_dir, session) -> None:
 
 
 # Function to process all images in a directory (recursively)
-def process_images_in_directory(directory_path, thumbnail_sizes, output_dir) -> None:
-    image_files = []
+def process_images_in_directory(
+    directory_path: Path, thumbnail_sizes: list[int], output_dir: Path
+) -> None:
+    image_files: list[Path] = []
     for root, _, files in os.walk(directory_path):
         for file in files:
-            if file.lower().endswith(
-                (".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff", ".webp")
-            ):
-                image_files.append(os.path.join(root, file))
+            if file.lower().endswith(constants.IMAGE_SUFFIXES):
+                image_files.append(Path(root) / file)
 
     session = get_session_maker()()
     # Use tqdm to show progress
@@ -144,20 +157,22 @@ def process_images_in_directory(directory_path, thumbnail_sizes, output_dir) -> 
 
 # Watchdog event handler for new files
 class NewImageHandler(FileSystemEventHandler):
-    def __init__(self, thumbnail_sizes, output_dir):
+    def __init__(self, thumbnail_sizes: list[int], output_dir: Path):
         self.thumbnail_sizes = thumbnail_sizes
         self.output_dir = output_dir
 
-    def on_created(self, event) -> None:
+    def on_created(self, event: FileCreatedEvent | DirCreatedEvent) -> None:
         session = get_session_maker()()
         try:
+            source_path = Path(str(event.src_path))
             # If a new file is created and is an image, process it
-            if not event.is_directory and event.src_path.lower().endswith(
-                (".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff", ".webp")
+            if (
+                not event.is_directory
+                and source_path.suffix in constants.IMAGE_SUFFIXES
             ):
                 print("Processing new photo")
                 process_image(
-                    event.src_path, self.thumbnail_sizes, self.output_dir, session
+                    source_path, self.thumbnail_sizes, self.output_dir, session
                 )
         finally:
             session.close()

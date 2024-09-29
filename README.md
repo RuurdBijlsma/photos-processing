@@ -31,6 +31,7 @@ For now very basic functionality only.
 * Add albums
   * Shared albums (with other servers)
 * Create frontend
+  * hosted on github pages?
   * Photos grid front page (infinite scroll, fitting layout, scroll to date)
   * Search bar
   * Upload from frontend

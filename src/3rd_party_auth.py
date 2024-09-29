@@ -2,7 +2,7 @@ import json
 from http import HTTPStatus
 from typing import Any
 
-from authlib.integrations.starlette_client import OAuth, OAuthError
+from authlib.integrations.starlette_client import OAuth, OAuthError  # type: ignore
 from fastapi import FastAPI, HTTPException
 from starlette.config import Config
 from starlette.middleware.sessions import SessionMiddleware
@@ -36,7 +36,7 @@ async def homepage(request: Request) -> HTMLResponse:
 @app.get("/login")
 async def login(request: Request) -> RedirectResponse:
     redirect_uri = request.url_for("auth")
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    return await oauth.google.authorize_redirect(request, redirect_uri)  # type: ignore
 
 
 @app.get("/auth")
@@ -64,7 +64,7 @@ async def me(request: Request) -> dict[Any, Any]:
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED, detail="Not authenticated"
         )
-    return user
+    return user  # type: ignore
 
 
 if __name__ == "__main__":
