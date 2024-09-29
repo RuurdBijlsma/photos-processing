@@ -21,6 +21,9 @@ psycopg2 = "^2.9.9"
 watchdog = "^5.0.3"
 tqdm = "^4.66.5"
 pre-commit = "^3.8.0"
+sqlalchemy-stubs = "^0.4"
+types-tqdm = "^4.66.0.20240417"
+pydantic-settings = "^2.5.2"
 
 
 [build-system]

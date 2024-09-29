@@ -2,7 +2,8 @@ import uuid
 from functools import lru_cache
 
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, UUID
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
 
 import constants
 
@@ -12,7 +13,7 @@ Base = declarative_base()
 
 # Define the Image model
 class ImageModel(Base):
-    __tablename__ = 'images'
+    __tablename__ = "images"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     filename = Column(String, nullable=False)
     format = Column(String, nullable=False)
@@ -24,9 +25,9 @@ class ImageModel(Base):
 
 # Define the Thumbnail model
 class ThumbnailModel(Base):
-    __tablename__ = 'thumbnails'
+    __tablename__ = "thumbnails"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    image_id = Column(UUID, ForeignKey('images.id'), nullable=False)
+    image_id = Column(UUID, ForeignKey("images.id"), nullable=False)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
     size = Column(Integer, nullable=False)

@@ -1,18 +1,18 @@
+import os
 from contextlib import asynccontextmanager
+from typing import Any
 from uuid import UUID
 
 from fastapi import FastAPI, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
-import os
-
+from sqlalchemy.orm import Session
 from watchdog.observers import Observer
 
 import constants
 from basic_photos import process_all, NewImageHandler
 from database import get_session, ImageModel, ThumbnailModel
-from fastapi.middleware.cors import CORSMiddleware
+from interfaces import ImageResponse
 
 
 @asynccontextmanager
@@ -41,27 +41,13 @@ app.add_middleware(
 )
 
 
-# Pydantic model for response
-class Thumbnail(BaseModel):
-    width: int
-    height: int
-    size: int
-    path: str
-
-
-class ImageResponse(BaseModel):
-    id: UUID
-    filename: str
-    path: str
-    format: str
-    width: int
-    height: int
-    thumbnails: list[Thumbnail]
-
-
 # Endpoint to get images with pagination
 @app.get("/images/", response_model=list[ImageResponse])
-def get_images(page: int = Query(1, ge=1), limit: int = Query(10, ge=1), session: Session = Depends(get_session)):
+def get_images(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    session: Session = Depends(get_session),
+) -> list[dict[str, Any]]:
     # Calculate offset for pagination
     offset = (page - 1) * limit
 
@@ -83,51 +69,53 @@ def get_images(page: int = Query(1, ge=1), limit: int = Query(10, ge=1), session
             }
             for thumbnail in image.thumbnails
         ]
-        response.append({
-            "id": image.id,
-            "filename": image.filename,
-            "path": f"/images/{image.id}",
-            "format": image.format,
-            "width": image.width,
-            "height": image.height,
-            "thumbnails": thumbnails
-        })
+        response.append(
+            {
+                "id": image.id,
+                "filename": image.filename,
+                "path": f"/images/{image.id}",
+                "format": image.format,
+                "width": image.width,
+                "height": image.height,
+                "thumbnails": thumbnails,
+            }
+        )
     return response
+
+
+def get_file_response(
+    record: ThumbnailModel | ImageModel | None,
+    base_dir: str,
+    media_type: str | None = None,
+) -> FileResponse:
+    if not record:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    img_path = os.path.join(base_dir, record.filename)
+
+    # Check if the thumbnail file exists on disk
+    if not os.path.exists(img_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Return the thumbnail file as a response
+    return FileResponse(img_path, media_type=media_type)
 
 
 # Endpoint to serve thumbnail images by ID
 @app.get("/thumbnails/{thumbnail_id}")
-def get_thumbnail(thumbnail_id: UUID, session: Session = Depends(get_session)):
+def get_thumbnail(
+    thumbnail_id: UUID, session: Session = Depends(get_session)
+) -> FileResponse:
     # Fetch the thumbnail record from the database
     thumbnail = session.query(ThumbnailModel).filter_by(id=thumbnail_id).first()
-
-    if not thumbnail:
-        raise HTTPException(status_code=404, detail="Thumbnail not found")
-
-    # Check if the thumbnail file exists on disk
-    if not os.path.exists(thumbnail.path):
-        raise HTTPException(status_code=404, detail="Thumbnail file not found")
-
-    # Return the thumbnail file as a response
-    return FileResponse(thumbnail.path)
+    return get_file_response(thumbnail, constants.THUMBNAILS_DIR)
 
 
 @app.get("/images/{image_id}")
-def get_image(image_id: UUID, session: Session = Depends(get_session)):
+def get_image(image_id: UUID, session: Session = Depends(get_session)) -> FileResponse:
     # Fetch the image record from the database
     image = session.query(ImageModel).filter_by(id=image_id).first()
-
-    if not image:
-        raise HTTPException(status_code=404, detail="Thumbnail not found")
-
-    img_path = os.path.join(constants.PHOTOS_DIR, image.filename)
-
-    # Check if the thumbnail file exists on disk
-    if not os.path.exists(img_path):
-        raise HTTPException(status_code=404, detail="Thumbnail file not found")
-
-    # Return the thumbnail file as a response
-    return FileResponse(img_path, media_type="image/webp")
+    return get_file_response(image, constants.PHOTOS_DIR, "image/webp")
 
 
 if __name__ == "__main__":
