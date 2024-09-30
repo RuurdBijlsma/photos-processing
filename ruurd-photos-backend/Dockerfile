@@ -53,7 +53,7 @@ COPY photos ./photos
 COPY alembic ./alembic
 COPY poetry.lock pyproject.toml alembic.ini ./
 
-ENV PYTHONPATH "/app"
+ENV PYTHONPATH="/app"
 
 EXPOSE 9475
-CMD ["uvicorn", "photos.server:app", "--host", "0.0.0.0", "--port" ,"8000"]
+CMD ["fastapi", "run", "photos/server.py", "--port", "9475"]

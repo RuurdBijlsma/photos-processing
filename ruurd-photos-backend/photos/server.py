@@ -19,18 +19,18 @@ from photos.interfaces import ImageResponse
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
-    run_migrations("alembic", constants.CONNECTION_STRING)
-    process_all()
-    event_handler = NewImageHandler(constants.THUMBNAIL_SIZES, constants.THUMBNAILS_DIR)
-    print("Watching for new files...")
-    observer = Observer()
-    observer.schedule(event_handler, str(constants.PHOTOS_DIR), recursive=True)
-    observer.start()
+    # run_migrations("alembic", constants.CONNECTION_STRING)
+    # process_all()
+    # event_handler = NewImageHandler(constants.THUMBNAIL_SIZES, constants.THUMBNAILS_DIR)
+    # print("Watching for new files...")
+    # observer = Observer()
+    # observer.schedule(event_handler, str(constants.PHOTOS_DIR), recursive=True)
+    # observer.start()
     print("Starting server")
     yield
     print("Closing server")
-    observer.stop()
-    observer.join()
+    # observer.stop()
+    # observer.join()
 
 
 # Define the FastAPI app
@@ -47,9 +47,9 @@ app.add_middleware(
 # Endpoint to get images with pagination
 @app.get("/images/", response_model=list[ImageResponse])
 def get_images(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1),
-    session: Session = Depends(get_session),
+        page: int = Query(1, ge=1),
+        limit: int = Query(10, ge=1),
+        session: Session = Depends(get_session),
 ) -> list[dict[str, Any]]:
     # Calculate offset for pagination
     offset = (page - 1) * limit
@@ -87,9 +87,9 @@ def get_images(
 
 
 def get_file_response(
-    record: ThumbnailModel | ImageModel | None,
-    base_dir: Path,
-    media_type: str | None = None,
+        record: ThumbnailModel | ImageModel | None,
+        base_dir: Path,
+        media_type: str | None = None,
 ) -> FileResponse:
     if not record:
         raise HTTPException(status_code=404, detail="Not found")
@@ -107,7 +107,7 @@ def get_file_response(
 # Endpoint to serve thumbnail images by ID
 @app.get("/thumbnails/{thumbnail_id}")
 def get_thumbnail(
-    thumbnail_id: UUID, session: Session = Depends(get_session)
+        thumbnail_id: UUID, session: Session = Depends(get_session)
 ) -> FileResponse:
     # Fetch the thumbnail record from the database
     thumbnail = session.query(ThumbnailModel).filter_by(id=thumbnail_id).first()
@@ -119,6 +119,13 @@ def get_image(image_id: UUID, session: Session = Depends(get_session)) -> FileRe
     # Fetch the image record from the database
     image = session.query(ImageModel).filter_by(id=image_id).first()
     return get_file_response(image, constants.PHOTOS_DIR, "image/webp")
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {
+        "status": "ok"
+    }
 
 
 if __name__ == "__main__":

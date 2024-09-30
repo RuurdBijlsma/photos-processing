@@ -184,8 +184,6 @@ def process_all() -> None:
         constants.PHOTOS_DIR, constants.THUMBNAIL_SIZES, constants.THUMBNAILS_DIR
     )
 
-    print("Watching for new photos.")
-
 
 # Example usage
 if __name__ == "__main__":

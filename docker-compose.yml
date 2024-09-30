@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: postgres
-    image: postgres:14
+    image: postgres:17
     restart: unless-stopped
     environment:
       POSTGRES_USER: "postgres"
@@ -9,24 +9,20 @@ services:
       POSTGRES_DB: "photos"
     networks:
       - backend
-    ports:
-      - "5432:5432"
     volumes:
       - photos-db:/var/lib/postgresql/data
 
   photos:
     container_name: photos
     build:
-      context: ./backend
+      context: ruurd-photos-backend
     restart: unless-stopped
-    environment:
-      EXAMPLE_ENV: "hoi"
     depends_on:
       - postgres
-    ports:
-      - "9475:9475"
     networks:
       - backend
+    ports:
+      - 9475:9475
     volumes:
       - ${PHOTOS_DIR}:/app/data/photos
       - ${THUMBNAILS_DIR}:/app/data/thumbnails

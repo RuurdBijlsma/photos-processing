@@ -6,7 +6,6 @@ For now very basic functionality only.
 
 * Python
   * add tests
-  * fix docker compose postgres connection
   * logs not showing in docker compose?
   * env files for different environments
   * use nginx for image hosting instead of fastapi endpoints
@@ -23,6 +22,9 @@ For now very basic functionality only.
   * ...
 * Add ai processing
   * image caption (text and embedding)
+    * Cluster on caption embeddings? kmeans op embeddings
+    * pca to reduce dimensionality of embeddings? for speed
+    * periodically run algorithm to determine amount of clusters (elbow method)
   * image object detection (list of objects in image?)
   * facial recognition (group by faces)
   * detect document -> OCR
