@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent
 
-from photos import constants
 from photos.database import ImageModel, ThumbnailModel, get_session_maker
+from photos.environment import app_config
 
 
 # Function to generate thumbnail and save it in WEBP format
@@ -146,9 +146,10 @@ def process_images_in_directory(
     image_files: list[Path] = []
     for root, _, files in os.walk(directory_path):
         for file in files:
-            if file.lower().endswith(constants.IMAGE_SUFFIXES):
+            if file.lower().endswith(app_config.image_suffixes):
                 image_files.append(Path(root) / file)
 
+    print(f"Photos dir: {directory_path}")
     session = get_session_maker()()
     # Use tqdm to show progress
     for image_path in tqdm(image_files, desc="Processing images", unit="image"):
@@ -168,7 +169,7 @@ class NewImageHandler(FileSystemEventHandler):
             # If a new file is created and is an image, process it
             if (
                 not event.is_directory
-                and source_path.suffix in constants.IMAGE_SUFFIXES
+                and source_path.suffix in app_config.image_suffixes
             ):
                 print("Processing new photo")
                 process_image(
@@ -181,7 +182,7 @@ class NewImageHandler(FileSystemEventHandler):
 def process_all() -> None:
     # Process all existing images in the directory
     process_images_in_directory(
-        constants.PHOTOS_DIR, constants.THUMBNAIL_SIZES, constants.THUMBNAILS_DIR
+        app_config.photos_dir, app_config.thumbnail_sizes, app_config.thumbnails_dir
     )
 
 

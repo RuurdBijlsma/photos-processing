@@ -51,6 +51,7 @@ RUN poetry install
 WORKDIR /app
 COPY photos ./photos
 COPY alembic ./alembic
+COPY config ./config
 COPY poetry.lock pyproject.toml alembic.ini ./
 
 ENV PYTHONPATH="/app"

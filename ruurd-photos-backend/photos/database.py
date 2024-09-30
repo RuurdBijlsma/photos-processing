@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, UUID,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, Session, Mapped
 
-from photos import constants
+from photos.environment import app_config
 
 # SQLAlchemy base model
 Base = declarative_base()
@@ -44,7 +44,7 @@ class ThumbnailModel(Base):
 
 @lru_cache
 def get_engine() -> Engine:
-    engine = create_engine(constants.CONNECTION_STRING)
+    engine = create_engine(app_config.connection_string)
     Base.metadata.create_all(engine)
     return engine
 
