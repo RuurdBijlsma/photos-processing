@@ -1,126 +1,83 @@
 import os
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Sequence
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
-from uuid import UUID
 
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from sqlalchemy import select
 from sqlalchemy.orm import Session
-from watchdog.observers import Observer
+from starlette.staticfiles import StaticFiles
 
-from photos.basic_photos import process_all, NewImageHandler
-from photos.database import get_session, ImageModel, ThumbnailModel, run_migrations
-from photos.environment import app_config
-from photos.interfaces import ImageResponse
+from photos.config.app_config import app_config
+from photos.database.database import get_session
+from photos.database.migrations import run_migrations
+from photos.database.models import ImageModel
+from photos.interfaces import ImageInfo
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
+    print("Running migrations")
     run_migrations("alembic", app_config.connection_string)
-    process_all()
-    event_handler = NewImageHandler(
-        app_config.thumbnail_sizes, app_config.thumbnails_dir
-    )
-    print("Watching for new files...")
-    observer = Observer()
-    observer.schedule(event_handler, str(app_config.photos_dir), recursive=True)
-    observer.start()
-    print("Starting server")
+    print("Migration complete, starting server")
     yield
     print("Closing server")
-    observer.stop()
-    observer.join()
 
 
 # Define the FastAPI app
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
-# Endpoint to get images with pagination
-@app.get("/images/", response_model=list[ImageResponse])
-def get_images(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1),
-    session: Session = Depends(get_session),
-) -> list[dict[str, Any]]:
-    # Calculate offset for pagination
-    offset = (page - 1) * limit
+@app.post("/images", response_model=ImageInfo)
+def post_image(image_info: ImageInfo, session: Session = Depends(get_session)) -> ImageModel:
+    print(image_info)
+    image_model = ImageModel(**image_info.dict())
+    session.add(image_model)
+    session.commit()
+    session.refresh(image_model)
+    return image_model
 
-    # Query the database to get the images and their thumbnails
-    images = session.query(ImageModel).offset(offset).limit(limit).all()
+
+@app.get("/images", response_model=list[ImageInfo])
+def get_images(
+        page: int = Query(1, ge=1),
+        limit: int = Query(10, ge=1),
+        session: Session = Depends(get_session),
+) -> Sequence[ImageModel]:
+    offset = (page - 1) * limit
+    images = session.execute(
+        select(ImageModel).offset(offset).limit(limit)
+    ).scalars().all()
 
     if not images:
         raise HTTPException(status_code=404, detail="No images found")
 
-    # Prepare the response data
-    response = []
-    for image in images:
-        thumbnails = [
-            {
-                "width": thumbnail.width,
-                "height": thumbnail.height,
-                "size": thumbnail.size,
-                "path": f"/thumbnails/{thumbnail.id}",
-            }
-            for thumbnail in image.thumbnails
-        ]
-        response.append(
-            {
-                "id": image.id,
-                "filename": image.filename,
-                "path": f"/images/{image.id}",
-                "format": image.format,
-                "width": image.width,
-                "height": image.height,
-                "thumbnails": thumbnails,
-            }
-        )
-    return response
+    return images
 
 
 def get_file_response(
-    record: ThumbnailModel | ImageModel | None,
-    base_dir: Path,
-    media_type: str | None = None,
+        record: ImageModel,
+        photos_dir: Path,
+        media_type: str | None = None,
 ) -> FileResponse:
     if not record:
         raise HTTPException(status_code=404, detail="Not found")
 
-    img_path = base_dir / record.filename
+    img_path = photos_dir / record.filename
 
-    # Check if the thumbnail file exists on disk
     if not os.path.exists(img_path):
         raise HTTPException(status_code=404, detail="File not found")
 
-    # Return the thumbnail file as a response
     return FileResponse(img_path, media_type=media_type)
-
-
-# Endpoint to serve thumbnail images by ID
-@app.get("/thumbnails/{thumbnail_id}")
-def get_thumbnail(
-    thumbnail_id: UUID, session: Session = Depends(get_session)
-) -> FileResponse:
-    # Fetch the thumbnail record from the database
-    thumbnail = session.query(ThumbnailModel).filter_by(id=thumbnail_id).first()
-    return get_file_response(thumbnail, app_config.thumbnails_dir)
-
-
-@app.get("/images/{image_id}")
-def get_image(image_id: UUID, session: Session = Depends(get_session)) -> FileResponse:
-    # Fetch the image record from the database
-    image = session.query(ImageModel).filter_by(id=image_id).first()
-    return get_file_response(image, app_config.photos_dir, "image/webp")
 
 
 @app.get("/health")
@@ -128,7 +85,9 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=9475)
+if app_config.host_thumbnails:
+    app.mount(
+        "/thumbnails",
+        StaticFiles(directory=app_config.thumbnails_dir, ),
+        name="Thumbnails"
+    )

@@ -4,13 +4,14 @@ from pathlib import Path
 
 from PIL import Image
 from PIL.ExifTags import TAGS
+from PIL.TiffImagePlugin import IFDRational
 
 from photos.config.process_config import ProcessConfig
 from photos.interfaces import ImageInfo
 
 
 def base_info(
-        photos_dir:Path,
+        photos_dir: Path,
         image_path: Path,
         image_hash: str,
         _: ProcessConfig,
@@ -24,6 +25,8 @@ def base_info(
         exif_info = {}
         for tag, value in raw_exif.items():
             tag_name = TAGS.get(tag, tag)
+            if isinstance(value, IFDRational):
+                value = float(value)
             exif_info[tag_name] = value
 
         return ImageInfo(

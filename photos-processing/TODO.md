@@ -2,6 +2,8 @@
 
 * Python
   * add tests
+  * common_types
+  * alembic upgrade head gets stuck
   * refactor photos-server same way as photos-processing
   * logs not showing in docker compose?
   * env files for different environments

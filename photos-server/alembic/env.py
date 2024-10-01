@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from photos.database import Base
+from photos.database.database import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,7 +19,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 logger.setLevel(logging.INFO)
-logger.info("Alembic logging is enabled.")
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

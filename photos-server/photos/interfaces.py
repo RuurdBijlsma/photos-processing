@@ -1,21 +1,21 @@
-from uuid import UUID
+from typing import Any
 
 from pydantic import BaseModel
 
 
-# Pydantic model for response
-class Thumbnail(BaseModel):
-    width: int
-    height: int
-    size: int
-    path: str
-
-
-class ImageResponse(BaseModel):
-    id: UUID
+class ImageInfoResponse(BaseModel):
+    id: str
     filename: str
-    path: str
-    format: str
     width: int
     height: int
-    thumbnails: list[Thumbnail]
+
+
+class ImageInfo(BaseModel):
+    id: str
+    filename: str
+    relative_path: str
+    hash: str
+    width: int
+    height: int
+    format: str
+    exif: None | dict[str, Any]
