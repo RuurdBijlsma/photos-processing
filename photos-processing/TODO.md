@@ -2,6 +2,7 @@
 
 * Python
   * add tests
+  * make refactored stuff work with docker compose or helm?
   * common_types
   * alembic upgrade head gets stuck
   * refactor photos-server same way as photos-processing
