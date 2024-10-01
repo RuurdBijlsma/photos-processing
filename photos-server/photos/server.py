@@ -12,16 +12,14 @@ from sqlalchemy.orm import Session
 from watchdog.observers import Observer
 
 from photos.basic_photos import process_all, NewImageHandler
-from photos.database import get_session, ImageModel, ThumbnailModel
+from photos.database import get_session, ImageModel, ThumbnailModel, run_migrations
 from photos.environment import app_config
 from photos.interfaces import ImageResponse
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
-    print()
-    print(app_config.connection_string)
-    # run_migrations("alembic", app_config.connection_string)
+    run_migrations("alembic", app_config.connection_string)
     process_all()
     event_handler = NewImageHandler(
         app_config.thumbnail_sizes, app_config.thumbnails_dir

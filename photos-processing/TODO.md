@@ -2,6 +2,7 @@
 
 * Python
   * add tests
+  * refactor photos-server same way as photos-processing
   * logs not showing in docker compose?
   * env files for different environments
   * use nginx for image hosting instead of fastapi endpoints

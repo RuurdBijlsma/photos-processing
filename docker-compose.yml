@@ -15,7 +15,7 @@ services:
   photos:
     container_name: photos
     build:
-      context: ruurd-photos-backend
+      context: photos-processing
     restart: no
     environment:
       PHOTOS_DIR: /app/data/photos
