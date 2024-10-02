@@ -11,8 +11,7 @@ from photos.ingest.process_image import process_image
 
 
 def process_images_in_directory(
-        photos_dir: Path,
-        process_config: ProcessConfig
+    photos_dir: Path, process_config: ProcessConfig
 ) -> None:
     """Check all images for processing."""
     image_files: list[Path] = []
@@ -34,14 +33,14 @@ class NewImageHandler(FileSystemEventHandler):
     def on_created(self, event: FileCreatedEvent | DirCreatedEvent) -> None:
         source_path = Path(str(event.src_path))
         if (
-                not event.is_directory
-                and source_path.suffix in self.process_config.image_suffixes
+            not event.is_directory
+            and source_path.suffix in self.process_config.image_suffixes
         ):
             print("Processing new photo!")
             process_image(self.photos_dir, source_path, self.process_config)
 
 
-def watch_for_photos(photos_dir: Path, process_config: ProcessConfig):
+def watch_for_photos(photos_dir: Path, process_config: ProcessConfig) -> None:
     """Will run until key is pressed"""
     event_handler = NewImageHandler(photos_dir, process_config)
     observer = Observer()

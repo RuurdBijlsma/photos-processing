@@ -38,7 +38,9 @@ app.add_middleware(
 
 
 @app.post("/images", response_model=ImageInfo)
-def post_image(image_info: ImageInfo, session: Session = Depends(get_session)) -> ImageModel:
+def post_image(
+    image_info: ImageInfo, session: Session = Depends(get_session)
+) -> ImageModel:
     print(image_info)
     image_model = ImageModel(**image_info.dict())
     session.add(image_model)
@@ -49,14 +51,14 @@ def post_image(image_info: ImageInfo, session: Session = Depends(get_session)) -
 
 @app.get("/images", response_model=list[ImageInfo])
 def get_images(
-        page: int = Query(1, ge=1),
-        limit: int = Query(10, ge=1),
-        session: Session = Depends(get_session),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    session: Session = Depends(get_session),
 ) -> Sequence[ImageModel]:
     offset = (page - 1) * limit
-    images = session.execute(
-        select(ImageModel).offset(offset).limit(limit)
-    ).scalars().all()
+    images = (
+        session.execute(select(ImageModel).offset(offset).limit(limit)).scalars().all()
+    )
 
     if not images:
         raise HTTPException(status_code=404, detail="No images found")
@@ -65,13 +67,14 @@ def get_images(
 
 
 def get_file_response(
-        record: ImageModel,
-        photos_dir: Path,
-        media_type: str | None = None,
+    record: ImageModel,
+    photos_dir: Path,
+    media_type: str | None = None,
 ) -> FileResponse:
     if not record:
         raise HTTPException(status_code=404, detail="Not found")
 
+    assert record.filename is not None
     img_path = photos_dir / record.filename
 
     if not os.path.exists(img_path):
@@ -88,6 +91,8 @@ def health() -> dict[str, str]:
 if app_config.host_thumbnails:
     app.mount(
         "/thumbnails",
-        StaticFiles(directory=app_config.thumbnails_dir, ),
-        name="Thumbnails"
+        StaticFiles(
+            directory=app_config.thumbnails_dir,
+        ),
+        name="Thumbnails",
     )
