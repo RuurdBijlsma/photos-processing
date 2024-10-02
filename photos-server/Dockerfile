@@ -1,60 +1,32 @@
-FROM ubuntu:22.04 AS python-base
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y software-properties-common \
-    && add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get update && apt-get install -y python3.12 python3-distutils python3-pip python3-apt \
-    && apt-get clean autoclean \
-    && apt-get autoremove --yes
+# The builder image, used to build the virtual environment
+FROM python:3.12.7 AS builder
 
-# Set environment variables (if needed)
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    POETRY_VERSION=1.7.1 \
-    POETRY_HOME="/opt/poetry" \
-    PYSETUP_PATH="/opt/pysetup" \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    VENV_PATH="/opt/pysetup/.venv"
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+RUN pip install poetry==1.8.3
 
-FROM python-base AS builder-base
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-        # deps for installing poetry
-        curl \
-        # deps for building python deps
-        build-essential \
-    && apt-get clean autoclean \
-    && apt-get autoremove --yes \
-    && curl -sSL https://install.python-poetry.org | python3
-
-WORKDIR $PYSETUP_PATH
-COPY poetry.lock pyproject.toml ./
-RUN poetry install
-
-FROM python-base AS development
-
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
-COPY poetry.lock pyproject.toml ./
-
-# copy in our built poetry + venv
-COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-
-# quicker install as runtime deps are already installed
-RUN poetry install
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
+RUN touch README.md && \
+    poetry install --without dev --no-root && rm -rf "$POETRY_CACHE_DIR"
+
+# The runtime image, used to just run the code provided its virtual environment
+FROM python:3.12.7-slim AS runtime
+WORKDIR /app
+ENV PYTHONPATH="/app"
+
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
+
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+
 COPY photos ./photos
 COPY alembic ./alembic
-COPY config ./config
-COPY poetry.lock pyproject.toml alembic.ini ./
-
-ENV PYTHONPATH="/app"
+COPY alembic.ini .
 
 EXPOSE 9475
 CMD ["fastapi", "run", "photos/server.py", "--port", "9475"]

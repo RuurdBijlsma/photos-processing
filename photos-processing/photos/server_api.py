@@ -4,7 +4,7 @@ import httpx
 
 from photos.interfaces import ImageInfo
 
-server_url = os.environ.get("SERVER_API_URL", "http://127.0.0.1:9475")
+server_url = os.environ.get("SERVER_API_URL", "http://localhost:9475")
 
 
 def store_image(image_info: ImageInfo) -> None:

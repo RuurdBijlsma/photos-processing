@@ -12,10 +12,10 @@ services:
     volumes:
       - photos-db:/var/lib/postgresql/data
 
-  photos:
-    container_name: photos
+  photos-server:
+    container_name: photos-server
     build:
-      context: photos-processing
+      context: photos-server
     restart: no
     environment:
       PHOTOS_DIR: /app/data/photos
@@ -27,6 +27,23 @@ services:
       - backend
     ports:
       - 9475:9475
+    volumes:
+      - ${PHOTOS_DIR}:/app/data/photos
+      - ${THUMBNAILS_DIR}:/app/data/thumbnails
+
+  photos-processing:
+    container_name: photos-processing
+    build:
+      context: photos-processing
+    restart: no
+    environment:
+      SERVER_API_URL: "http://photos-server:9475"
+      PHOTOS_DIR: /app/data/photos
+      THUMBNAILS_DIR: /app/data/thumbnails
+    depends_on:
+      - photos-server
+    networks:
+      - backend
     volumes:
       - ${PHOTOS_DIR}:/app/data/photos
       - ${THUMBNAILS_DIR}:/app/data/thumbnails
