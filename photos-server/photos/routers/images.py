@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from photos.config.app_config import app_config
 from photos.database.database import get_session
 from photos.database.models import ImageModel
-from photos.interfaces import ImageInfo, ImageExistsRequest
+from photos.interfaces import ImageInfo, ThumbImageInfo
 
 router = APIRouter(prefix="/images")
 
@@ -25,7 +25,7 @@ def post_image(
     return image_model
 
 
-@router.get("", response_model=list[ImageInfo])
+@router.get("", response_model=list[ThumbImageInfo])
 def get_images(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
@@ -40,23 +40,3 @@ def get_images(
         raise HTTPException(status_code=404, detail="No images found")
 
     return images
-
-
-@router.post("/exists")
-def image_exists(
-    image_request: ImageExistsRequest, session: Session = Depends(get_session)
-) -> bool:
-    image_model = (
-        session.query(ImageModel).filter_by(relative_path=image_request.path).first()
-    )
-    if image_model is None:
-        return False
-
-    assert image_model.id is not None
-    # Check for each resolution
-    for size in app_config.thumbnail_sizes:
-        file_path = app_config.thumbnails_dir / image_model.id / f"{size}p.webp"
-        if not file_path.exists():
-            return False
-
-    return True

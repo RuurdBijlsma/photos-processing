@@ -2,12 +2,13 @@ import os
 
 from PIL.ImageFile import ImageFile
 
-from photos.config.process_config import ProcessConfig
+from photos.config.process_config import process_config
 from photos.interfaces import BaseImageInfo
 
 
 def generate_thumbnails(
-    img: ImageFile, image_info: BaseImageInfo, process_config: ProcessConfig
+        img: ImageFile,
+        image_info: BaseImageInfo
 ) -> None:
     folder = process_config.thumbnails_dir / image_info.id
     if not os.path.exists(folder):

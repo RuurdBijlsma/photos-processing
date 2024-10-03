@@ -2,9 +2,10 @@
 
 * Python
   * add tests
+  * gps module
+  * watch for photo deletion and delete from db?
   * don't process photos that are already processed
   * common_types
-  * logs not showing in docker compose?
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
 * Add users

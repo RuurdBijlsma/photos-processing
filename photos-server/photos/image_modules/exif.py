@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Any
 
-import piexif
+import piexif # type: ignore
 from PIL.ExifTags import TAGS
 from PIL.ImageFile import ImageFile
 
@@ -37,8 +37,11 @@ def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return dict(all_exif)
 
 
-def get_exif(img: ImageFile, image_info: BaseImageInfo, _: ProcessConfig) -> ImageInfo:
-    exif_data = piexif.load(img.info["exif"])
+def get_exif(img: ImageFile, image_info: BaseImageInfo) -> ImageInfo:
+    if "exif" not in img.info:
+        exif_data = None
+    else:
+        exif_data = get_all_exif(piexif.load(img.info["exif"]))
     img_format = img.format if img.format is not None else "UNKNOWN"
 
     return ImageInfo(
@@ -46,5 +49,5 @@ def get_exif(img: ImageFile, image_info: BaseImageInfo, _: ProcessConfig) -> Ima
         width=img.width,
         height=img.height,
         format=img_format,
-        exif=get_all_exif(exif_data),
+        exif=exif_data,
     )
