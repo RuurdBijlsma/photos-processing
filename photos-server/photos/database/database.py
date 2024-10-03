@@ -12,7 +12,7 @@ from photos.database.models import Base
 
 @lru_cache
 def get_engine() -> Engine:
-    engine = create_engine(app_config.connection_string)
+    engine = create_engine(app_config.connection_string, echo=False)
     Base.metadata.create_all(engine)
     return engine
 
