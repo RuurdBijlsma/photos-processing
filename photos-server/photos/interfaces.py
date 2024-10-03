@@ -19,3 +19,7 @@ class ImageInfo(BaseModel):
     height: int
     format: str
     exif: None | dict[str, Any]
+
+
+class ImageExistsRequest(BaseModel):
+    path: str

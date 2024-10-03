@@ -10,9 +10,7 @@ Base = declarative_base()
 class ImageModel(Base):
     __tablename__ = "images"
 
-    id = Column(
-        String, primary_key=True, index=True
-    )  # Use primary_key=True for unique IDs
+    id = Column(String, primary_key=True, index=True)
     filename = Column(String, nullable=False, index=True)
     relative_path = Column(String, nullable=False)
     hash = Column(String, nullable=False)
