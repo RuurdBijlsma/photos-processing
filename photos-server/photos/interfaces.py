@@ -35,12 +35,14 @@ class GeoLocation(BaseModel):
 
 
 class GpsImageInfo(ExifImageInfo):
-    latitude: float
-    longitude: float
-    altitude: float
-    gps_datetime: datetime
-    location: GeoLocation
+    latitude: float | None = None
+    longitude: float | None = None
+    altitude: float | None = None
+    gps_datetime: datetime | None = None
+    location: GeoLocation | None = None
 
 
 class TimeImageInfo(GpsImageInfo):
-    datetime_taken: datetime
+    datetime: datetime
+    timezone_known: bool
+    datetime_source: str

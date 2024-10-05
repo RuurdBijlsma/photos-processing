@@ -7,11 +7,12 @@ from sqlalchemy.orm import Session
 
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
-from photos.database.models import ImageModel
+from photos.database.models import ImageModel, GeoLocationModel
 from photos.image_modules.base_info import base_info
 from photos.image_modules.exif import get_exif
 from photos.image_modules.gps import get_gps_image
 from photos.image_modules.thumbnails import generate_thumbnails
+from photos.image_modules.time_taken import get_time_taken
 from photos.interfaces import ExifImageInfo
 from photos.utils import clean_object
 
@@ -20,9 +21,13 @@ logger = logging.getLogger(__name__)
 
 def store_image(image_info: ExifImageInfo, session: Session) -> ImageModel:
     logger.info(image_info)
-    cleaned_dict = clean_object(image_info.dict())
+    cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
-    image_model = ImageModel(**cleaned_dict)
+    location = cleaned_dict.pop("location")
+    location_model = None
+    if location:
+        location_model = GeoLocationModel(**location)
+    image_model = ImageModel(**cleaned_dict, location=location_model)
     session.add(image_model)
     session.commit()
     session.refresh(image_model)
@@ -69,5 +74,6 @@ def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
         generate_thumbnails(img, image_info)
         image_info = get_exif(img, image_info)
     image_info = get_gps_image(image_info)
+    image_info = get_time_taken(image_info)
 
     store_image(image_info, session)
