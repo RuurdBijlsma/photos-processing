@@ -2,7 +2,6 @@ import os
 import uuid
 from pathlib import Path
 
-from photos.config.process_config import ProcessConfig
 from photos.interfaces import BaseImageInfo
 
 

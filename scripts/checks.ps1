@@ -9,6 +9,5 @@ function Run-Checks
 }
 
 Push-Location $PSScriptRoot/..
-Run-Checks -dir photos-processing
 Run-Checks -dir photos-server
 Pop-Location

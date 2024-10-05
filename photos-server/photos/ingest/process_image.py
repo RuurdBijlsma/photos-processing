@@ -10,16 +10,17 @@ from photos.config.process_config import process_config
 from photos.database.models import ImageModel
 from photos.image_modules.base_info import base_info
 from photos.image_modules.exif import get_exif
+from photos.image_modules.gps import get_gps_image
 from photos.image_modules.thumbnails import generate_thumbnails
-from photos.interfaces import ImageInfo
+from photos.interfaces import ExifImageInfo
 from photos.utils import clean_object
 
 logger = logging.getLogger(__name__)
 
 
-def store_image(image_info: ImageInfo, session: Session) -> ImageModel:
+def store_image(image_info: ExifImageInfo, session: Session) -> ImageModel:
     logger.info(image_info)
-    cleaned_dict=clean_object(image_info.dict())
+    cleaned_dict = clean_object(image_info.dict())
     assert isinstance(cleaned_dict, dict)
     image_model = ImageModel(**cleaned_dict)
     session.add(image_model)
@@ -31,9 +32,7 @@ def store_image(image_info: ImageInfo, session: Session) -> ImageModel:
 def image_exists(image_path: Path, session: Session) -> bool:
     relative_path = str(image_path.relative_to(app_config.photos_dir))
     image_model = (
-        session.query(ImageModel).filter_by(
-            relative_path=relative_path
-        ).first()
+        session.query(ImageModel).filter_by(relative_path=relative_path).first()
     )
     if image_model is None:
         return False
@@ -51,18 +50,14 @@ def image_exists(image_path: Path, session: Session) -> bool:
 def hash_image(image_path: Path, chunk_size: int = 65536) -> str:
     hasher = hashlib.sha256()
 
-    with image_path.open('rb') as f:
-        for chunk in iter(lambda: f.read(chunk_size), b''):
+    with image_path.open("rb") as f:
+        for chunk in iter(lambda: f.read(chunk_size), b""):
             hasher.update(chunk)
 
     return hasher.hexdigest()
 
 
-def process_image(
-        photos_dir: Path,
-        image_path: Path,
-        session: Session
-) -> None:
+def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
     image_hash = hash_image(image_path)
 
     if image_exists(image_path, session):
@@ -73,5 +68,6 @@ def process_image(
     with Image.open(photos_dir / image_info.relative_path) as img:
         generate_thumbnails(img, image_info)
         image_info = get_exif(img, image_info)
+    image_info = get_gps_image(image_info)
 
     store_image(image_info, session)

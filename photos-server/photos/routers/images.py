@@ -5,17 +5,16 @@ from fastapi import Depends, HTTPException, Query, APIRouter
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from photos.config.app_config import app_config
 from photos.database.database import get_session
 from photos.database.models import ImageModel
-from photos.interfaces import ImageInfo, ThumbImageInfo
+from photos.interfaces import ExifImageInfo, ThumbImageInfo
 
 router = APIRouter(prefix="/images")
 
 
-@router.post("", response_model=ImageInfo)
+@router.post("", response_model=ExifImageInfo)
 def post_image(
-    image_info: ImageInfo, session: Session = Depends(get_session)
+    image_info: ExifImageInfo, session: Session = Depends(get_session)
 ) -> ImageModel:
     logging.info(image_info)
     image_model = ImageModel(**image_info.dict())

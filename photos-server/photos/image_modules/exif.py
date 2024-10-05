@@ -1,12 +1,11 @@
 from collections import defaultdict
 from typing import Any
 
-import piexif # type: ignore
+import piexif
 from PIL.ExifTags import TAGS
 from PIL.ImageFile import ImageFile
 
-from photos.config.process_config import ProcessConfig
-from photos.interfaces import BaseImageInfo, ImageInfo
+from photos.interfaces import BaseImageInfo, ExifImageInfo
 
 
 def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -31,21 +30,25 @@ def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
             # Convert the tag number to human-readable name if possible
             tag_name = TAGS.get(tag, tag)
             if isinstance(value, bytes):
-                value = value.decode("utf-8")
+                try:
+                    value = value.decode("utf-8")
+                except UnicodeDecodeError:
+                    # Ignore value if it can't be turned into string
+                    continue
             all_exif[section_name][tag_name] = value
 
     return dict(all_exif)
 
 
-def get_exif(img: ImageFile, image_info: BaseImageInfo) -> ImageInfo:
+def get_exif(img: ImageFile, image_info: BaseImageInfo) -> ExifImageInfo:
     if "exif" not in img.info:
         exif_data = None
     else:
         exif_data = get_all_exif(piexif.load(img.info["exif"]))
     img_format = img.format if img.format is not None else "UNKNOWN"
 
-    return ImageInfo(
-        **image_info.dict(),
+    return ExifImageInfo(
+        **image_info.model_dump(),
         width=img.width,
         height=img.height,
         format=img_format,

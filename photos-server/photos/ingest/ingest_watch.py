@@ -36,14 +36,14 @@ def process_images_in_directory(photos_dir: Path) -> None:
 
 
 class NewImageHandler(FileSystemEventHandler):
-    def __init__(self):
+    def __init__(self) -> None:
         self.session = get_session_maker()()
 
     def on_created(self, event: FileCreatedEvent | DirCreatedEvent) -> None:
         source_path = Path(str(event.src_path))
         if (
-                not event.is_directory
-                and source_path.suffix in process_config.image_suffixes
+            not event.is_directory
+            and source_path.suffix in process_config.image_suffixes
         ):
             logger.info("[watchdog] Processing new photo!")
             process_image(app_config.photos_dir, source_path, self.session)

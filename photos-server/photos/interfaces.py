@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -21,5 +22,25 @@ class ThumbImageInfo(BaseImageInfo):
     format: str
 
 
-class ImageInfo(ThumbImageInfo):
+class ExifImageInfo(ThumbImageInfo):
     exif: None | dict[str, Any]
+
+
+class GeoLocation(BaseModel):
+    country: str
+    province: str
+    city: str
+    latitude: float
+    longitude: float
+
+
+class GpsImageInfo(ExifImageInfo):
+    latitude: float
+    longitude: float
+    altitude: float
+    gps_datetime: datetime
+    location: GeoLocation
+
+
+class TimeImageInfo(GpsImageInfo):
+    datetime_taken: datetime
