@@ -50,6 +50,7 @@ def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
         and image_info.longitude is not None
     ):
         tz = tf.timezone_at(lng=image_info.longitude, lat=image_info.latitude)
+        assert tz is not None
         datetime_taken = image_info.gps_datetime.astimezone(pytz.timezone(tz))
         timezone_known = True
         datetime_source = "GPS"

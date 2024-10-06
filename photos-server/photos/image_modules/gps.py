@@ -12,7 +12,7 @@ def dms_to_decimal(degrees: float, minutes: float, seconds: float) -> float:
 
 
 def parse_exif_gps(
-        exif_gps: dict[str | int, Any],
+    exif_gps: dict[str | int, Any],
 ) -> dict[str, float | datetime | None]:
     # Parse latitude
     lat_dms = exif_gps.get(2)
@@ -76,10 +76,10 @@ def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
         return GpsImageInfo(**image_info.model_dump())
     gps_data = parse_exif_gps(image_info.exif["GPS"])
     if (
-            gps_data["latitude"] is None
-            or gps_data["longitude"] is None
-            or gps_data["datetime"] is None
-            or gps_data["altitude"] is None
+        gps_data["latitude"] is None
+        or gps_data["longitude"] is None
+        or gps_data["datetime"] is None
+        or gps_data["altitude"] is None
     ):
         return GpsImageInfo(**image_info.model_dump())
     assert isinstance(gps_data["latitude"], float)

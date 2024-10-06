@@ -23,7 +23,7 @@ class ThumbImageInfo(BaseImageInfo):
 
 
 class ExifImageInfo(ThumbImageInfo):
-    exif: None | dict[str, Any]
+    exif: dict[str, Any] | None
 
 
 class GeoLocation(BaseModel):

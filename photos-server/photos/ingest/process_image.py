@@ -1,4 +1,3 @@
-import hashlib
 import logging
 from pathlib import Path
 
@@ -52,24 +51,12 @@ def image_exists(image_path: Path, session: Session) -> bool:
     return True
 
 
-def hash_image(image_path: Path, chunk_size: int = 65536) -> str:
-    hasher = hashlib.sha256()
-
-    with image_path.open("rb") as f:
-        for chunk in iter(lambda: f.read(chunk_size), b""):
-            hasher.update(chunk)
-
-    return hasher.hexdigest()
-
-
 def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
-    image_hash = hash_image(image_path)
-
     if image_exists(image_path, session):
         logger.info(f"Image {image_path} exists, skipping")
         return
 
-    image_info = base_info(photos_dir, image_path, image_hash)
+    image_info = base_info(photos_dir, image_path)
     with Image.open(photos_dir / image_info.relative_path) as img:
         generate_thumbnails(img, image_info)
         image_info = get_exif(img, image_info)
