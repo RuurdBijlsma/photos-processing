@@ -1,4 +1,5 @@
 from datetime import datetime, UTC
+from typing import Any
 
 import piexif
 import reverse_geocode
@@ -6,7 +7,7 @@ import reverse_geocode
 from photos.interfaces import ExifImageInfo, GpsImageInfo, GeoLocation
 
 
-def convert_to_degrees(value):
+def convert_to_degrees(value: list[list[int]]) -> float:
     """Converts the GPS coordinates stored in EXIF format to degrees in float."""
     d = value[0][0] / value[0][1]
     m = value[1][0] / value[1][1] / 60.0
@@ -14,7 +15,9 @@ def convert_to_degrees(value):
     return d + m + s
 
 
-def parse_exif_gps(gps_info) -> tuple[float | None, float | None, float | None, datetime | None]:
+def parse_exif_gps(
+    gps_info: dict[str, Any],
+) -> tuple[float | None, float | None, float | None, datetime | None]:
     """Extracts GPS coordinates, altitude, and GPS datetime from EXIF data."""
     gps_latitude = gps_info.get(piexif.GPSIFD.GPSLatitude)
     gps_latitude_ref = gps_info.get(piexif.GPSIFD.GPSLatitudeRef)
@@ -27,13 +30,12 @@ def parse_exif_gps(gps_info) -> tuple[float | None, float | None, float | None, 
     if gps_latitude is None or gps_longitude is None:
         return None, None, None, None
 
-    # Convert coordinates to floats
     lat = convert_to_degrees(gps_latitude)
-    if gps_latitude_ref and gps_latitude_ref != 'N':
+    if gps_latitude_ref and gps_latitude_ref != "N":
         lat = -lat
 
     lon = convert_to_degrees(gps_longitude)
-    if gps_longitude_ref and gps_longitude_ref != 'E':
+    if gps_longitude_ref and gps_longitude_ref != "E":
         lon = -lon
 
     # Convert altitude if present
@@ -55,11 +57,7 @@ def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
     if not image_info.exif or "GPS" not in image_info.exif:
         return GpsImageInfo(**image_info.model_dump())
     lat, lon, alt, gps_datetime = parse_exif_gps(image_info.exif["GPS"])
-    if (
-        lat is None
-        or lon is None
-        or alt is None
-    ):
+    if lat is None or lon is None or alt is None:
         return GpsImageInfo(**image_info.model_dump())
     coded = reverse_geocode.get((lat, lon))
     return GpsImageInfo(
