@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -38,11 +38,12 @@ class GpsImageInfo(ExifImageInfo):
     latitude: float | None = None
     longitude: float | None = None
     altitude: float | None = None
-    gps_datetime: datetime | None = None
+    datetime_utc: datetime | None = None
     location: GeoLocation | None = None
 
 
 class TimeImageInfo(GpsImageInfo):
-    datetime: datetime
-    timezone_known: bool
+    datetime_local: datetime
     datetime_source: str
+    timezone_name: str | None
+    timezone_offset: timedelta | None

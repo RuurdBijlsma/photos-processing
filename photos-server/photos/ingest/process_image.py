@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 def store_image(image_info: ExifImageInfo, session: Session) -> ImageModel:
-    logger.info(image_info)
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
     location = cleaned_dict.pop("location")
@@ -53,7 +52,7 @@ def image_exists(image_path: Path, session: Session) -> bool:
 
 def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
     if image_exists(image_path, session):
-        logger.info(f"Image {image_path} exists, skipping")
+        logger.debug(f"Image {image_path} exists, skipping")
         return
 
     image_info = base_info(photos_dir, image_path)

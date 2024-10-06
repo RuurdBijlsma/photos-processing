@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Interval
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Mapped
@@ -19,14 +19,15 @@ class ImageModel(Base):
     height = Column(Integer, nullable=False)
     format = Column(String, nullable=False)
     exif = Column(JSONB, nullable=True)
-    datetime = Column(DateTime(timezone=True), nullable=False)
-    timezone_known = Column(Boolean, nullable=False)
+    datetime_local = Column(DateTime(timezone=False), nullable=False)
+    timezone_name = Column(String, nullable=True)
+    timezone_offset = Column(Interval, nullable=True)
     datetime_source = Column(String, nullable=False)
     # GPS
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     altitude = Column(Float, nullable=True)
-    gps_datetime = Column(DateTime(timezone=True), nullable=True)
+    datetime_utc = Column(DateTime(timezone=True), nullable=True)
     location_id = Column(Integer, ForeignKey("geo_locations.id"), nullable=True)
     location: Mapped[GeoLocationModel | None] = relationship(
         "GeoLocationModel", back_populates="images"

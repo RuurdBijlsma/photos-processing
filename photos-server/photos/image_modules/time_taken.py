@@ -21,8 +21,7 @@ def parse_filename_datetime(filename: str) -> datetime | None:
         return None
 
 
-def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
-    timezone_known = False
+def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
     datetime_source = "Unknown"
     datetime_taken = datetime.now()
     filename_datetime = parse_filename_datetime(image_info.filename)
@@ -41,18 +40,16 @@ def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
         hours, minutes = map(int, offset_time.split(":"))
         offset = timedelta(hours=hours, minutes=minutes)
         datetime_taken = datetime_taken.replace(tzinfo=timezone(offset))
-        timezone_known = True
         datetime_source = "OffsetTimeOriginal"
     # Second try: Get datetime+tz from GPS time (utc) and gps coordinate for tz
     elif (
-        image_info.gps_datetime
+        image_info.datetime_utc
         and image_info.latitude is not None
         and image_info.longitude is not None
     ):
         tz = tf.timezone_at(lng=image_info.longitude, lat=image_info.latitude)
         assert tz is not None
-        datetime_taken = image_info.gps_datetime.astimezone(pytz.timezone(tz))
-        timezone_known = True
+        datetime_taken = image_info.datetime_utc.astimezone(pytz.timezone(tz))
         datetime_source = "GPS"
     # Third try, no tz information available, get from EXIF>DateTimeOriginal or Image>ImageInfo
     elif image_info.exif:
@@ -79,9 +76,42 @@ def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
         datetime_taken = datetime.fromtimestamp(creation_time)
         datetime_source = "modification_date"
 
+    return datetime_taken, datetime_source
+
+
+def get_timezone_info(lat: float, lon: float, date: datetime) -> tuple[str | None, timedelta | None]:
+    """Gets timezone name and offset from latitude, longitude, and date."""
+
+    timezone_str = tf.timezone_at(lat=lat, lng=lon)
+    if not timezone_str:
+        return None, None
+
+    timezone_offset = pytz.timezone(timezone_str).localize(date.replace(tzinfo=None)).utcoffset()
+    return timezone_str, timezone_offset
+
+
+def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
+    datetime_taken, datetime_source = get_local_datetime(image_info)
+    # Fix cringe timezone (offset based) to one based on location
+    if (
+        datetime_taken.tzinfo is not None
+        and isinstance(datetime_taken.tzinfo, timezone)
+        and image_info.datetime_utc
+        and image_info.latitude is not None
+        and image_info.longitude is not None
+    ):
+        tz = tf.timezone_at(lng=image_info.longitude, lat=image_info.latitude)
+        assert tz is not None
+        datetime_taken = datetime_taken.replace(tzinfo=pytz.timezone(tz))
+
+    timezone_name: str | None = None
+    timezone_offset: timedelta | None = None
+    if image_info.latitude is not None and image_info.longitude is not None:
+        timezone_name, timezone_offset = get_timezone_info(image_info.latitude, image_info.longitude, datetime_taken)
     return TimeImageInfo(
         **image_info.model_dump(),
-        datetime=datetime_taken,
-        timezone_known=timezone_known,
+        datetime_local=datetime_taken,
         datetime_source=datetime_source,
+        timezone_name=timezone_name,
+        timezone_offset=timezone_offset,
     )

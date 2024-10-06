@@ -1,98 +1,73 @@
 from datetime import datetime, UTC
-from typing import Any
 
+import piexif
 import reverse_geocode
 
 from photos.interfaces import ExifImageInfo, GpsImageInfo, GeoLocation
 
 
-def dms_to_decimal(degrees: float, minutes: float, seconds: float) -> float:
-    """Convert degrees, minutes, seconds to decimal format."""
-    return degrees + (minutes / 60.0) + (seconds / 3600.0)
+def convert_to_degrees(value):
+    """Converts the GPS coordinates stored in EXIF format to degrees in float."""
+    d = value[0][0] / value[0][1]
+    m = value[1][0] / value[1][1] / 60.0
+    s = value[2][0] / value[2][1] / 3600.0
+    return d + m + s
 
 
-def parse_exif_gps(
-    exif_gps: dict[str | int, Any],
-) -> dict[str, float | datetime | None]:
-    # Parse latitude
-    lat_dms = exif_gps.get(2)
-    lat_ref = exif_gps.get(3, "N")  # Defaults to 'N' if not found
-    if lat_dms:
-        latitude = dms_to_decimal(
-            lat_dms[0][0] / lat_dms[0][1],
-            lat_dms[1][0] / lat_dms[1][1],
-            lat_dms[2][0] / lat_dms[2][1],
-        )
-        if lat_ref == "S":  # Southern hemisphere should be negative
-            latitude = -latitude
-    else:
-        latitude = None
+def parse_exif_gps(gps_info) -> tuple[float | None, float | None, float | None, datetime | None]:
+    """Extracts GPS coordinates, altitude, and GPS datetime from EXIF data."""
+    gps_latitude = gps_info.get(piexif.GPSIFD.GPSLatitude)
+    gps_latitude_ref = gps_info.get(piexif.GPSIFD.GPSLatitudeRef)
+    gps_longitude = gps_info.get(piexif.GPSIFD.GPSLongitude)
+    gps_longitude_ref = gps_info.get(piexif.GPSIFD.GPSLongitudeRef)
+    gps_altitude = gps_info.get(piexif.GPSIFD.GPSAltitude, None)
+    gps_date_str = gps_info.get(piexif.GPSIFD.GPSDateStamp, None)
+    gps_time_obj = gps_info.get(piexif.GPSIFD.GPSTimeStamp, None)
 
-    # Parse longitude
-    lon_dms = exif_gps.get(4)
-    lon_ref = exif_gps.get(5, "E")  # Defaults to 'E' if not found
-    if lon_dms:
-        longitude = dms_to_decimal(
-            lon_dms[0][0] / lon_dms[0][1],
-            lon_dms[1][0] / lon_dms[1][1],
-            lon_dms[2][0] / lon_dms[2][1],
-        )
-        if lon_ref == "W":  # Western hemisphere should be negative
-            longitude = -longitude
-    else:
-        longitude = None
+    if gps_latitude is None or gps_longitude is None:
+        return None, None, None, None
 
-    # Parse altitude
-    altitude_data = exif_gps.get(6)
-    if altitude_data:
-        altitude = altitude_data[0] / altitude_data[1]
-        if altitude_data[1] == 1:  # Below sea level
-            altitude = -altitude
-    else:
-        altitude = None
+    # Convert coordinates to floats
+    lat = convert_to_degrees(gps_latitude)
+    if gps_latitude_ref and gps_latitude_ref != 'N':
+        lat = -lat
 
-    gps_datetime: datetime | None = None
-    gps_date = exif_gps.get(29)
-    gps_time_data = exif_gps.get(7)
-    if gps_time_data and gps_date:
-        hours = gps_time_data[0][0] / gps_time_data[0][1]
-        minutes = gps_time_data[1][0] / gps_time_data[1][1]
-        seconds = gps_time_data[2][0] / gps_time_data[2][1]
-        gps_datetime = datetime.strptime(gps_date, "%Y:%m:%d")
-        gps_datetime = gps_datetime.replace(
-            hour=int(hours), minute=int(minutes), second=int(seconds), tzinfo=UTC
-        )
+    lon = convert_to_degrees(gps_longitude)
+    if gps_longitude_ref and gps_longitude_ref != 'E':
+        lon = -lon
 
-    return {
-        "latitude": latitude,
-        "longitude": longitude,
-        "altitude": altitude,
-        "datetime": gps_datetime,
-    }
+    # Convert altitude if present
+    alt = gps_altitude[0] / gps_altitude[1] if gps_altitude else 0
+
+    # GPS DateTime format is "YYYY:MM:DD"
+    hours = gps_time_obj[0][0] / gps_time_obj[0][1]
+    minutes = gps_time_obj[1][0] / gps_time_obj[1][1]
+    seconds = gps_time_obj[2][0] / gps_time_obj[2][1]
+    gps_datetime = datetime.strptime(gps_date_str, "%Y:%m:%d")
+    gps_datetime = gps_datetime.replace(
+        hour=int(hours), minute=int(minutes), second=int(seconds), tzinfo=UTC
+    )
+
+    return lat, lon, alt, gps_datetime
 
 
 def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
     if not image_info.exif or "GPS" not in image_info.exif:
         return GpsImageInfo(**image_info.model_dump())
-    gps_data = parse_exif_gps(image_info.exif["GPS"])
+    lat, lon, alt, gps_datetime = parse_exif_gps(image_info.exif["GPS"])
     if (
-        gps_data["latitude"] is None
-        or gps_data["longitude"] is None
-        or gps_data["datetime"] is None
-        or gps_data["altitude"] is None
+        lat is None
+        or lon is None
+        or alt is None
     ):
         return GpsImageInfo(**image_info.model_dump())
-    assert isinstance(gps_data["latitude"], float)
-    assert isinstance(gps_data["longitude"], float)
-    assert isinstance(gps_data["altitude"], float)
-    assert isinstance(gps_data["datetime"], datetime)
-    coded = reverse_geocode.get((gps_data["latitude"], gps_data["longitude"]))
+    coded = reverse_geocode.get((lat, lon))
     return GpsImageInfo(
         **image_info.model_dump(),
-        latitude=gps_data["latitude"],
-        longitude=gps_data["longitude"],
-        altitude=gps_data["altitude"],
-        gps_datetime=gps_data["datetime"],
+        latitude=lat,
+        longitude=lon,
+        altitude=alt,
+        datetime_utc=gps_datetime,
         location=GeoLocation(
             country=coded["country"],
             province=coded["state"],

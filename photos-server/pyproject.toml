@@ -4,8 +4,8 @@ version = "2.0.0"
 description = ""
 authors = ["Ruurd Bijlsma <ruurd@bijlsma.dev>"]
 license = "'"
-readme = "README.md"
-packages = [{ include = "*", from = "src" }]
+readme = "../README.md"
+packages = [{ include = "*", from = "photos" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
