@@ -21,11 +21,7 @@ def parse_filename_datetime(filename: str) -> datetime | None:
         return None
 
 
-def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
-    datetime_source = "Unknown"
-    datetime_taken = datetime.now()
-    filename_datetime = parse_filename_datetime(image_info.filename)
-    # First try: Get from datetime+tz from exif fields if they exist
+def get_modern_datetime(image_info: GpsImageInfo) -> datetime:
     if (
         image_info.exif
         and "EXIF" in image_info.exif
@@ -39,43 +35,74 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
         offset_time = image_info.exif["EXIF"]["OffsetTimeOriginal"]
         hours, minutes = map(int, offset_time.split(":"))
         offset = timedelta(hours=hours, minutes=minutes)
-        datetime_taken = datetime_taken.replace(tzinfo=timezone(offset))
-        datetime_source = "OffsetTimeOriginal"
-    # Second try: Get datetime+tz from GPS time (utc) and gps coordinate for tz
-    elif (
+        return datetime_taken.replace(tzinfo=timezone(offset))
+
+
+def get_gps_datetime(image_info: GpsImageInfo) -> datetime:
+    if (
         image_info.datetime_utc
         and image_info.latitude is not None
         and image_info.longitude is not None
     ):
         tz = tf.timezone_at(lng=image_info.longitude, lat=image_info.latitude)
         assert tz is not None
-        datetime_taken = image_info.datetime_utc.astimezone(pytz.timezone(tz))
+        return image_info.datetime_utc.astimezone(pytz.timezone(tz))
+
+
+def get_exif_datetime_original(image_info: GpsImageInfo) -> datetime:
+    if image_info.exif and "EXIF" in image_info.exif and "DateTimeOriginal" in image_info.exif["EXIF"]:
+        return datetime.strptime(
+            image_info.exif["EXIF"]["DateTimeOriginal"],
+            "%Y:%m:%d %H:%M:%S",
+        )
+
+
+def get_exif_image_datetime(image_info: GpsImageInfo) -> datetime:
+    if image_info.exif and "Image" in image_info.exif and "DateTime" in image_info.exif["Image"]:
+        return datetime.strptime(
+            image_info.exif["Image"]["DateTime"],
+            "%Y:%m:%d %H:%M:%S",
+        )
+
+
+def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
+    datetime_source: str | None = None
+    datetime_taken: datetime | None = None
+    filename_datetime = parse_filename_datetime(image_info.filename)
+    # First try: Get from datetime+tz from exif fields if they exist
+    try:
+        datetime_taken = get_modern_datetime(image_info)
+        datetime_source = "OffsetTimeOriginal"
+    except ValueError:
+        ...
+    # Second try: Get datetime+tz from GPS time (utc) and gps coordinate for tz
+    if datetime_taken is None:
+        datetime_taken = get_gps_datetime(image_info)
         datetime_source = "GPS"
-    # Third try, no tz information available, get from EXIF>DateTimeOriginal or Image>ImageInfo
-    elif image_info.exif:
-        if "EXIF" in image_info.exif and "DateTimeOriginal" in image_info.exif["EXIF"]:
-            datetime_taken = datetime.strptime(
-                image_info.exif["EXIF"]["DateTimeOriginal"],
-                "%Y:%m:%d %H:%M:%S",
-            )
+    # Third try, no tz information available, get from EXIF>DateTimeOriginal
+    if datetime_taken is None:
+        try:
+            datetime_taken = get_exif_datetime_original(image_info)
             datetime_source = "DateTimeOriginal"
-        elif "Image" in image_info.exif and "DateTime" in image_info.exif["Image"]:
-            datetime_taken = datetime.strptime(
-                image_info.exif["Image"]["DateTime"],
-                "%Y:%m:%d %H:%M:%S",
-            )
-            datetime_source = "DateTime"
-    # Fourth try: get it from filename, no tz available
-    elif filename_datetime:
+        except ValueError:
+            ...
+    # Fourth try, get from Image>DateTime
+    if datetime_taken is None:
+        datetime_taken = get_exif_image_datetime(image_info)
+        datetime_source = "DateTime"
+    # Fifth try: get it from filename
+    if datetime_taken is None and filename_datetime:
         datetime_taken = filename_datetime
-        datetime_source = "filename"
-    # Fifth try: get it from file modification date
-    else:
+        datetime_source = "Filename"
+    # Last try: Get it from file modification datetime
+    if datetime_taken is None:
         file_path = app_config.photos_dir / image_info.relative_path
         creation_time = file_path.stat().st_mtime
         datetime_taken = datetime.fromtimestamp(creation_time)
-        datetime_source = "modification_date"
+        datetime_source = "ModificationDate"
 
+    if datetime_source is None:
+        print("WHAT THE FUCK")
     return datetime_taken, datetime_source
 
 

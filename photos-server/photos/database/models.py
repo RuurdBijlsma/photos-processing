@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Interval
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Interval, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Mapped
@@ -39,11 +39,14 @@ class GeoLocationModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     country = Column(String, nullable=False)
-    province = Column(String, nullable=False)
+    province = Column(String, nullable=True)
     city = Column(String, nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     # One-to-many relationship with ImageLocation
     images: Mapped[list[ImageModel]] = relationship(
         "ImageModel", back_populates="location"
+    )
+    __table_args__ = (
+        UniqueConstraint('city', 'province', 'country', name='unique_location'),
     )

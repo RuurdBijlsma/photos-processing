@@ -28,7 +28,7 @@ class ExifImageInfo(ThumbImageInfo):
 
 class GeoLocation(BaseModel):
     country: str
-    province: str
+    province: str | None
     city: str
     latitude: float
     longitude: float

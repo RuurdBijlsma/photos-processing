@@ -1,0 +1,33 @@
+import os
+import random
+import shutil
+
+
+def copy_random_files(source_folder: str, destination_folder: str, sample_size: int):
+    # Ensure the destination folder exists
+    os.makedirs(destination_folder, exist_ok=True)
+
+    # Get all files in the source folder
+    files = [f for f in os.listdir(source_folder) if os.path.isfile(os.path.join(source_folder, f))]
+
+    # Check if the sample size is larger than the number of available files
+    if sample_size > len(files):
+        print(f"Sample size {sample_size} is larger than available files {len(files)}. Reducing sample size.")
+        sample_size = len(files)
+
+    # Randomly sample files
+    sampled_files = random.sample(files, sample_size)
+
+    # Copy each sampled file to the destination folder
+    for file in sampled_files:
+        source_path = os.path.join(source_folder, file)
+        destination_path = os.path.join(destination_folder, file)
+        shutil.copy2(source_path, destination_path)  # copy2 preserves metadata
+        print(f"Copied {file} to {destination_folder}")
+
+
+if __name__ == "__main__":
+    print(5)
+    from_path = "D:/Backup/Photos/photos/photos"
+    to_path = "C:/Users/Ruurd/PycharmProjects/RuurdPhotos2/data/photos"
+    copy_random_files(from_path, to_path, 200)

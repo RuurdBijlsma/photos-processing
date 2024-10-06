@@ -12,19 +12,25 @@ from photos.image_modules.exif import get_exif
 from photos.image_modules.gps import get_gps_image
 from photos.image_modules.thumbnails import generate_thumbnails
 from photos.image_modules.time_taken import get_time_taken
-from photos.interfaces import ExifImageInfo
+from photos.interfaces import TimeImageInfo
 from photos.utils import clean_object
 
 logger = logging.getLogger(__name__)
 
 
-def store_image(image_info: ExifImageInfo, session: Session) -> ImageModel:
+def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
     location = cleaned_dict.pop("location")
     location_model = None
-    if location:
-        location_model = GeoLocationModel(**location)
+    if location and image_info.location:
+        location_model = session.query(GeoLocationModel).filter_by(
+            city=image_info.location.city,
+            province=image_info.location.province,
+            country=image_info.location.country
+        ).scalar()
+        if not location_model:
+            location_model = GeoLocationModel(**location)
     image_model = ImageModel(**cleaned_dict, location=location_model)
     session.add(image_model)
     session.commit()

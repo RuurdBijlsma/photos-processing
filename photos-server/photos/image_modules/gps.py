@@ -41,14 +41,18 @@ def parse_exif_gps(
     # Convert altitude if present
     alt = gps_altitude[0] / gps_altitude[1] if gps_altitude else 0
 
-    # GPS DateTime format is "YYYY:MM:DD"
-    hours = gps_time_obj[0][0] / gps_time_obj[0][1]
-    minutes = gps_time_obj[1][0] / gps_time_obj[1][1]
-    seconds = gps_time_obj[2][0] / gps_time_obj[2][1]
-    gps_datetime = datetime.strptime(gps_date_str, "%Y:%m:%d")
-    gps_datetime = gps_datetime.replace(
-        hour=int(hours), minute=int(minutes), second=int(seconds), tzinfo=UTC
-    )
+    try:
+        # GPS DateTime format is "YYYY:MM:DD"
+        gps_datetime = datetime.strptime(gps_date_str, "%Y:%m:%d")
+        hours = gps_time_obj[0][0] / gps_time_obj[0][1]
+        minutes = gps_time_obj[1][0] / gps_time_obj[1][1]
+        seconds = gps_time_obj[2][0] / gps_time_obj[2][1]
+        gps_datetime = gps_datetime.replace(
+            hour=int(hours), minute=int(minutes), second=int(seconds), tzinfo=UTC
+        )
+    except ValueError:
+        print(f"Failed to parse gps datetime, got '{gps_date_str}' as date-str")
+        gps_datetime = None
 
     return lat, lon, alt, gps_datetime
 
@@ -68,7 +72,7 @@ def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
         datetime_utc=gps_datetime,
         location=GeoLocation(
             country=coded["country"],
-            province=coded["state"],
+            province=coded.get("state"),
             city=coded["city"],
             latitude=coded["latitude"],
             longitude=coded["longitude"],

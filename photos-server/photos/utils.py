@@ -4,7 +4,7 @@ from typing import Any
 
 def remove_non_printable(input_string: str) -> str:
     # Use a regex to replace non-printable characters with an empty string
-    return re.sub(r"[^\x20-\x7E]", "", input_string)
+    return re.sub(r"[^\x20-\x7E\xA0-\uFFEF]", "", input_string)
 
 
 def clean_object(obj: dict[str, Any]) -> dict[str, Any] | list[Any] | str:
