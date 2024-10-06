@@ -63,3 +63,8 @@
         * resource usage (cpu,ram,etc)
         * media processing info
 * Create android gallery app with local and cloud photos
+* Album titel generate met llm? op basis van captions, locations/countries
+* Iets van auto album generatie op basis van locatie, als je een foto maakt als je thuis bent na 10+ foto's en 2+ dagen niet thuis vraag of er een album van moet komen.
+  * gokken waar thuis is op basis van foto lokaties, maar ook user vragen
+* Automatische album selectie van goeie fotos?
+* Voor map view, heat map als je uitgezoomd bent, stipjes voor foto's waar je op kan klikken als je meer inzoomt
