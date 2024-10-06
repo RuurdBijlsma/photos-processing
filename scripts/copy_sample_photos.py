@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+from tqdm import tqdm
 
 
 def copy_random_files(source_folder: str, destination_folder: str, sample_size: int):
@@ -19,15 +20,13 @@ def copy_random_files(source_folder: str, destination_folder: str, sample_size: 
     sampled_files = random.sample(files, sample_size)
 
     # Copy each sampled file to the destination folder
-    for file in sampled_files:
+    for file in tqdm(sampled_files, desc="Copying files", unit="file"):
         source_path = os.path.join(source_folder, file)
         destination_path = os.path.join(destination_folder, file)
-        shutil.copy2(source_path, destination_path)  # copy2 preserves metadata
-        print(f"Copied {file} to {destination_folder}")
+        shutil.copy2(source_path, destination_path)
 
 
 if __name__ == "__main__":
-    print(5)
     from_path = "D:/Backup/Photos/photos/photos"
     to_path = "C:/Users/Ruurd/PycharmProjects/RuurdPhotos2/data/photos"
-    copy_random_files(from_path, to_path, 200)
+    copy_random_files(from_path, to_path, 1000)

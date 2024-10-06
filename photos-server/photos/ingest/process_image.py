@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from sqlalchemy.orm import Session
 
 from photos.config.app_config import app_config
@@ -62,9 +62,14 @@ def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
         return
 
     image_info = base_info(photos_dir, image_path)
-    with Image.open(photos_dir / image_info.relative_path) as img:
-        generate_thumbnails(img, image_info)
-        image_info = get_exif(img, image_info)
+    try:
+        img = Image.open(photos_dir / image_info.relative_path)
+    except UnidentifiedImageError:
+        logger.warning(f"Could not process image: {image_info.relative_path}")
+        return
+    generate_thumbnails(img, image_info)
+    image_info = get_exif(img, image_info)
+    img.close()
     image_info = get_gps_image(image_info)
     image_info = get_time_taken(image_info)
 

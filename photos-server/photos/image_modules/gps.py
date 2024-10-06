@@ -50,7 +50,7 @@ def parse_exif_gps(
         gps_datetime = gps_datetime.replace(
             hour=int(hours), minute=int(minutes), second=int(seconds), tzinfo=UTC
         )
-    except ValueError:
+    except (ValueError, TypeError):
         print(f"Failed to parse gps datetime, got '{gps_date_str}' as date-str")
         gps_datetime = None
 

@@ -2,15 +2,8 @@
 
 * Python
     * add tests
-    * sqlalchemy loses timezone information when posting to postgres, everything is utc.
-      * solution: store time as datetime without tz in datetime_local, 
-      * add column: datetime_utc (remove gps datetime)
-      * add column: timezone (optional)
-      * after done processing, fill timezones and datetime_utcs for rows that dont have this yet
-    * gps module
+    * als latitude en longitude 0 zijn, zet gps info naar None!
     * watch for photo deletion and delete from db?
-    * don't process photos that are already processed
-    * common_types
     * use nginx for image hosting instead of fastapi endpoints
     * ci/cd?
     * after process all is done, go over list again to timezone_known=false, then give them timezone from neighbouring
