@@ -1,6 +1,15 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Interval, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    ForeignKey,
+    DateTime,
+    Interval,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Mapped
@@ -48,5 +57,5 @@ class GeoLocationModel(Base):
         "ImageModel", back_populates="location"
     )
     __table_args__ = (
-        UniqueConstraint('city', 'province', 'country', name='unique_location'),
+        UniqueConstraint("city", "province", "country", name="unique_location"),
     )

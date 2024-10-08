@@ -16,12 +16,15 @@ def parse_filename_datetime(filename: str) -> datetime | None:
     if match:
         date_str = match.group(1)
         time_str = match.group(2)
-        return datetime.strptime(f"{date_str} {time_str}", "%Y%m%d %H%M%S")
+        try:
+            return datetime.strptime(f"{date_str} {time_str}", "%Y%m%d %H%M%S")
+        except ValueError:
+            return None
     else:
         return None
 
 
-def get_modern_datetime(image_info: GpsImageInfo) -> datetime:
+def get_modern_datetime(image_info: GpsImageInfo) -> datetime | None:
     if (
         image_info.exif
         and "EXIF" in image_info.exif
@@ -36,9 +39,10 @@ def get_modern_datetime(image_info: GpsImageInfo) -> datetime:
         hours, minutes = map(int, offset_time.split(":"))
         offset = timedelta(hours=hours, minutes=minutes)
         return datetime_taken.replace(tzinfo=timezone(offset))
+    return None
 
 
-def get_gps_datetime(image_info: GpsImageInfo) -> datetime:
+def get_gps_datetime(image_info: GpsImageInfo) -> datetime | None:
     if (
         image_info.datetime_utc
         and image_info.latitude is not None
@@ -47,22 +51,33 @@ def get_gps_datetime(image_info: GpsImageInfo) -> datetime:
         tz = tf.timezone_at(lng=image_info.longitude, lat=image_info.latitude)
         assert tz is not None
         return image_info.datetime_utc.astimezone(pytz.timezone(tz))
+    return None
 
 
-def get_exif_datetime_original(image_info: GpsImageInfo) -> datetime:
-    if image_info.exif and "EXIF" in image_info.exif and "DateTimeOriginal" in image_info.exif["EXIF"]:
+def get_exif_datetime_original(image_info: GpsImageInfo) -> datetime | None:
+    if (
+        image_info.exif
+        and "EXIF" in image_info.exif
+        and "DateTimeOriginal" in image_info.exif["EXIF"]
+    ):
         return datetime.strptime(
             image_info.exif["EXIF"]["DateTimeOriginal"],
             "%Y:%m:%d %H:%M:%S",
         )
+    return None
 
 
-def get_exif_image_datetime(image_info: GpsImageInfo) -> datetime:
-    if image_info.exif and "Image" in image_info.exif and "DateTime" in image_info.exif["Image"]:
+def get_exif_image_datetime(image_info: GpsImageInfo) -> datetime | None:
+    if (
+        image_info.exif
+        and "Image" in image_info.exif
+        and "DateTime" in image_info.exif["Image"]
+    ):
         return datetime.strptime(
             image_info.exif["Image"]["DateTime"],
             "%Y:%m:%d %H:%M:%S",
         )
+    return None
 
 
 def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
@@ -101,8 +116,8 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
         datetime_taken = datetime.fromtimestamp(creation_time)
         datetime_source = "ModificationDate"
 
-    if datetime_source is None:
-        print("WHAT THE FUCK")
+    assert datetime_taken is not None
+    assert datetime_source is not None
     return datetime_taken, datetime_source
 
 

@@ -7,10 +7,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
+from ingest.process_directory import process_images_in_directory
+from ingest.watch_directory import watch_for_photos
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.migrations import run_migrations
-from photos.ingest.ingest_watch import process_images_in_directory, watch_for_photos
 from photos.routers import images, health
 
 logger = logging.getLogger(__name__)

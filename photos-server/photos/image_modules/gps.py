@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, UTC
 from typing import Any
 
@@ -5,6 +6,8 @@ import piexif
 import reverse_geocode
 
 from photos.interfaces import ExifImageInfo, GpsImageInfo, GeoLocation
+
+logger = logging.getLogger(__name__)
 
 
 def convert_to_degrees(value: list[list[int]]) -> float:
@@ -51,7 +54,7 @@ def parse_exif_gps(
             hour=int(hours), minute=int(minutes), second=int(seconds), tzinfo=UTC
         )
     except (ValueError, TypeError):
-        print(f"Failed to parse gps datetime, got '{gps_date_str}' as date-str")
+        logger.debug(f"Failed to parse gps datetime, got '{gps_date_str}' as date-str")
         gps_datetime = None
 
     return lat, lon, alt, gps_datetime
@@ -61,7 +64,7 @@ def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
     if not image_info.exif or "GPS" not in image_info.exif:
         return GpsImageInfo(**image_info.model_dump())
     lat, lon, alt, gps_datetime = parse_exif_gps(image_info.exif["GPS"])
-    if lat is None or lon is None or alt is None:
+    if not lat or not lon or alt is None:
         return GpsImageInfo(**image_info.model_dump())
     coded = reverse_geocode.get((lat, lon))
     return GpsImageInfo(

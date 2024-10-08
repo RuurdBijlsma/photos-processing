@@ -9,11 +9,17 @@ def copy_random_files(source_folder: str, destination_folder: str, sample_size: 
     os.makedirs(destination_folder, exist_ok=True)
 
     # Get all files in the source folder
-    files = [f for f in os.listdir(source_folder) if os.path.isfile(os.path.join(source_folder, f))]
+    files = [
+        f
+        for f in os.listdir(source_folder)
+        if os.path.isfile(os.path.join(source_folder, f))
+    ]
 
     # Check if the sample size is larger than the number of available files
     if sample_size > len(files):
-        print(f"Sample size {sample_size} is larger than available files {len(files)}. Reducing sample size.")
+        print(
+            f"Sample size {sample_size} is larger than available files {len(files)}. Reducing sample size."
+        )
         sample_size = len(files)
 
     # Randomly sample files
@@ -29,4 +35,4 @@ def copy_random_files(source_folder: str, destination_folder: str, sample_size: 
 if __name__ == "__main__":
     from_path = "D:/Backup/Photos/photos/photos"
     to_path = "C:/Users/Ruurd/PycharmProjects/RuurdPhotos2/data/photos"
-    copy_random_files(from_path, to_path, 1000)
+    copy_random_files(from_path, to_path, 10000)

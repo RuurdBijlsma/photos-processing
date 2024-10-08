@@ -1,10 +1,8 @@
 import logging
-import os
 import sys
 import time
 from pathlib import Path
 
-from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent
 from watchdog.observers import Observer
 
@@ -19,20 +17,6 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
-
-
-def process_images_in_directory(photos_dir: Path) -> None:
-    """Check all images for processing."""
-    image_files: list[Path] = []
-    for root, _, files in os.walk(photos_dir):
-        for file in files:
-            if file.lower().endswith(process_config.image_suffixes):
-                image_files.append(Path(root) / file)
-
-    session = get_session_maker()()
-    logger.info(f"Photos dir: {photos_dir}")
-    for image_path in tqdm(image_files, desc="Processing images", unit="image"):
-        process_image(photos_dir, image_path, session)
 
 
 class NewImageHandler(FileSystemEventHandler):
