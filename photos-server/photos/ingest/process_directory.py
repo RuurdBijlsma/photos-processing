@@ -1,6 +1,7 @@
 import itertools
 import logging
 import os
+import shutil
 import string
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -110,18 +111,32 @@ def chunk_list_itertools(data: list[T], n: int) -> list[list[T]]:
     ]
 
 
+print_column = 0
+console_width = shutil.get_terminal_size().columns
+
+
+def print_char(char: str):
+    global print_column
+    print_column += len(char)
+    if print_column >= console_width:
+        print_column = 0
+        print("", flush=True)
+    print(char, end="")
+
+
 def process_image_list(
     photos_dir: Path, image_list: list[Path], identifier: str
 ) -> None:
     """Process a chunk of images with a separate session."""
     session = get_session_maker()()
     try:
-        print("[", end="")
+        print_char("[")
+
         for image_path in image_list:
-            print(identifier, end="")
+            print_char(identifier)
             process_image(photos_dir, image_path, session)
     finally:
-        print(f"{identifier}]", end="")
+        print_char(f"{identifier}]")
         session.close()
 
 
@@ -142,10 +157,12 @@ def process_images_in_directory(photos_dir: Path) -> None:
         session.close()
 
     print(f"Found {len(image_files)} images, processing...")
+    global print_column
+    print_column = 0
     if app_config.multithreaded_processing:
         core_count = os.cpu_count()
         assert core_count is not None
-        # If you have more than 91 cores you will be sad
+        # If you have more than 92 cores you will be sad
         image_chunks = zip(
             chunk_list_itertools(image_files, core_count),
             list(string.digits)
