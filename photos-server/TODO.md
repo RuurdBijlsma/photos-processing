@@ -6,6 +6,7 @@
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * add table: failed images, so it doesn't try to process them again?
+  * bug: why does it keep finding images after having processed the list the first time?
   * bug: some images have a gps coordinate, but no utc time, find out why??
   * after process all is done, go over list again to timezone_known=false, then give them timezone from neighbouring
     photo (closest in datetime)

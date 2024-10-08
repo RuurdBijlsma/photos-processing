@@ -73,6 +73,8 @@ def fill_timezone_gaps() -> None:
             local_tz = pytz.timezone(timezone_str)
             local_dt = local_tz.localize(image.datetime_local)
             image.datetime_utc = local_dt.astimezone(pytz.utc)
+            image.timezone_name = timezone_str
+            image.timezone_offset = local_dt.utcoffset()
         session.commit()
     except Exception as e:
         session.rollback()
