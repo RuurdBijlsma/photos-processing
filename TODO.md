@@ -10,6 +10,8 @@
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * add table: failed images, so it doesn't try to process them again?
+  * make video thumbnails av1
+  * add button [optimize library], to convert all images to avif, and all videos to av1 codec
 * Add users
   * roles (server admin/user)
 * Add albums
