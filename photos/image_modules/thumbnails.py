@@ -1,6 +1,7 @@
 import os
 
-import ffmpeg
+import ffmpeg  # type:ignore
+import pillow_avif  # type:ignore
 from PIL import Image
 from PIL.ImageFile import ImageFile
 
@@ -12,7 +13,7 @@ from photos.interfaces import BaseImageInfo
 def generate_pillow_thumbnail(img: ImageFile, height: int, thumb_path: str) -> None:
     img_copy = img.copy()
     img_copy.thumbnail((height / img.height * img.width, height))
-    img_copy.save(thumb_path, format="WEBP")
+    img_copy.save(thumb_path, format="AVIF")
 
 
 def generate_ffmpeg_thumbnail(
@@ -34,7 +35,7 @@ def generate_thumbnails(image_info: BaseImageInfo) -> None:
 
     with Image.open(app_config.photos_dir / image_info.relative_path) as img:
         for height in process_config.thumbnail_sizes:
-            thumb_name = f"{height}p.webp"
+            thumb_name = f"{height}p.avif"
             thumb_path = os.path.join(folder, thumb_name)
             try:
                 generate_pillow_thumbnail(img, height, thumb_path)
