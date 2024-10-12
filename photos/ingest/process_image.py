@@ -48,7 +48,7 @@ def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
         logger.debug(f"Could not process image: {image_info.relative_path}")
         return
     generate_thumbnails(img, image_info)
-    image_info = get_exif(img, image_info)
+    image_info = get_exif(image_info)
     img.close()
     image_info = get_gps_image(image_info)
     image_info = get_time_taken(image_info)

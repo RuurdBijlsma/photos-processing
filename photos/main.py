@@ -4,15 +4,15 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
-from ingest.process_directory import process_images_in_directory
-from ingest.watch_directory import watch_for_photos
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.migrations import run_migrations
-from photos.routers import images, health
+from photos.ingest.process_directory import process_images_in_directory
+from photos.ingest.watch_directory import watch_for_photos
+from photos.routers import images, health, auth
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,10 @@ app.add_middleware(
 )
 app.include_router(images.router)
 app.include_router(health.router)
+app.include_router(auth.router)
 
+if not process_config.thumbnails_dir.exists():
+    process_config.thumbnails_dir.mkdir(exist_ok=True)
 if app_config.host_thumbnails:
     app.mount(
         "/thumbnails",

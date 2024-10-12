@@ -13,10 +13,10 @@ from sqlalchemy.orm import Session
 from timezonefinder import TimezoneFinder
 from tqdm import tqdm
 
-from database.models import ImageModel
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.database import get_session_maker
+from photos.database.models import ImageModel
 from photos.ingest.process_image import process_image
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def fix_image_timezone(
 
     # Execute the query
     result = session.execute(stmt).scalars().first()
-    if result is None:
+    if result is None or not (result.latitude and result.longitude):
         return None
     return result.latitude, result.longitude
 
@@ -72,6 +72,7 @@ def fill_timezone_gaps() -> None:
                 continue
             local_tz = pytz.timezone(timezone_str)
             local_dt = local_tz.localize(image.datetime_local)
+            assert local_dt is not None
             image.datetime_utc = local_dt.astimezone(pytz.utc)
             image.timezone_name = timezone_str
             image.timezone_offset = local_dt.utcoffset()
@@ -117,7 +118,7 @@ print_column = 0
 console_width = shutil.get_terminal_size().columns
 
 
-def print_char(char: str):
+def print_char(char: str) -> None:
     global print_column
     print_column += len(char)
     if print_column >= console_width:
@@ -164,14 +165,14 @@ def process_images_in_directory(photos_dir: Path) -> None:
     if app_config.multithreaded_processing:
         core_count = os.cpu_count()
         assert core_count is not None
-        # If you have more than 92 cores you will be sad
-        image_chunks = zip(
+        # If you have more than 94 cores you will be sad
+        image_chunks = list(zip(
             chunk_list_itertools(image_files, core_count),
             list(string.digits)
             + list(string.ascii_lowercase)
             + list(string.ascii_uppercase)
             + list(string.punctuation),
-        )
+        ))
         with ThreadPoolExecutor(max_workers=core_count) as executor:
             executor.map(
                 lambda id_chunk: process_image_list(
@@ -181,6 +182,6 @@ def process_images_in_directory(photos_dir: Path) -> None:
             )
         print("")
     else:
-        process_image_list(photos_dir, image_files, "=")
+        process_image_list(photos_dir, image_files, ".")
 
     fill_timezone_gaps()

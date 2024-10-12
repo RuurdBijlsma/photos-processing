@@ -2,6 +2,9 @@
 
 * Python
   * add tests
+  * use exiftool instead of current lib (how to include it?)
+  * handle motion photos (mp4 is slice of the bytes, stated in exiftool output)
+  * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
   * watch for photo deletion and delete from db?
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?

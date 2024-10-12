@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import enum
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -8,7 +10,7 @@ from sqlalchemy import (
     ForeignKey,
     DateTime,
     Interval,
-    UniqueConstraint,
+    UniqueConstraint, Enum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base
@@ -27,11 +29,20 @@ class ImageModel(Base):
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
     format = Column(String, nullable=False)
-    exif = Column(JSONB, nullable=True)
+    size_bytes = Column(Integer, nullable=False)
     datetime_local = Column(DateTime(timezone=False), nullable=False)
     timezone_name = Column(String, nullable=True)
     timezone_offset = Column(Interval, nullable=True)
     datetime_source = Column(String, nullable=False)
+    # EXIF
+    exif_tool = Column(JSONB, nullable=False)
+    file = Column(JSONB, nullable=False)
+    composite = Column(JSONB, nullable=False)
+    exif = Column(JSONB, nullable=True)
+    xmp = Column(JSONB, nullable=True)
+    jfif = Column(JSONB, nullable=True)
+    icc_profile = Column(JSONB, nullable=True)
+    gif = Column(JSONB, nullable=True)
     # GPS
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
@@ -59,3 +70,18 @@ class GeoLocationModel(Base):
     __table_args__ = (
         UniqueConstraint("city", "province", "country", name="unique_location"),
     )
+
+
+class Role(enum.Enum):
+    admin = 1
+    user = 2
+
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String, nullable=False, unique=True)
+    hashed_password = Column(String, nullable=False)
+    display_name = Column(String, nullable=False)
+    role = Column(Enum(Role), nullable=False)

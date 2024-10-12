@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from functools import lru_cache
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -28,3 +30,6 @@ def get_session() -> Generator[Session, None, None]:
         yield session
     finally:
         session.close()
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
