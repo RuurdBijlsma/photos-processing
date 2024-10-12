@@ -2,17 +2,14 @@
 
 * Python
   * add tests
-  * use exiftool instead of current lib (how to include it?)
+  * videos
+  * Get exiftool and ffmpeg binaries automatically?
   * handle motion photos (mp4 is slice of the bytes, stated in exiftool output)
   * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
   * watch for photo deletion and delete from db?
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * add table: failed images, so it doesn't try to process them again?
-  * bug: why does it keep finding images after having processed the list the first time?
-  * bug: some images have a gps coordinate, but no utc time, find out why??
-  * after process all is done, go over list again to timezone_known=false, then give them timezone from neighbouring
-    photo (closest in datetime)
 * Add users
   * roles (server admin/user)
 * Add albums
