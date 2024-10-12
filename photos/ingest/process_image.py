@@ -41,7 +41,6 @@ def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
 
 
 def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
-
     image_info = base_info(photos_dir, image_path)
 
     with ThreadPoolExecutor() as executor:

@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Annotated
+from typing import Annotated, Any
 
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
@@ -13,7 +13,7 @@ from photos.database.database import SessionDep
 from photos.database.models import UserModel
 from photos.interfaces import User, Token, TokenData
 
-logging.getLogger('passlib').setLevel(logging.ERROR)
+logging.getLogger("passlib").setLevel(logging.ERROR)
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -28,11 +28,11 @@ TokenDep = Annotated[str, Depends(oauth2_scheme)]
 app = FastAPI()
 
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
@@ -40,17 +40,19 @@ def get_user(session: Session, email: str) -> UserModel | None:
     return session.query(UserModel).filter_by(email=email).first()
 
 
-def authenticate_user(session: Session, email: str, password: str):
+def authenticate_user(session: Session, email: str, password: str) -> UserModel | None:
     user = get_user(session, email)
-    if not user:
-        return False
+    if not user or not user.hashed_password:
+        return None
     if not verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
+def create_access_token(
+    data: dict[str, Any], expires_delta: timedelta | None = None
+) -> str:
+    to_encode: dict[str, Any] = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
@@ -60,7 +62,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(session: SessionDep, token: TokenDep):
+async def get_current_user(session: SessionDep, token: TokenDep) -> UserModel:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -68,12 +70,13 @@ async def get_current_user(session: SessionDep, token: TokenDep):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: int = payload.get("sub")
+        email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
         token_data = TokenData(email=email)
     except InvalidTokenError:
         raise credentials_exception
+    assert token_data.email is not None
     user = get_user(session, email=token_data.email)
     if user is None:
         raise credentials_exception
@@ -81,15 +84,6 @@ async def get_current_user(session: SessionDep, token: TokenDep):
 
 
 UserDep = Annotated[User, Depends(get_current_user)]
-
-
-async def get_current_active_user(
-    current_user: UserDep,
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
-
 
 router = APIRouter()
 
@@ -114,7 +108,5 @@ async def login_for_access_token(
 
 
 @router.get("/users/me/", response_model=User)
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
+async def read_users_me(current_user: UserDep) -> User:
     return current_user

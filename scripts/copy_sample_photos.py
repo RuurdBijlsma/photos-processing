@@ -5,7 +5,9 @@ import shutil
 from tqdm import tqdm
 
 
-def copy_random_files(source_folder: str, destination_folder: str, sample_size: int):
+def copy_random_files(
+    source_folder: str, destination_folder: str, sample_size: int
+) -> None:
     # Ensure the destination folder exists
     os.makedirs(destination_folder, exist_ok=True)
 

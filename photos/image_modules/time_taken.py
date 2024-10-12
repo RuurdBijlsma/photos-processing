@@ -33,17 +33,13 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
     def f3() -> tuple[datetime, str]:
         assert image_info.exif
         result = datetime.strptime(
-            image_info.exif["DateTimeOriginal"],
-            '%Y:%m:%d %H:%M:%S'
+            image_info.exif["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S"
         )
         return result, "DateTimeOriginal"
 
     def f4() -> tuple[datetime, str]:
         assert image_info.exif
-        result = datetime.strptime(
-            image_info.exif["CreateDate"],
-            '%Y:%m:%d %H:%M:%S'
-        )
+        result = datetime.strptime(image_info.exif["CreateDate"], "%Y:%m:%d %H:%M:%S")
         return result, "DateTimeOriginal"
 
     def f5() -> tuple[datetime, str]:
@@ -54,15 +50,14 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
             time_str = match.group(2)
             return (
                 datetime.strptime(f"{date_str} {time_str}", "%Y%m%d %H%M%S"),
-                "Filename"
+                "Filename",
             )
         raise ValueError(f"Could not parse {image_info.filename}")
 
     def f6() -> tuple[datetime, str]:
         assert image_info.file and "FileModifyDate" in image_info.file
         result = datetime.strptime(
-            image_info.file["FileModifyDate"],
-            '%Y:%m:%d %H:%M:%S%z'
+            image_info.file["FileModifyDate"], "%Y:%m:%d %H:%M:%S%z"
         )
         return result, "ModificationDate"
 
@@ -74,7 +69,9 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
     raise ValueError(f"Could not parse datetime for {image_info.filename}!")
 
 
-def get_timezone_info(image_info: GpsImageInfo, date: datetime) -> tuple[str | None, timedelta | None]:
+def get_timezone_info(
+    image_info: GpsImageInfo, date: datetime
+) -> tuple[str | None, timedelta | None]:
     """Gets timezone name and offset from latitude, longitude, and date."""
     if not image_info.latitude or not image_info.longitude:
         return None, None

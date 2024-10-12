@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Any
 
 from PIL.ExifTags import TAGS
-from exiftool import ExifToolHelper  # type: ignore
+from exiftool import ExifToolHelper
 
 from photos.config.app_config import app_config
 from photos.interfaces import BaseImageInfo, ExifImageInfo
@@ -49,10 +49,14 @@ def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
     nested_dict = {}
 
     for key, value in exiftool_dict.items():
-        if isinstance(value, str) and "(Binary data" in value and "use -b option" in value:
+        if (
+            isinstance(value, str)
+            and "(Binary data" in value
+            and "use -b option" in value
+        ):
             continue  # Ignore binary data keys
 
-        key_parts = key.split(':')
+        key_parts = key.split(":")
 
         if len(key_parts) == 1:
             nested_dict[key] = value
@@ -70,8 +74,14 @@ def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
 def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
     with ExifToolHelper() as et:
         result = et.execute_json(app_config.photos_dir / image_info.relative_path)
-        if result is None or not isinstance(result, list) or not isinstance(result[0], dict):
-            return ExifImageInfo(**image_info.model_dump(), )
+        if (
+            result is None
+            or not isinstance(result, list)
+            or not isinstance(result[0], dict)
+        ):
+            return ExifImageInfo(
+                **image_info.model_dump(),
+            )
         exif_dict = structure_exiftool_dict(result[0])
 
     if "EXIF" in exif_dict:
@@ -81,7 +91,9 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
         # LG G4 produces ref = 1.8 for some reason when above sea level (maybe also below?)
         if alt_ref != 1 and alt_ref != 0 and alt_ref is not None:
             if "GPSAltitude" in exif_dict["Composite"]:
-                exif_dict["Composite"]["GPSAltitude"] = abs(exif_dict["Composite"]["GPSAltitude"])
+                exif_dict["Composite"]["GPSAltitude"] = abs(
+                    exif_dict["Composite"]["GPSAltitude"]
+                )
             exif_dict["EXIF"]["GPSAltitudeRef"] = 0
 
     assert "ExifTool" in exif_dict
@@ -107,5 +119,5 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
         jfif=exif_dict.get("JFIF"),
         icc_profile=exif_dict.get("ICC_Profile"),
         composite=exif_dict["Composite"],
-        gif=exif_dict.get("GIF")
+        gif=exif_dict.get("GIF"),
     )

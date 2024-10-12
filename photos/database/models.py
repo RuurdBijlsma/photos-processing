@@ -10,7 +10,8 @@ from sqlalchemy import (
     ForeignKey,
     DateTime,
     Interval,
-    UniqueConstraint, Enum,
+    UniqueConstraint,
+    Enum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base

@@ -15,13 +15,16 @@ def generate_pillow_thumbnail(img: ImageFile, height: int, thumb_path: str) -> N
     img_copy.save(thumb_path, format="WEBP")
 
 
-def generate_ffmpeg_thumbnail(image_info: BaseImageInfo, height: int, thumb_path: str) -> None:
+def generate_ffmpeg_thumbnail(
+    image_info: BaseImageInfo, height: int, thumb_path: str
+) -> None:
     input_file = app_config.photos_dir / image_info.relative_path
-    (ffmpeg
-     .input(input_file)
-     .filter('scale', -1, height)
-     .output(thumb_path)
-     .run(quiet=True))
+    (
+        ffmpeg.input(input_file)
+        .filter("scale", -1, height)
+        .output(thumb_path)
+        .run(quiet=True)
+    )
 
 
 def generate_thumbnails(image_info: BaseImageInfo) -> None:

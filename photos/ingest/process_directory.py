@@ -33,7 +33,7 @@ def fix_image_timezone(
         .order_by(
             func.abs(
                 func.extract("epoch", ImageModel.datetime_local)
-                - func.extract("epoch", image.datetime_local)
+                - func.extract("epoch", image.datetime_local)  # type: ignore
             )
         )
         .limit(1)
@@ -43,7 +43,7 @@ def fix_image_timezone(
     result = session.execute(stmt).scalars().first()
     if result is None or not (result.latitude and result.longitude):
         return None
-    return result.latitude, result.longitude
+    return float(result.latitude), float(result.longitude)
 
 
 def fill_timezone_gaps() -> None:
@@ -71,6 +71,7 @@ def fill_timezone_gaps() -> None:
             if timezone_str is None:
                 continue
             local_tz = pytz.timezone(timezone_str)
+            assert image.datetime_local is not None
             local_dt = local_tz.localize(image.datetime_local)
             assert local_dt is not None
             image.datetime_utc = local_dt.astimezone(pytz.utc)
@@ -166,13 +167,15 @@ def process_images_in_directory(photos_dir: Path) -> None:
         core_count = os.cpu_count()
         assert core_count is not None
         # If you have more than 94 cores you will be sad
-        image_chunks = list(zip(
-            chunk_list_itertools(image_files, core_count),
-            list(string.digits)
-            + list(string.ascii_lowercase)
-            + list(string.ascii_uppercase)
-            + list(string.punctuation),
-        ))
+        image_chunks = list(
+            zip(
+                chunk_list_itertools(image_files, core_count),
+                list(string.digits)
+                + list(string.ascii_lowercase)
+                + list(string.ascii_uppercase)
+                + list(string.punctuation),
+            )
+        )
         with ThreadPoolExecutor(max_workers=core_count) as executor:
             executor.map(
                 lambda id_chunk: process_image_list(
