@@ -1,6 +1,7 @@
 import os
 
 import ffmpeg
+from PIL import Image
 from PIL.ImageFile import ImageFile
 
 from photos.config.app_config import app_config
@@ -23,16 +24,16 @@ def generate_ffmpeg_thumbnail(image_info: BaseImageInfo, height: int, thumb_path
      .run(quiet=True))
 
 
-def generate_thumbnails(img: ImageFile, image_info: BaseImageInfo) -> None:
+def generate_thumbnails(image_info: BaseImageInfo) -> None:
     folder = process_config.thumbnails_dir / image_info.id
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    for height in process_config.thumbnail_sizes:
-        thumb_name = f"{height}p.webp"
-        thumb_path = os.path.join(folder, thumb_name)
-        try:
-            generate_ffmpeg_thumbnail(image_info, height, thumb_path)
-        except OSError:
-            print("FFMPEG FAILED!")
-            generate_pillow_thumbnail(img, height, thumb_path)
+    with Image.open(app_config.photos_dir / image_info.relative_path) as img:
+        for height in process_config.thumbnail_sizes:
+            thumb_name = f"{height}p.webp"
+            thumb_path = os.path.join(folder, thumb_name)
+            try:
+                generate_pillow_thumbnail(img, height, thumb_path)
+            except OSError:
+                generate_ffmpeg_thumbnail(image_info, height, thumb_path)

@@ -1,7 +1,7 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from PIL import Image, UnidentifiedImageError
 from sqlalchemy.orm import Session
 
 from photos.database.models import ImageModel, GeoLocationModel
@@ -41,16 +41,15 @@ def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
 
 
 def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
-    image_info = base_info(photos_dir, image_path)
-    try:
-        img = Image.open(photos_dir / image_info.relative_path)
-    except UnidentifiedImageError:
-        logger.debug(f"Could not process image: {image_info.relative_path}")
-        return
-    generate_thumbnails(img, image_info)
-    image_info = get_exif(image_info)
-    img.close()
-    image_info = get_gps_image(image_info)
-    image_info = get_time_taken(image_info)
 
-    store_image(image_info, session)
+    image_info = base_info(photos_dir, image_path)
+
+    with ThreadPoolExecutor() as executor:
+        thumbnail_future = executor.submit(lambda: generate_thumbnails(image_info))
+
+        image_info = get_exif(image_info)
+        image_info = get_gps_image(image_info)
+        image_info = get_time_taken(image_info)
+        thumbnail_future.result()
+
+        store_image(image_info, session)

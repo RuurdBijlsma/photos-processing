@@ -2,7 +2,6 @@ import logging
 import multiprocessing
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
