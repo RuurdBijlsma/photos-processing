@@ -12,18 +12,21 @@ from photos.interfaces import BaseImageInfo
 def generate_web_video(input_file: Path, height: int, folder: Path) -> None:
     out_file = folder / "vid.webm"
     (
-        ffmpeg.input(input_file)
+        ffmpeg.input(str(input_file))
         .filter("scale", -1, height)
         .output(
             str(out_file),
             vcodec="libvpx-vp9",
             acodec="libopus",
             video_bitrate="2M",
+            map="0:a",
             map_metadata=-1,
         )
         .overwrite_output()
+        # .compile()
         .run(capture_stdout=False, capture_stderr=True)
     )
+    # print(out)
 
 
 def ffmpeg_thumbnails(input_file: Path, sizes: list[int], folder: Path) -> None:
