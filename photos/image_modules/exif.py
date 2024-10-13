@@ -122,12 +122,12 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
         duration = parse_duration(exif_dict["Matroska"]["Duration"])
     assert width and height
     print_str = (
-        f"-- {image_info.filename} --\n"
+        f"{image_info.filename}\t\t--\t\t"
         f"{readable_bytes(exif_dict["File"]["FileSize"])}, {width} x {height}"
     )
     if image_info.relative_path.suffix in process_config.video_suffixes:
         print_str += f", {duration:3.1f}s"
-    print(print_str + "\n")
+    print(print_str)
     return ExifImageInfo(
         **image_info.model_dump(),
         size_bytes=exif_dict["File"]["FileSize"],
