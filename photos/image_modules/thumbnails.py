@@ -22,7 +22,7 @@ def generate_web_video(input_file: Path, height: int, folder: Path) -> None:
             map_metadata=-1,
         )
         .overwrite_output()
-        .run(quiet=False)
+        .run(capture_stdout=False, capture_stderr=True)
     )
 
 
@@ -33,9 +33,9 @@ def ffmpeg_thumbnails(input_file: Path, sizes: list[int], folder: Path) -> None:
         process = (
             ffmpeg.input(input_file)
             .filter("scale", -1, height)
-            .output(str(out_file), vframes=1, map_metadata=-1)
+            .output(str(out_file), vframes=1, map_metadata=-1, qscale=2)
             .overwrite_output()
-            .run_async(quiet=False)
+            .run_async(pipe_stdout=False, pipe_stderr=True)
         )
         processes.append(process)
     for process in processes:

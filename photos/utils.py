@@ -10,6 +10,14 @@ from photos.database.models import ImageModel, UserModel, Role
 from photos.routers.auth import get_password_hash
 
 
+def readable_bytes(num: int, suffix: str = "B") -> str:
+    for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f}Yi{suffix}"
+
+
 def delete_image(relative_path: Path, session: Session) -> None:
     if relative_path.exists():
         relative_path.unlink()

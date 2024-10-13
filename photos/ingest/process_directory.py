@@ -1,8 +1,6 @@
 import itertools
 import logging
 import os
-import shutil
-import string
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import TypeVar
@@ -115,32 +113,13 @@ def chunk_list_itertools(data: list[T], n: int) -> list[list[T]]:
     ]
 
 
-print_column = 0
-console_width = shutil.get_terminal_size().columns
-
-
-def print_char(char: str) -> None:
-    global print_column
-    print_column += len(char)
-    if print_column >= console_width:
-        print_column = 0
-        print("", flush=True)
-    print(char, end="")
-
-
-def process_image_list(
-    photos_dir: Path, image_list: list[Path], identifier: str
-) -> None:
+def process_image_list(photos_dir: Path, image_list: list[Path]) -> None:
     """Process a chunk of images with a separate session."""
     session = get_session_maker()()
     try:
-        print_char("[")
-
         for image_path in image_list:
             process_image(photos_dir, image_path, session)
-            print_char(identifier)
     finally:
-        print_char(f"{identifier}]")
         session.close()
 
 
@@ -161,30 +140,17 @@ def process_images_in_directory(photos_dir: Path) -> None:
         session.close()
 
     print(f"Found {len(image_files)} images, processing...")
-    global print_column
-    print_column = 0
     if app_config.multithreaded_processing:
         core_count = os.cpu_count()
         assert core_count is not None
-        # If you have more than 94 cores you will be sad
-        image_chunks = list(
-            zip(
-                chunk_list_itertools(image_files, core_count),
-                list(string.digits)
-                + list(string.ascii_lowercase)
-                + list(string.ascii_uppercase)
-                + list(string.punctuation),
-            )
-        )
+        image_chunks = chunk_list_itertools(image_files, core_count)
         with ThreadPoolExecutor(max_workers=core_count) as executor:
             executor.map(
-                lambda id_chunk: process_image_list(
-                    photos_dir, id_chunk[0], id_chunk[1]
-                ),
+                lambda chunk: process_image_list(photos_dir, chunk),
                 image_chunks,
             )
         print("")
     else:
-        process_image_list(photos_dir, image_files, ".")
+        process_image_list(photos_dir, image_files)
 
     fill_timezone_gaps()

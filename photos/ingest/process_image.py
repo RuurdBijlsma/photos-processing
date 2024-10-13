@@ -43,13 +43,14 @@ def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
 def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
     image_info = base_info(photos_dir, image_path)
 
-    generate_thumbnails(image_info)
-
     try:
         image_info = get_exif(image_info)
     except ExifToolExecuteError:
         print(f"Failed to process {image_info}")
         return None
+
+    generate_thumbnails(image_info)
+
     image_info = get_gps_image(image_info)
     image_info = get_time_taken(image_info)
 

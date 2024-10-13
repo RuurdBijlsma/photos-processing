@@ -19,7 +19,7 @@ class BaseImageInfo(BaseModel):
 class ThumbImageInfo(BaseImageInfo):
     width: int
     height: int
-    duration: float
+    duration: float | None
     size_bytes: int
     format: str
 

@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from typing import Any
 
@@ -5,7 +6,11 @@ from PIL.ExifTags import TAGS
 from exiftool import ExifToolHelper
 
 from photos.config.app_config import app_config
+from photos.config.process_config import process_config
 from photos.interfaces import BaseImageInfo, ExifImageInfo
+from photos.utils import readable_bytes
+
+logger = logging.getLogger(__name__)
 
 
 def parse_duration(duration_str: str) -> float:
@@ -119,6 +124,13 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
         height = exif_dict["Matroska"]["ImageHeight"]
         duration = parse_duration(exif_dict["Matroska"]["Duration"])
     assert width and height
+    print_str = (
+        f"-- {image_info.filename} --\n"
+        f"{readable_bytes(exif_dict["File"]["FileSize"])}, {width} x {height}"
+    )
+    if image_info.relative_path.suffix in process_config.video_suffixes:
+        print_str += f", {duration:3.1f}s"
+    print(print_str + "\n")
     return ExifImageInfo(
         **image_info.model_dump(),
         size_bytes=exif_dict["File"]["FileSize"],
