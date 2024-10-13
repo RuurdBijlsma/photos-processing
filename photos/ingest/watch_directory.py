@@ -3,7 +3,13 @@ import sys
 import time
 from pathlib import Path
 
-from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent, DirDeletedEvent, FileDeletedEvent
+from watchdog.events import (
+    FileSystemEventHandler,
+    FileCreatedEvent,
+    DirCreatedEvent,
+    DirDeletedEvent,
+    FileDeletedEvent,
+)
 from watchdog.observers import Observer
 
 from photos.config.app_config import app_config

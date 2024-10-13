@@ -1,5 +1,4 @@
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from exiftool.exceptions import ExifToolExecuteError
@@ -44,16 +43,14 @@ def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
 def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
     image_info = base_info(photos_dir, image_path)
 
-    with ThreadPoolExecutor() as executor:
-        thumbnail_future = executor.submit(lambda: generate_thumbnails(image_info))
+    generate_thumbnails(image_info)
 
-        try:
-            image_info = get_exif(image_info)
-        except ExifToolExecuteError:
-            print(f"Failed to process {image_info}")
-            return None
-        image_info = get_gps_image(image_info)
-        image_info = get_time_taken(image_info)
-        thumbnail_future.result()
+    try:
+        image_info = get_exif(image_info)
+    except ExifToolExecuteError:
+        print(f"Failed to process {image_info}")
+        return None
+    image_info = get_gps_image(image_info)
+    image_info = get_time_taken(image_info)
 
-        store_image(image_info, session)
+    store_image(image_info, session)

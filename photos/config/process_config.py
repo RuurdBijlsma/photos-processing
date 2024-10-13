@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings
 class ProcessConfig(BaseSettings):
     thumbnails_dir: Path = Path("data/thumbnails")
     thumbnail_sizes: list[int] = [240, 480, 1080]
+    web_video_height: int = 1080
     image_suffixes: tuple[str, ...] = (
         ".png",
         ".jpg",
@@ -15,11 +16,7 @@ class ProcessConfig(BaseSettings):
         ".tiff",
         ".webp",
     )
-    video_suffixes: tuple[str, ...] = (
-        ".mp4",
-        '.mkv',
-        '.webm'
-    )
+    video_suffixes: tuple[str, ...] = (".mp4", ".mkv", ".webm")
 
     @property
     def media_suffixes(self) -> tuple[str, ...]:

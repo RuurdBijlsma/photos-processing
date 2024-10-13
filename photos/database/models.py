@@ -28,8 +28,8 @@ class ImageModel(Base):
     relative_path = Column(String, nullable=False)
     hash = Column(String, nullable=False)
     width = Column(Integer, nullable=False)
-    duration = Column(Float, nullable=True)
     height = Column(Integer, nullable=False)
+    duration = Column(Float, nullable=True)
     format = Column(String, nullable=False)
     size_bytes = Column(Integer, nullable=False)
     datetime_local = Column(DateTime(timezone=False), nullable=False)
@@ -46,6 +46,7 @@ class ImageModel(Base):
     icc_profile = Column(JSONB, nullable=True)
     gif = Column(JSONB, nullable=True)
     quicktime = Column(JSONB, nullable=True)
+    matroska = Column(JSONB, nullable=True)
     # GPS
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)

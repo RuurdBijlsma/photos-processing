@@ -13,7 +13,11 @@ from photos.routers.auth import get_password_hash
 def delete_image(relative_path: Path, session: Session) -> None:
     if relative_path.exists():
         relative_path.unlink()
-    model = session.query(ImageModel).filter(ImageModel.relative_path == str(relative_path)).first()
+    model = (
+        session.query(ImageModel)
+        .filter(ImageModel.relative_path == str(relative_path))
+        .first()
+    )
     if model is not None and model.id is not None:
         thumb_folder = process_config.thumbnails_dir / model.id
         thumb_folder.unlink(missing_ok=True)
@@ -23,7 +27,9 @@ def delete_image(relative_path: Path, session: Session) -> None:
 
 def add_admin_user() -> None:
     session = get_session_maker()()
-    existing_admin = session.query(UserModel).filter_by(email="admin@ruurd.photos").first()
+    existing_admin = (
+        session.query(UserModel).filter_by(email="admin@ruurd.photos").first()
+    )
     if existing_admin:
         return
     admin = UserModel(

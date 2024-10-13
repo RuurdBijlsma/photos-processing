@@ -19,6 +19,7 @@ class BaseImageInfo(BaseModel):
 class ThumbImageInfo(BaseImageInfo):
     width: int
     height: int
+    duration: float
     size_bytes: int
     format: str
 
@@ -33,6 +34,7 @@ class ExifImageInfo(ThumbImageInfo):
     icc_profile: dict[str, Any] | None
     gif: dict[str, Any] | None
     quicktime: dict[str, Any] | None
+    matroska: dict[str, Any] | None
 
 
 class GeoLocation(BaseModel):

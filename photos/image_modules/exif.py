@@ -8,6 +8,11 @@ from photos.config.app_config import app_config
 from photos.interfaces import BaseImageInfo, ExifImageInfo
 
 
+def parse_duration(duration_str: str) -> float:
+    h, m, s = duration_str.split(":")
+    return int(h) * 3600 + int(m) * 60 + float(s)
+
+
 def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
     all_exif: defaultdict[str, dict[str, Any]] = defaultdict(dict)
 
@@ -101,18 +106,25 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
     assert "Composite" in exif_dict
     width = exif_dict["File"].get("ImageWidth")
     height = exif_dict["File"].get("ImageHeight")
+    duration: float | None = None
     if "GIF" in exif_dict:
         width = exif_dict["GIF"]["ImageWidth"]
         height = exif_dict["GIF"]["ImageHeight"]
     if "QuickTime" in exif_dict:
+        duration = exif_dict["QuickTime"]["Duration"]
         width = exif_dict["QuickTime"]["ImageWidth"]
         height = exif_dict["QuickTime"]["ImageHeight"]
+    if "Matroska" in exif_dict:
+        width = exif_dict["Matroska"]["ImageWidth"]
+        height = exif_dict["Matroska"]["ImageHeight"]
+        duration = parse_duration(exif_dict["Matroska"]["Duration"])
     assert width and height
     return ExifImageInfo(
         **image_info.model_dump(),
         size_bytes=exif_dict["File"]["FileSize"],
         width=width,
         height=height,
+        duration=duration,
         format=exif_dict["File"]["MIMEType"],
         exif_tool=exif_dict["ExifTool"],
         file=exif_dict["File"],
@@ -122,5 +134,6 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
         icc_profile=exif_dict.get("ICC_Profile"),
         composite=exif_dict["Composite"],
         gif=exif_dict.get("GIF"),
-        quicktime=exif_dict.get("QuickTime")
+        quicktime=exif_dict.get("QuickTime"),
+        matroska=exif_dict.get("Matroska"),
     )

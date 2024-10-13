@@ -137,8 +137,8 @@ def process_image_list(
         print_char("[")
 
         for image_path in image_list:
-            print_char(identifier)
             process_image(photos_dir, image_path, session)
+            print_char(identifier)
     finally:
         print_char(f"{identifier}]")
         session.close()

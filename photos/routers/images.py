@@ -14,9 +14,7 @@ router = APIRouter(prefix="/images")
 
 @router.post("", response_model=ExifImageInfo)
 def post_image(
-    _: UserDep,
-    session: SessionDep,
-    image_info: ExifImageInfo
+    _: UserDep, session: SessionDep, image_info: ExifImageInfo
 ) -> ImageModel:
     logging.info(image_info)
     image_model = ImageModel(**image_info.dict())
