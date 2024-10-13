@@ -3,6 +3,7 @@
 * Python
   * add tests
   * videos
+  * bug: it doesn't detect already processed images, and always processes everything again for some reason.
   * admin settings (frontend)
     * photos_dir
       * photos-dir/user_id/PIC.jpg

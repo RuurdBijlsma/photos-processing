@@ -1,4 +1,3 @@
-import logging
 from collections import defaultdict
 from typing import Any
 
@@ -9,8 +8,6 @@ from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.interfaces import BaseImageInfo, ExifImageInfo
 from photos.utils import readable_bytes
-
-logger = logging.getLogger(__name__)
 
 
 def parse_duration(duration_str: str) -> float:
