@@ -11,6 +11,8 @@
     * multithreaded_processing
   * Get exiftool and ffmpeg binaries automatically?
   * watch for photo deletion and delete from db?
+  * delete thumbnails that aren't linked to anything
+  * delete db records which files don't exist anymore
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * add table: failed images, so it doesn't try to process them again?

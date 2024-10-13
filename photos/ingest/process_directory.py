@@ -94,7 +94,7 @@ def image_exists(image_path: Path, session: Session) -> bool:
     assert image_model.id is not None
     # Check for each resolution
     for size in process_config.thumbnail_sizes:
-        file_path = process_config.thumbnails_dir / image_model.id / f"{size}p.webp"
+        file_path = process_config.thumbnails_dir / image_model.id / f"{size}p.avif"
         if not file_path.exists():
             return False
 
@@ -129,7 +129,9 @@ def process_images_in_directory(photos_dir: Path) -> None:
     try:
         image_files: list[Path] = []
         for file in tqdm(
-            list(photos_dir.rglob("*")), desc="Finding image files", unit="file"
+            list(photos_dir.rglob("*")),
+            desc="Finding image files",
+            unit="file"
         ):
             if (
                 file.suffix.lower() in process_config.media_suffixes
