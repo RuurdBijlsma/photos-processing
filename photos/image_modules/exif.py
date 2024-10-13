@@ -101,10 +101,12 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
     assert "Composite" in exif_dict
     width = exif_dict["File"].get("ImageWidth")
     height = exif_dict["File"].get("ImageHeight")
-    if width is None:
+    if "GIF" in exif_dict:
         width = exif_dict["GIF"]["ImageWidth"]
-    if height is None:
         height = exif_dict["GIF"]["ImageHeight"]
+    if "QuickTime" in exif_dict:
+        width = exif_dict["QuickTime"]["ImageWidth"]
+        height = exif_dict["QuickTime"]["ImageHeight"]
     assert width and height
     return ExifImageInfo(
         **image_info.model_dump(),
@@ -120,4 +122,5 @@ def get_exif(image_info: BaseImageInfo) -> ExifImageInfo:
         icc_profile=exif_dict.get("ICC_Profile"),
         composite=exif_dict["Composite"],
         gif=exif_dict.get("GIF"),
+        quicktime=exif_dict.get("QuickTime")
     )

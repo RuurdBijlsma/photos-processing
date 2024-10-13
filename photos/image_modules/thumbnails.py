@@ -1,31 +1,28 @@
 import os
+from pathlib import Path
+from subprocess import Popen
 
-import ffmpeg  # type:ignore
-import pillow_avif  # type:ignore
-from PIL import Image
-from PIL.ImageFile import ImageFile
+import ffmpeg  # type: ignore
 
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.interfaces import BaseImageInfo
 
 
-def generate_pillow_thumbnail(img: ImageFile, height: int, thumb_path: str) -> None:
-    img_copy = img.copy()
-    img_copy.thumbnail((height / img.height * img.width, height))
-    img_copy.save(thumb_path, format="AVIF")
-
-
-def generate_ffmpeg_thumbnail(
-    image_info: BaseImageInfo, height: int, thumb_path: str
-) -> None:
+def generate_ffmpeg_thumbnails(image_info: BaseImageInfo, sizes: list[int], folder: Path) -> None:
     input_file = app_config.photos_dir / image_info.relative_path
-    (
-        ffmpeg.input(input_file)
-        .filter("scale", -1, height)
-        .output(thumb_path)
-        .run(quiet=True)
-    )
+    output_files = [os.path.join(folder, f"{height}p.avif") for height in sizes]
+    processes: list[Popen] = []
+    for out_file, height in zip(output_files, sizes):
+        process = (ffmpeg
+                   .input(input_file)
+                   .filter('scale', -1, height)
+                   .output(out_file, vframes=1)
+                   .overwrite_output()
+                   .run_async(quiet=True))
+        processes.append(process)
+    for process in processes:
+        process.wait()
 
 
 def generate_thumbnails(image_info: BaseImageInfo) -> None:
@@ -33,11 +30,4 @@ def generate_thumbnails(image_info: BaseImageInfo) -> None:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    with Image.open(app_config.photos_dir / image_info.relative_path) as img:
-        for height in process_config.thumbnail_sizes:
-            thumb_name = f"{height}p.avif"
-            thumb_path = os.path.join(folder, thumb_name)
-            try:
-                generate_pillow_thumbnail(img, height, thumb_path)
-            except OSError:
-                generate_ffmpeg_thumbnail(image_info, height, thumb_path)
+    generate_ffmpeg_thumbnails(image_info, process_config.thumbnail_sizes, folder)

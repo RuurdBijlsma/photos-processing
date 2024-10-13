@@ -38,4 +38,4 @@ def copy_random_files(
 if __name__ == "__main__":
     from_path = "D:/Backup/Photos/photos/photos"
     to_path = "C:/Users/Ruurd/PycharmProjects/RuurdPhotos2/data/photos"
-    copy_random_files(from_path, to_path, 1000)
+    copy_random_files(from_path, to_path, 100)

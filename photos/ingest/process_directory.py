@@ -153,7 +153,7 @@ def process_images_in_directory(photos_dir: Path) -> None:
             list(photos_dir.rglob("*")), desc="Finding image files", unit="file"
         ):
             if (
-                file.suffix.lower() in process_config.image_suffixes
+                file.suffix.lower() in process_config.media_suffixes
                 and not image_exists(file, session)
             ):
                 image_files.append(file)

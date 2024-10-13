@@ -15,6 +15,15 @@ class ProcessConfig(BaseSettings):
         ".tiff",
         ".webp",
     )
+    video_suffixes: tuple[str, ...] = (
+        ".mp4",
+        '.mkv',
+        '.webm'
+    )
+
+    @property
+    def media_suffixes(self) -> tuple[str, ...]:
+        return self.image_suffixes + self.video_suffixes
 
 
 process_config = ProcessConfig()

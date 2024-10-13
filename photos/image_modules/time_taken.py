@@ -71,24 +71,30 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
 
 def get_timezone_info(
     image_info: GpsImageInfo, date: datetime
-) -> tuple[str | None, timedelta | None]:
+) -> tuple[datetime | None, str | None, timedelta | None]:
     """Gets timezone name and offset from latitude, longitude, and date."""
     if not image_info.latitude or not image_info.longitude:
-        return None, None
+        return None, None, None
 
     timezone_name = tf.timezone_at(lat=image_info.latitude, lng=image_info.longitude)
     if not timezone_name:
-        return None, None
+        return None, None, None
 
-    timezone_offset = (
-        pytz.timezone(timezone_name).localize(date.replace(tzinfo=None)).utcoffset()
-    )
-    return timezone_name, timezone_offset
+    tz_date = pytz.timezone(timezone_name).localize(date.replace(tzinfo=None))
+    timezone_offset = tz_date.utcoffset()
+
+    datetime_utc = image_info.datetime_utc
+    if datetime_utc is None:
+        datetime_utc = tz_date.astimezone(pytz.utc)
+
+    return datetime_utc, timezone_name, timezone_offset
 
 
 def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
     datetime_taken, datetime_source = get_local_datetime(image_info)
-    timezone_name, timezone_offset = get_timezone_info(image_info, datetime_taken)
+    datetime_utc, timezone_name, timezone_offset = get_timezone_info(image_info, datetime_taken)
+    image_info.datetime_utc = datetime_utc
+    datetime_taken = datetime_taken.replace(tzinfo=None)
 
     return TimeImageInfo(
         **image_info.model_dump(),

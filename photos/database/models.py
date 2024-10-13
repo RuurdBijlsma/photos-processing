@@ -28,6 +28,7 @@ class ImageModel(Base):
     relative_path = Column(String, nullable=False)
     hash = Column(String, nullable=False)
     width = Column(Integer, nullable=False)
+    duration = Column(Float, nullable=True)
     height = Column(Integer, nullable=False)
     format = Column(String, nullable=False)
     size_bytes = Column(Integer, nullable=False)
@@ -44,6 +45,7 @@ class ImageModel(Base):
     jfif = Column(JSONB, nullable=True)
     icc_profile = Column(JSONB, nullable=True)
     gif = Column(JSONB, nullable=True)
+    quicktime = Column(JSONB, nullable=True)
     # GPS
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
@@ -74,8 +76,8 @@ class GeoLocationModel(Base):
 
 
 class Role(enum.Enum):
-    admin = 1
-    user = 2
+    ADMIN = 1
+    USER = 2
 
 
 class UserModel(Base):

@@ -3,9 +3,12 @@
 * Python
   * add tests
   * videos
+  * admin settings (frontend)
+    * photos_dir
+      * photos-dir/user_id/PIC.jpg
+    * thumbnails_dir
+    * multithreaded_processing
   * Get exiftool and ffmpeg binaries automatically?
-  * handle motion photos (mp4 is slice of the bytes, stated in exiftool output)
-  * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
   * watch for photo deletion and delete from db?
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
@@ -43,6 +46,9 @@
   * Search bar
   * Upload from frontend
   * Map page with photos
+  * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
+  * vue component maken om motion photo te laten zien 
+    * fetch blob, slice motion video mp4 eruit, laat die zien, als ie klaar is, laat foto zien
   * Explore page
     * Locations (cities/countries)
     * Things

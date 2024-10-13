@@ -32,6 +32,7 @@ class ExifImageInfo(ThumbImageInfo):
     jfif: dict[str, Any] | None
     icc_profile: dict[str, Any] | None
     gif: dict[str, Any] | None
+    quicktime: dict[str, Any] | None
 
 
 class GeoLocation(BaseModel):

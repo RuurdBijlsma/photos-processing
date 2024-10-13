@@ -7,12 +7,17 @@ from sqlalchemy import select
 from photos.database.database import SessionDep
 from photos.database.models import ImageModel
 from photos.interfaces import ExifImageInfo, ThumbImageInfo
+from photos.routers.auth import UserDep
 
 router = APIRouter(prefix="/images")
 
 
 @router.post("", response_model=ExifImageInfo)
-def post_image(image_info: ExifImageInfo, session: SessionDep) -> ImageModel:
+def post_image(
+    _: UserDep,
+    session: SessionDep,
+    image_info: ExifImageInfo
+) -> ImageModel:
     logging.info(image_info)
     image_model = ImageModel(**image_info.dict())
     session.add(image_model)
@@ -23,6 +28,7 @@ def post_image(image_info: ExifImageInfo, session: SessionDep) -> ImageModel:
 
 @router.get("", response_model=list[ThumbImageInfo])
 def get_images(
+    _: UserDep,
     session: SessionDep,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),

@@ -33,6 +33,7 @@ def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
                     break
             except ValueError:
                 pass
+
     coded = reverse_geocode.get((lat, lon))
     return GpsImageInfo(
         **image_info.model_dump(),

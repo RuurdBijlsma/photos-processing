@@ -12,6 +12,7 @@ from photos.database.migrations import run_migrations
 from photos.ingest.process_directory import process_images_in_directory
 from photos.ingest.watch_directory import watch_for_photos
 from photos.routers import images, health, auth
+from photos.utils import add_admin_user
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,8 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Running migrations")
     run_migrations("alembic", app_config.connection_string)
     logger.info("Migration complete")
+
+    add_admin_user()
 
     process_images_in_directory(app_config.photos_dir)
     process = multiprocessing.Process(
