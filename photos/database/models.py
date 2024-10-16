@@ -56,6 +56,9 @@ class ImageModel(Base):
     location: Mapped[GeoLocationModel | None] = relationship(
         "GeoLocationModel", back_populates="images"
     )
+    # User
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    owner: Mapped[UserModel] = relationship("UserModel", back_populates="images")
 
 
 class GeoLocationModel(Base):
@@ -85,7 +88,7 @@ class UserModel(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String, nullable=False, unique=True)
+    username = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
-    display_name = Column(String, nullable=False)
     role = Column(Enum(Role), nullable=False)
+    images: Mapped[list[ImageModel]] = relationship("ImageModel", back_populates="owner")

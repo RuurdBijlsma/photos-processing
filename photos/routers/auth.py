@@ -36,12 +36,12 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def get_user(session: Session, email: str) -> UserModel | None:
-    return session.query(UserModel).filter_by(email=email).first()
+def get_user(session: Session, username: str) -> UserModel | None:
+    return session.query(UserModel).filter_by(username=username).first()
 
 
-def authenticate_user(session: Session, email: str, password: str) -> UserModel | None:
-    user = get_user(session, email)
+def authenticate_user(session: Session, username: str, password: str) -> UserModel | None:
+    user = get_user(session, username)
     if not user or not user.hashed_password:
         return None
     if not verify_password(password, user.hashed_password):
@@ -70,14 +70,14 @@ async def get_current_user(session: SessionDep, token: TokenDep) -> UserModel:
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        username: str = payload.get("sub")
+        if username is None:
             raise credentials_exception
-        token_data = TokenData(email=email)
+        token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
-    assert token_data.email is not None
-    user = get_user(session, email=token_data.email)
+    assert token_data.username is not None
+    user = get_user(session, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -102,7 +102,7 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": user.username}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
 

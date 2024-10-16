@@ -4,7 +4,7 @@ from pathlib import Path
 from exiftool.exceptions import ExifToolExecuteError
 from sqlalchemy.orm import Session
 
-from photos.database.models import ImageModel, GeoLocationModel
+from photos.database.models import ImageModel, GeoLocationModel, UserModel
 from photos.image_modules.base_info import base_info
 from photos.image_modules.exif import get_exif
 from photos.image_modules.gps import get_gps_image
@@ -16,7 +16,7 @@ from photos.utils import clean_object
 logger = logging.getLogger(__name__)
 
 
-def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
+def store_image(image_info: TimeImageInfo, user: UserModel, session: Session) -> ImageModel:
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
     location = cleaned_dict.pop("location")
@@ -33,15 +33,15 @@ def store_image(image_info: TimeImageInfo, session: Session) -> ImageModel:
         )
         if not location_model:
             location_model = GeoLocationModel(**location)
-    image_model = ImageModel(**cleaned_dict, location=location_model)
+    image_model = ImageModel(**cleaned_dict, location=location_model, user_id=user.id)
     session.add(image_model)
     session.commit()
     session.refresh(image_model)
     return image_model
 
 
-def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
-    image_info = base_info(photos_dir, image_path)
+def process_image(image_path: Path, user: UserModel, session: Session) -> None:
+    image_info = base_info(image_path)
 
     try:
         image_info = get_exif(image_info)
@@ -54,4 +54,4 @@ def process_image(photos_dir: Path, image_path: Path, session: Session) -> None:
     image_info = get_gps_image(image_info)
     image_info = get_time_taken(image_info)
 
-    store_image(image_info, session)
+    store_image(image_info, user, session)

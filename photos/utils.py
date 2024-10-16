@@ -33,18 +33,17 @@ def delete_image(relative_path: Path, session: Session) -> None:
         session.commit()
 
 
-def add_admin_user() -> None:
+def add_user(username: str, password: str, role: Role) -> None:
     session = get_session_maker()()
     existing_admin = (
-        session.query(UserModel).filter_by(email="admin@ruurd.photos").first()
+        session.query(UserModel).filter_by(username=username).first()
     )
     if existing_admin:
         return
     admin = UserModel(
-        display_name="Admin",
-        email="admin@ruurd.photos",
-        hashed_password=get_password_hash("squirrel"),
-        role=Role.ADMIN,
+        username=username,
+        hashed_password=get_password_hash(password),
+        role=role,
     )
     session.add(admin)
     session.commit()

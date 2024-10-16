@@ -3,21 +3,17 @@
 * Python
   * add tests
   * videos
-  * bug: it doesn't detect already processed images, and always processes everything again for some reason.
-  * admin settings (frontend)
-    * photos_dir
-      * photos-dir/user_id/PIC.jpg
-    * thumbnails_dir
-    * multithreaded_processing
-  * Get exiftool and ffmpeg binaries automatically?
   * watch for photo deletion and delete from db?
   * delete thumbnails that aren't linked to anything
   * delete db records which files don't exist anymore
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * add table: failed images, so it doesn't try to process them again?
-  * make video thumbnails av1
-  * add button [optimize library], to convert all images to avif, and all videos to av1 codec
+  * add button [optimize library], to convert all images to avif, and all videos to vp9 codec (av1 in the future?)
+  * make setup script to set correct mount inside pod
+    * the setup script will prompt: (main user info (username, password), photos location)
+    * the setup script will fill and .env file to give this info to the docker container and program.
+  * Get exiftool and ffmpeg binaries automatically?
 * Add users
   * roles (server admin/user)
 * Add albums
@@ -52,6 +48,11 @@
   * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
   * vue component maken om motion photo te laten zien 
     * fetch blob, slice motion video mp4 eruit, laat die zien, als ie klaar is, laat foto zien
+  * admin settings (frontend)
+    * photos_dir
+      * photos-dir/user_id/PIC.jpg
+    * thumbnails_dir
+    * multithreaded_processing
   * Explore page
     * Locations (cities/countries)
     * Things

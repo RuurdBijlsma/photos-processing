@@ -14,7 +14,7 @@ from tqdm import tqdm
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.database import get_session_maker
-from photos.database.models import ImageModel
+from photos.database.models import ImageModel, UserModel
 from photos.ingest.process_image import process_image
 
 logger = logging.getLogger(__name__)
@@ -22,12 +22,13 @@ tf = TimezoneFinder()
 
 
 def fix_image_timezone(
-    image: ImageModel, session: Session
+    image: ImageModel, user: UserModel, session: Session
 ) -> None | tuple[float, float]:
     stmt = (
         select(ImageModel)
         .where(ImageModel.latitude.isnot(None))
         .where(ImageModel.longitude.isnot(None))
+        .where(ImageModel.user_id.is_(user.id))
         .order_by(
             func.abs(
                 func.extract("epoch", ImageModel.datetime_local)
@@ -44,7 +45,7 @@ def fix_image_timezone(
     return float(result.latitude), float(result.longitude)
 
 
-def fill_timezone_gaps() -> None:
+def fill_timezone_gaps(user: UserModel) -> None:
     session = get_session_maker()()
     try:
         images = (
@@ -56,7 +57,7 @@ def fill_timezone_gaps() -> None:
         )
         closest_image_coordinates: list[tuple[float, float] | None] = []
         for image in tqdm(images, desc="Finding image timezones", unit="image"):
-            closest_image_coordinates.append(fix_image_timezone(image, session))
+            closest_image_coordinates.append(fix_image_timezone(image, user, session))
         for image, coordinate in tqdm(
             list(zip(images, closest_image_coordinates)),
             desc="Fixing timezones",
@@ -113,23 +114,23 @@ def chunk_list_itertools(data: list[T], n: int) -> list[list[T]]:
     ]
 
 
-def process_image_list(photos_dir: Path, image_list: list[Path]) -> None:
+def process_image_list(image_list: list[Path], user: UserModel) -> None:
     """Process a chunk of images with a separate session."""
     session = get_session_maker()()
     try:
         for image_path in image_list:
-            process_image(photos_dir, image_path, session)
+            process_image(image_path, user, session)
     finally:
         session.close()
 
 
-def process_images_in_directory(photos_dir: Path) -> None:
+def process_images_in_directory(directory: Path, user: UserModel) -> None:
     """Check all images for processing."""
     session = get_session_maker()()
     try:
         image_files: list[Path] = []
         for file in tqdm(
-            list(photos_dir.rglob("*")),
+            list(directory.rglob("*")),
             desc="Finding image files",
             unit="file"
         ):
@@ -148,11 +149,19 @@ def process_images_in_directory(photos_dir: Path) -> None:
         image_chunks = chunk_list_itertools(image_files, core_count)
         with ThreadPoolExecutor(max_workers=core_count) as executor:
             executor.map(
-                lambda chunk: process_image_list(photos_dir, chunk),
+                lambda chunk: process_image_list(chunk, user),
                 image_chunks,
             )
         print("")
     else:
-        process_image_list(photos_dir, image_files)
+        process_image_list(image_files, user)
 
-    fill_timezone_gaps()
+    fill_timezone_gaps(user)
+
+
+def process_all_user_photos() -> None:
+    session = get_session_maker()()
+    users = session.query(UserModel).all()
+    for user in users:
+        assert isinstance(user, UserModel)
+        process_images_in_directory(app_config.photos_dir / str(user.id), user)

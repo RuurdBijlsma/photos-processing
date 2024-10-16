@@ -2,6 +2,7 @@ import logging
 import multiprocessing
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
@@ -9,10 +10,11 @@ from starlette.staticfiles import StaticFiles
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.migrations import run_migrations
-from photos.ingest.process_directory import process_images_in_directory
+from photos.database.models import Role
+from photos.ingest.process_directory import process_all_user_photos
 from photos.ingest.watch_directory import watch_for_photos
 from photos.routers import images, health, auth
-from photos.utils import add_admin_user
+from photos.utils import add_user
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +25,11 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     run_migrations("alembic", app_config.connection_string)
     logger.info("Migration complete")
 
-    add_admin_user()
+    add_user("RuteNL", "squirrel", Role.ADMIN)
+    add_user("Ruurd", "squirrel", Role.USER)
+    add_user("Bijlsma", "squirrel", Role.USER)
 
-    process_images_in_directory(app_config.photos_dir)
+    process_all_user_photos()
     process = multiprocessing.Process(
         target=watch_for_photos, args=(app_config.photos_dir,)
     )
