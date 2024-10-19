@@ -25,17 +25,17 @@ handlers:
 loggers:
   uvicorn:
     level: INFO
-    handlers: [console, file]
+    handlers: [ console ]
     propagate: False
   uvicorn.error:
     level: ERROR
-    handlers: [error_console, file]
+    handlers: [ error_console ]
     propagate: False
   uvicorn.access:
     level: INFO
-    handlers: [console, file]
+    handlers: [ console ]
     propagate: False
 
 root:
   level: INFO
-  handlers: [console, file]
+  handlers: [ console ]

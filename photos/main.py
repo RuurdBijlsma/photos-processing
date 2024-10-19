@@ -29,7 +29,7 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     add_user("Ruurd", "squirrel", Role.USER)
     add_user("Bijlsma", "squirrel", Role.USER)
 
-    process_all_user_photos()
+    await process_all_user_photos()
     process = multiprocessing.Process(
         target=watch_for_photos, args=(app_config.photos_dir,)
     )

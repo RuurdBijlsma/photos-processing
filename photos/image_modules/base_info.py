@@ -3,8 +3,8 @@ import os
 import uuid
 from pathlib import Path
 
-from photos.config.app_config import app_config
 from photos.interfaces import BaseImageInfo
+from photos.utils import db_path
 
 
 def hash_image(image_path: Path, chunk_size: int = 65536) -> str:
@@ -22,7 +22,7 @@ def base_info(
 ) -> BaseImageInfo:
     return BaseImageInfo(
         id=uuid.uuid4().hex,
-        relative_path=image_path.relative_to(app_config.photos_dir),
+        relative_path=db_path(image_path),
         filename=os.path.basename(image_path),
         hash=hash_image(image_path),
     )

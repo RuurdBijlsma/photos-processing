@@ -13,7 +13,7 @@ class BaseImageInfo(BaseModel):
 
     @field_serializer("relative_path")
     def serialize_relative_path(self, relative_path: Path) -> str:
-        return str(relative_path)
+        return relative_path.as_posix()
 
 
 class ThumbImageInfo(BaseImageInfo):

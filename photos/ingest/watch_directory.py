@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import sys
 import time
@@ -12,11 +13,11 @@ from watchdog.events import (
 )
 from watchdog.observers import Observer
 
-from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.database import get_session_maker
+from photos.database.models import UserModel
 from photos.ingest.process_image import process_image
-from photos.utils import delete_image
+from photos.utils import delete_image, db_path
 
 # Need to set up logging because watchdog in different thread is weird
 logger = logging.getLogger(__name__)
@@ -37,11 +38,13 @@ class NewImageHandler(FileSystemEventHandler):
             and source_path.suffix in process_config.media_suffixes
         ):
             logger.info("[watchdog] Processing new photo!")
-            process_image(app_config.photos_dir, source_path, self.session)
+            user_folder = db_path(source_path).parts[0]
+            user = self.session.query(UserModel).filter_by(user_id=user_folder).scalar()
+            asyncio.run(process_image(source_path, user, self.session))
 
     def on_deleted(self, event: DirDeletedEvent | FileDeletedEvent) -> None:
         source_path = Path(str(event.src_path))
-        relative_path = source_path.relative_to(app_config.photos_dir)
+        relative_path = db_path(source_path)
         delete_image(relative_path, self.session)
 
 

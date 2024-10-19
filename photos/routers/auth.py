@@ -40,7 +40,9 @@ def get_user(session: Session, username: str) -> UserModel | None:
     return session.query(UserModel).filter_by(username=username).first()
 
 
-def authenticate_user(session: Session, username: str, password: str) -> UserModel | None:
+def authenticate_user(
+    session: Session, username: str, password: str
+) -> UserModel | None:
     user = get_user(session, username)
     if not user or not user.hashed_password:
         return None

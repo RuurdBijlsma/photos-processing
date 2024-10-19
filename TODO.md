@@ -46,7 +46,7 @@
   * Upload from frontend
   * Map page with photos
   * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
-  * vue component maken om motion photo te laten zien 
+  * vue component maken om motion photo te laten zien
     * fetch blob, slice motion video mp4 eruit, laat die zien, als ie klaar is, laat foto zien
   * admin settings (frontend)
     * photos_dir

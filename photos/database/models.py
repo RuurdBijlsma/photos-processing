@@ -91,4 +91,6 @@ class UserModel(Base):
     username = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(Role), nullable=False)
-    images: Mapped[list[ImageModel]] = relationship("ImageModel", back_populates="owner")
+    images: Mapped[list[ImageModel]] = relationship(
+        "ImageModel", back_populates="owner"
+    )

@@ -4,18 +4,28 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.database import get_session_maker
 from photos.database.models import ImageModel, UserModel, Role
 from photos.routers.auth import get_password_hash
 
 
+def path_str(path: Path) -> str:
+    return db_path(path).as_posix()
+
+
+def db_path(path: Path) -> Path:
+    return path.relative_to(app_config.photos_dir)
+
+
 def readable_bytes(num: int, suffix: str = "B") -> str:
+    fnum = float(num)
     for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
-        if abs(num) < 1024.0:
-            return f"{num:3.1f}{unit}{suffix}"
-        num /= 1024.0
-    return f"{num:.1f}Yi{suffix}"
+        if abs(fnum) < 1024.0:
+            return f"{fnum:3.1f}{unit}{suffix}"
+        fnum /= 1024.0
+    return f"{fnum:.1f}Yi{suffix}"
 
 
 def delete_image(relative_path: Path, session: Session) -> None:
@@ -23,7 +33,7 @@ def delete_image(relative_path: Path, session: Session) -> None:
         relative_path.unlink()
     model = (
         session.query(ImageModel)
-        .filter(ImageModel.relative_path == str(relative_path))
+        .filter(ImageModel.relative_path.__eq__(relative_path.as_posix()))
         .first()
     )
     if model is not None and model.id is not None:
@@ -35,9 +45,7 @@ def delete_image(relative_path: Path, session: Session) -> None:
 
 def add_user(username: str, password: str, role: Role) -> None:
     session = get_session_maker()()
-    existing_admin = (
-        session.query(UserModel).filter_by(username=username).first()
-    )
+    existing_admin = session.query(UserModel).filter_by(username=username).first()
     if existing_admin:
         return
     admin = UserModel(

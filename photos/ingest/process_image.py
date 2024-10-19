@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from pathlib import Path
 
@@ -16,7 +17,9 @@ from photos.utils import clean_object
 logger = logging.getLogger(__name__)
 
 
-def store_image(image_info: TimeImageInfo, user: UserModel, session: Session) -> ImageModel:
+def store_image(
+    image_info: TimeImageInfo, user: UserModel, session: Session
+) -> ImageModel:
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
     location = cleaned_dict.pop("location")
@@ -40,7 +43,7 @@ def store_image(image_info: TimeImageInfo, user: UserModel, session: Session) ->
     return image_model
 
 
-def process_image(image_path: Path, user: UserModel, session: Session) -> None:
+async def process_image(image_path: Path, user: UserModel, session: Session) -> None:
     image_info = base_info(image_path)
 
     try:
@@ -49,7 +52,9 @@ def process_image(image_path: Path, user: UserModel, session: Session) -> None:
         print(f"Failed to process {image_info}")
         return None
 
-    generate_thumbnails(image_info)
+    # await here because otherwise prints go out of order?
+    await asyncio.sleep(0.1)
+    await generate_thumbnails(image_info)
 
     image_info = get_gps_image(image_info)
     image_info = get_time_taken(image_info)

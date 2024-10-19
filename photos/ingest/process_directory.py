@@ -1,3 +1,4 @@
+import asyncio
 import itertools
 import logging
 import os
@@ -14,8 +15,9 @@ from tqdm import tqdm
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.database import get_session_maker
-from photos.database.models import ImageModel, UserModel
+from photos.database.models import ImageModel, UserModel, GeoLocationModel
 from photos.ingest.process_image import process_image
+from photos.utils import path_str
 
 logger = logging.getLogger(__name__)
 tf = TimezoneFinder()
@@ -28,7 +30,7 @@ def fix_image_timezone(
         select(ImageModel)
         .where(ImageModel.latitude.isnot(None))
         .where(ImageModel.longitude.isnot(None))
-        .where(ImageModel.user_id.is_(user.id))
+        .where(ImageModel.user_id.__eq__(user.id))
         .order_by(
             func.abs(
                 func.extract("epoch", ImageModel.datetime_local)
@@ -85,18 +87,22 @@ def fill_timezone_gaps(user: UserModel) -> None:
 
 
 def image_exists(image_path: Path, session: Session) -> bool:
-    relative_path = str(image_path.relative_to(app_config.photos_dir))
     image_model = (
-        session.query(ImageModel).filter_by(relative_path=relative_path).first()
+        session.query(ImageModel).filter_by(relative_path=path_str(image_path)).first()
     )
     if image_model is None:
         return False
 
-    assert image_model.id is not None
+    assert image_model.hash is not None
     # Check for each resolution
     for size in process_config.thumbnail_sizes:
-        file_path = process_config.thumbnails_dir / image_model.id / f"{size}p.avif"
+        file_path = process_config.thumbnails_dir / image_model.hash / f"{size}p.avif"
         if not file_path.exists():
+            return False
+
+    if image_path.suffix in process_config.video_suffixes:
+        vid_path = process_config.thumbnails_dir / image_model.hash / "vid.webm"
+        if not vid_path.exists():
             return False
 
     return True
@@ -114,54 +120,77 @@ def chunk_list_itertools(data: list[T], n: int) -> list[list[T]]:
     ]
 
 
-def process_image_list(image_list: list[Path], user: UserModel) -> None:
+async def process_image_list(image_list: list[Path], user: UserModel) -> None:
     """Process a chunk of images with a separate session."""
     session = get_session_maker()()
     try:
         for image_path in image_list:
-            process_image(image_path, user, session)
+            await process_image(image_path, user, session)
     finally:
         session.close()
 
 
-def process_images_in_directory(directory: Path, user: UserModel) -> None:
+def remove_dangling_entries(session: Session, image_files: list[Path]) -> None:
+    db_images = session.query(ImageModel).all()
+    relative_paths = [path_str(path) for path in image_files]
+    for image_model in db_images:
+        if image_model.relative_path not in relative_paths:
+            session.delete(image_model)
+            print(
+                f"Deleting {image_model.relative_path}, the file does not exist anymore."
+            )
+    session.commit()
+
+    locations_without_images = (
+        session.query(GeoLocationModel)
+        .outerjoin(ImageModel, GeoLocationModel.id == ImageModel.location_id)
+        .filter(ImageModel.id.is_(None))
+        .all()
+    )
+    for location in locations_without_images:
+        print(f"Deleting {location}, the location has no images anymore.")
+        session.delete(location)
+    session.commit()
+
+
+async def process_images_in_directory(directory: Path, user: UserModel) -> None:
     """Check all images for processing."""
     session = get_session_maker()()
+    image_files = [
+        file
+        for file in directory.rglob("*")
+        if file.suffix.lower() in process_config.media_suffixes
+    ]
+    remove_dangling_entries(session, image_files)
+
     try:
-        image_files: list[Path] = []
-        for file in tqdm(
-            list(directory.rglob("*")),
-            desc="Finding image files",
-            unit="file"
-        ):
-            if (
-                file.suffix.lower() in process_config.media_suffixes
-                and not image_exists(file, session)
-            ):
-                image_files.append(file)
+        images_to_process: list[Path] = []
+        for file in tqdm(image_files, desc="Finding image files", unit="file"):
+            if not image_exists(file, session):
+                images_to_process.append(file)
     finally:
         session.close()
 
-    print(f"Found {len(image_files)} images, processing...")
+    print(f"Found {len(images_to_process)} images, processing...")
     if app_config.multithreaded_processing:
         core_count = os.cpu_count()
         assert core_count is not None
-        image_chunks = chunk_list_itertools(image_files, core_count)
+        image_chunks = chunk_list_itertools(images_to_process, core_count)
         with ThreadPoolExecutor(max_workers=core_count) as executor:
             executor.map(
-                lambda chunk: process_image_list(chunk, user),
+                lambda chunk: asyncio.run(process_image_list(chunk, user)),
                 image_chunks,
             )
         print("")
     else:
-        process_image_list(image_files, user)
+        await process_image_list(images_to_process, user)
 
     fill_timezone_gaps(user)
 
 
-def process_all_user_photos() -> None:
+async def process_all_user_photos() -> None:
     session = get_session_maker()()
     users = session.query(UserModel).all()
     for user in users:
         assert isinstance(user, UserModel)
-        process_images_in_directory(app_config.photos_dir / str(user.id), user)
+        await process_images_in_directory(app_config.photos_dir / str(user.id), user)
