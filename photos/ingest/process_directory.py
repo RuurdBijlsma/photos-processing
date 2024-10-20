@@ -2,6 +2,7 @@ import asyncio
 import itertools
 import logging
 import os
+import shutil
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import TypeVar
@@ -121,7 +122,7 @@ def chunk_list_itertools(data: list[T], n: int) -> list[list[T]]:
 
 
 async def process_image_list(image_list: list[Path], user: UserModel) -> None:
-    """Process a chunk of images with a separate session."""
+    """Process a chunk of images with a separate db session."""
     session = get_session_maker()()
     try:
         for image_path in image_list:
@@ -130,8 +131,10 @@ async def process_image_list(image_list: list[Path], user: UserModel) -> None:
         session.close()
 
 
-def remove_dangling_entries(session: Session, image_files: list[Path]) -> None:
-    db_images = session.query(ImageModel).all()
+def remove_dangling_entries(
+    session: Session, user_id: int, image_files: list[Path]
+) -> None:
+    db_images = session.query(ImageModel).filter_by(user_id=user_id).all()
     relative_paths = [path_str(path) for path in image_files]
     for image_model in db_images:
         if image_model.relative_path not in relative_paths:
@@ -153,7 +156,18 @@ def remove_dangling_entries(session: Session, image_files: list[Path]) -> None:
     session.commit()
 
 
+def remove_dangling_thumbnails() -> None:
+    """Remove thumbnails for images that don't exist."""
+    session = get_session_maker()()
+    thumbnails = {folder.name for folder in process_config.thumbnails_dir.iterdir()}
+    db_hashes = {img_hash for (img_hash,) in session.query(ImageModel.hash).all()}
+    for dangling_thumbnail in thumbnails - db_hashes:
+        print(f"Thumbnail {dangling_thumbnail} has no images, deleting.")
+        shutil.rmtree(process_config.thumbnails_dir / dangling_thumbnail)
+
+
 async def process_images_in_directory(directory: Path, user: UserModel) -> None:
+    print(f"Processing images for user {user.username}")
     """Check all images for processing."""
     session = get_session_maker()()
     image_files = [
@@ -161,7 +175,8 @@ async def process_images_in_directory(directory: Path, user: UserModel) -> None:
         for file in directory.rglob("*")
         if file.suffix.lower() in process_config.media_suffixes
     ]
-    remove_dangling_entries(session, image_files)
+    assert user.id is not None
+    remove_dangling_entries(session, user.id, image_files)
 
     try:
         images_to_process: list[Path] = []
@@ -194,3 +209,4 @@ async def process_all_user_photos() -> None:
     for user in users:
         assert isinstance(user, UserModel)
         await process_images_in_directory(app_config.photos_dir / str(user.id), user)
+    remove_dangling_thumbnails()

@@ -12,7 +12,7 @@ def extract_slice(
         mapped_file = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
 
         # Extract the slice
-        data_slice = mapped_file[offset: offset + length]
+        data_slice = mapped_file[offset : offset + length]
 
         # Write the slice to the output file
         with open(output_file, "wb") as out_f:

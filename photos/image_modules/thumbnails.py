@@ -9,8 +9,37 @@ from photos.config.process_config import process_config
 from photos.interfaces import BaseImageInfo
 
 
+async def check_video_integrity(input_file: Path) -> bool:
+    command = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-read_intervals",
+        "%+30",
+        "-show_entries",
+        "stream=codec_name,width,height,duration",
+        "-of",
+        "default=noprint_wrappers=1",
+        str(input_file),
+    ]
+    process = await asyncio.create_subprocess_exec(
+        *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    _, stderr = await process.communicate()
+    errors = stderr.decode().strip()
+    if errors:
+        return False
+    return True
+
+
 async def generate_web_video(input_file: Path, height: int, folder: Path) -> None:
     out_file = folder / "vid.webm"
+    if (
+        out_file.exists()
+        and out_file.stat().st_size > 0
+        and await check_video_integrity(out_file)
+    ):
+        return
 
     await run_ffmpeg(
         [
