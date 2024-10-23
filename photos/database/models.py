@@ -25,7 +25,7 @@ class ImageModel(Base):
 
     id = Column(String, primary_key=True, index=True)
     filename = Column(String, nullable=False, index=True)
-    relative_path = Column(String, nullable=False)
+    relative_path = Column(String, nullable=False, unique=True)
     hash = Column(String, nullable=False)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)

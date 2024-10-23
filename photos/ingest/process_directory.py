@@ -1,90 +1,24 @@
 import asyncio
-import itertools
 import logging
 import os
-import shutil
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import TypeVar
 
-import pytz
-from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-from timezonefinder import TimezoneFinder
 from tqdm import tqdm
 
 from photos.config.app_config import app_config
 from photos.config.process_config import process_config
 from photos.database.database import get_session_maker
-from photos.database.models import ImageModel, UserModel, GeoLocationModel
+from photos.database.models import ImageModel, UserModel
+from photos.ingest.dangle_removers import remove_dangling_entries, remove_images_with_no_thumbnails, \
+    remove_dangling_thumbnails
+from photos.ingest.fix_timezone import fill_timezone_gaps
+from photos.ingest.process_directory_utils import chunk_list_itertools
 from photos.ingest.process_image import process_image
 from photos.utils import path_str
 
 logger = logging.getLogger(__name__)
-tf = TimezoneFinder()
-
-
-def fix_image_timezone(
-    image: ImageModel, user: UserModel, session: Session
-) -> None | tuple[float, float]:
-    stmt = (
-        select(ImageModel)
-        .where(ImageModel.latitude.isnot(None))
-        .where(ImageModel.longitude.isnot(None))
-        .where(ImageModel.user_id.__eq__(user.id))
-        .order_by(
-            func.abs(
-                func.extract("epoch", ImageModel.datetime_local)
-                - func.extract("epoch", image.datetime_local)  # type: ignore
-            )
-        )
-        .limit(1)
-    )
-
-    # Execute the query
-    result = session.execute(stmt).scalars().first()
-    if result is None or not (result.latitude and result.longitude):
-        return None
-    return float(result.latitude), float(result.longitude)
-
-
-def fill_timezone_gaps(user: UserModel) -> None:
-    session = get_session_maker()()
-    try:
-        images = (
-            session.execute(
-                select(ImageModel).where(ImageModel.timezone_name.is_(None))
-            )
-            .scalars()
-            .all()
-        )
-        closest_image_coordinates: list[tuple[float, float] | None] = []
-        for image in tqdm(images, desc="Finding image timezones", unit="image"):
-            closest_image_coordinates.append(fix_image_timezone(image, user, session))
-        for image, coordinate in tqdm(
-            list(zip(images, closest_image_coordinates)),
-            desc="Fixing timezones",
-            unit="image",
-        ):
-            if coordinate is None:
-                continue
-            latitude, longitude = coordinate
-            timezone_str = tf.timezone_at(lat=latitude, lng=longitude)
-            if timezone_str is None:
-                continue
-            local_tz = pytz.timezone(timezone_str)
-            assert image.datetime_local is not None
-            local_dt = local_tz.localize(image.datetime_local)
-            assert local_dt is not None
-            image.datetime_utc = local_dt.astimezone(pytz.utc)
-            image.timezone_name = timezone_str
-            image.timezone_offset = local_dt.utcoffset()
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        print(f"An exception occurred: {e}")
-    finally:
-        session.close()
 
 
 def image_exists(image_path: Path, session: Session) -> bool:
@@ -109,18 +43,6 @@ def image_exists(image_path: Path, session: Session) -> bool:
     return True
 
 
-T = TypeVar("T")
-
-
-def chunk_list_itertools(data: list[T], n: int) -> list[list[T]]:
-    """Split a list into n chunks using itertools."""
-    it = iter(data)
-    return [
-        list(itertools.islice(it, i))
-        for i in [len(data) // n + (1 if x < len(data) % n else 0) for x in range(n)]
-    ]
-
-
 async def process_image_list(image_list: list[Path], user: UserModel) -> None:
     """Process a chunk of images with a separate db session."""
     session = get_session_maker()()
@@ -129,41 +51,6 @@ async def process_image_list(image_list: list[Path], user: UserModel) -> None:
             await process_image(image_path, user, session)
     finally:
         session.close()
-
-
-def remove_dangling_entries(
-    session: Session, user_id: int, image_files: list[Path]
-) -> None:
-    db_images = session.query(ImageModel).filter_by(user_id=user_id).all()
-    relative_paths = [path_str(path) for path in image_files]
-    for image_model in db_images:
-        if image_model.relative_path not in relative_paths:
-            session.delete(image_model)
-            print(
-                f"Deleting {image_model.relative_path}, the file does not exist anymore."
-            )
-    session.commit()
-
-    locations_without_images = (
-        session.query(GeoLocationModel)
-        .outerjoin(ImageModel, GeoLocationModel.id == ImageModel.location_id)
-        .filter(ImageModel.id.is_(None))
-        .all()
-    )
-    for location in locations_without_images:
-        print(f"Deleting {location}, the location has no images anymore.")
-        session.delete(location)
-    session.commit()
-
-
-def remove_dangling_thumbnails() -> None:
-    """Remove thumbnails for images that don't exist."""
-    session = get_session_maker()()
-    thumbnails = {folder.name for folder in process_config.thumbnails_dir.iterdir()}
-    db_hashes = {img_hash for (img_hash,) in session.query(ImageModel.hash).all()}
-    for dangling_thumbnail in thumbnails - db_hashes:
-        print(f"Thumbnail {dangling_thumbnail} has no images, deleting.")
-        shutil.rmtree(process_config.thumbnails_dir / dangling_thumbnail)
 
 
 async def process_images_in_directory(directory: Path, user: UserModel) -> None:
@@ -183,6 +70,7 @@ async def process_images_in_directory(directory: Path, user: UserModel) -> None:
         for file in tqdm(image_files, desc="Finding image files", unit="file"):
             if not image_exists(file, session):
                 images_to_process.append(file)
+        remove_images_with_no_thumbnails(images_to_process, session)
     finally:
         session.close()
 

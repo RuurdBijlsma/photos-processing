@@ -47,11 +47,17 @@ async def generate_web_video(input_file: Path, height: int, folder: Path) -> Non
             "-i",
             input_file,
             "-c:v",
-            "libvpx-vp9",
+            "libvpx-vp9",  # VP9 encoding, for webm
+            "-crf",  # variable bitrate
+            "40",  # higher value is lower quality, 40 is pretty low quality
+            "-b:v",
+            "0",  # set bitrate to 0 to tell ffmpeg variable bitrate is used
             "-vf",
-            f"scale=-1:{height}",
+            f"scale=-1:{height}",  # make 1080p
             "-c:a",
             "libopus",
+            "-b:a",
+            "128k",
             out_file,
         ],
         overwrite_output=True,
@@ -78,8 +84,10 @@ async def ffmpeg_thumbnails(input_file: Path, sizes: list[int], folder: Path) ->
                         "1",
                         "-map_metadata",
                         "-1",
-                        "-qscale:v",
-                        "2",
+                        "-crf",
+                        "10",
+                        "-b:v",
+                        "0",
                         out_file,
                     ],
                     overwrite_output=True,
