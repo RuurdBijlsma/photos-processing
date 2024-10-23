@@ -2,28 +2,18 @@
 
 * Python
   * add tests
-  * videos
   * watch for photo deletion and delete from db?
-  * delete thumbnails that aren't linked to anything
-  * delete db records which files don't exist anymore
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
   * add table: failed images, so it doesn't try to process them again?
   * add button [optimize library], to convert all images to avif, and all videos to vp9 codec (av1 in the future?)
-  * make setup script to set correct mount inside pod
-    * the setup script will prompt: (main user info (username, password), photos location)
-    * the setup script will fill and .env file to give this info to the docker container and program.
+  * make .env file for user to set base photos dir
   * Get exiftool and ffmpeg binaries automatically?
 * Add users
   * roles (server admin/user)
 * Add albums
-  * Shared albums between servers (oauth2 for auth)
-* Add exif processing
-  * time taken + timezone
-  * location + reverse geocode
-  * capture info (iso, etc.)
-  * ...
-* Add ai processing
+  * Shared albums between servers (shared secret to access other server's album)
+* Add AI processing
   * image caption (text and embedding)
     * Cluster on caption embeddings? kmeans op embeddings
     * pca to reduce dimensionality of embeddings? for speed
@@ -37,8 +27,6 @@
   * postgres full text search
   * search by location (from reverse geocode)
   * search by date/time
-* Add albums
-  * Shared albums (with other servers)
 * Create frontend
   * hosted on github pages?
   * Photos grid front page (infinite scroll, fitting layout, scroll to date)
@@ -72,7 +60,7 @@
 * Create android gallery app with local and cloud photos
 * Album titel generate met llm? op basis van captions, locations/countries
 * Iets van auto album generatie op basis van locatie, als je een foto maakt als je thuis bent na 10+ foto's en 2+ dagen
-  niet thuis vraag of er een album van moet komen.
+  niet thuis, vraag of er een album van moet komen.
   * gokken waar thuis is op basis van foto lokaties, maar ook user vragen
 * Automatische album selectie van goeie fotos?
 * Voor map view, heat map als je uitgezoomd bent, stipjes voor foto's waar je op kan klikken als je meer inzoomt

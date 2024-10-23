@@ -96,7 +96,7 @@ async def ffmpeg_thumbnails(input_file: Path, sizes: list[int], folder: Path) ->
             except FfmpegError as e:
                 if "Cannot allocate memory" in str(e):
                     print("ffmpeg memory error, trying again...")
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(5)
                     continue
                 else:
                     raise e
