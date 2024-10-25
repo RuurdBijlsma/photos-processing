@@ -2,6 +2,31 @@
 
 * Python
   * add tests
+  * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
+  * alle model capabilities even op een rijtje zetten
+    * clip (dubious): image en text embeddings in zelfde embedding space
+    * llama 3.2 (very good): 
+      * llm 
+      * llm met vision mogelijkheid (vision niet geprobeerd)
+      * kan text embeddings maken
+    * minicpm (very good): llm met vision (alleen vision geprobeerd)
+    * blip image captioning (basic but works): image to text captions
+    * vit-base-patch16-224 (limited classification count, but can be useful): image classification: image to 1 of 1000 classifications
+    * nvidia/segformer (looks good but cant get it to run): image segmentation, en classification per segment. segments are per "pixel", not bounding boxes
+    * facebook/detr-resnet-50: classify multiple objects per image, boundingbox per recognzied object
+    * google/owlvit-base-patch32: clip van google (niet goed onderzocht)
+  * CLIP model kan image en text embeddings in zelfde space maken
+    * is clip wel goed? ik krijg niet zo hoge similarity scores
+    * beide proberen
+  * vergelijking maken van verschillende image caption methodes:
+  * compare speed, accuracy, put in table
+    * blip salesforce
+    * llama vision
+    * question_image
+  * vision llm-> ask many questions, then cluster on embeddings of answers to get collections of photos, example:
+    * what type of place is this photo taken? (e.g. park, beach, city) keep you answer direct and to the point.
+    * then make embedding of answer
+    * with every photo having such an embedding, cluster on this column to make collections of types of places, for example beach collection
   * watch for photo deletion and delete from db?
   * use nginx for image hosting instead of fastapi endpoints
   * ci/cd?
@@ -9,8 +34,6 @@
   * add button [optimize library], to convert all images to avif, and all videos to vp9 codec (av1 in the future?)
   * make .env file for user to set base photos dir
   * Get exiftool and ffmpeg binaries automatically?
-* Add users
-  * roles (server admin/user)
 * Add albums
   * Shared albums between servers (shared secret to access other server's album)
 * Add AI processing
@@ -64,3 +87,8 @@
   * gokken waar thuis is op basis van foto lokaties, maar ook user vragen
 * Automatische album selectie van goeie fotos?
 * Voor map view, heat map als je uitgezoomd bent, stipjes voor foto's waar je op kan klikken als je meer inzoomt
+* Photo editor?
+  * depth estimation -> blur bg?
+  * depth estimation -> smart cropping?
+  * image->image upscaler?
+  * stable diffusion inpainting?
