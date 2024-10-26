@@ -23,7 +23,7 @@ def extract_slice(
 
 
 # Example usage
-# Extracts video from pixel motion photos
+# Extracts video from pixel motion images
 # HDR gain map:
 # offset = 3809938
 # length = 106210

@@ -1,46 +1,28 @@
 import logging
-import multiprocessing
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from starlette.staticfiles import StaticFiles
+from starlette.requests import Request
 
-from photos.config.app_config import app_config
-from photos.config.process_config import process_config
-from photos.database.migrations import run_migrations
-from photos.database.models import Role
-from photos.ingest.process_directory import process_all_user_photos
-from photos.ingest.watch_directory import watch_for_photos
-from photos.routers import images, health, auth
-from photos.utils import add_user
+from photos.server.lifespan import lifespan
+from photos.server.routers.auth.auth_router import auth_router
+from photos.server.routers.health.health_router import health_router
+from photos.server.routers.images.images_router import images_router
 
-logger = logging.getLogger(__name__)
-
-
-@asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
-    logger.info("Running migrations")
-    run_migrations("alembic", app_config.connection_string)
-    logger.info("Migration complete")
-
-    add_user("RuteNL", "squirrel", Role.ADMIN)
-    add_user("Ruurd", "squirrel", Role.USER)
-    add_user("Bijlsma", "squirrel", Role.USER)
-
-    await process_all_user_photos()
-    process = multiprocessing.Process(
-        target=watch_for_photos, args=(app_config.photos_dir,)
-    )
-    process.start()
-
-    logger.info("Starting server!")
-    yield
-    logger.info("Closing server :(")
-
-
+logging.basicConfig()
+logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 app = FastAPI(lifespan=lifespan)
+
+
+@app.middleware("http")
+async def log_exceptions(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        logging.exception("Unhandled exception occurred")
+        raise e
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -48,20 +30,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(images.router)
-app.include_router(health.router)
-app.include_router(auth.router)
-
-if not process_config.thumbnails_dir.exists():
-    process_config.thumbnails_dir.mkdir(exist_ok=True)
-if app_config.host_thumbnails:
-    app.mount(
-        "/thumbnails",
-        StaticFiles(
-            directory=process_config.thumbnails_dir,
-        ),
-        name="Thumbnails",
-    )
+app.include_router(images_router)
+app.include_router(health_router)
+app.include_router(auth_router)
 
 if __name__ == "__main__":
     import uvicorn

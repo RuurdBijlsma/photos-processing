@@ -16,7 +16,7 @@ def image_to_base64_data_uri(file_path):
 
 
 # Replace with the actual path to your image file in WSL
-file_path = "./data/photos/1/20170819_100607.jpg"
+file_path = "./data/images/1/20170819_100607.jpg"
 data_uri = image_to_base64_data_uri(file_path)
 
 # Initialize the chat handler
@@ -33,7 +33,7 @@ llm = Llama(
 messages = [
     {
         "role": "system",
-        "content": "You are great at identifying objects in photos, you keep you answers to a comma separated list of objects."},
+        "content": "You are great at identifying objects in images, you keep you answers to a comma separated list of objects."},
     {
         "role": "user",
         "content": [

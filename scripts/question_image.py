@@ -17,13 +17,13 @@ model = model.to(device='cuda', dtype=torch.float16)
 tokenizer = AutoTokenizer.from_pretrained('openbmb/MiniCPM-V-2', trust_remote_code=True)
 model.eval()
 
-img_url = Path('data/photos/1/20180812_150015.jpg')
+img_url = Path('data/images/1/20180812_150015.jpg')
 image = Image.open(img_url).convert("RGB")
 
 questions = [
     "Perfectly describe this photo in detail, leave nothing out. The original image will be recreated from your response.",
-    "You are a photographer who's creating a selection of photos to show to family. "
-    "The selection should have high quality and interesting photos that tell part of the story. "
+    "You are a photographer who's creating a selection of images to show to family. "
+    "The selection should have high quality and interesting images that tell part of the story. "
     "Should this photo be included in the album? Indicate with a number from 1 (no) to 10 (absolutely).",
     "Rate this photo on a scale of 1 to 10 in terms of professional quality standards? Give the number only.",
     "Does this photo appear to be taken indoors or outdoors? If outdoors, can you recognize the location or "

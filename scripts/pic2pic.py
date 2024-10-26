@@ -7,7 +7,7 @@ pipe = StableDiffusionInstructPix2PixPipeline.from_pretrained(model_id, torch_dt
 pipe.to("cuda")
 pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
 
-img_path = "data/photos/1/20150714_170022.jpg"
+img_path = "data/images/1/20150714_170022.jpg"
 
 
 def download_image(img_path):
