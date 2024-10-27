@@ -1,9 +1,12 @@
 from pydantic import BaseModel
 
 
-class GeoLocation(BaseModel):
+class GeoLocationSmall(BaseModel):
     country: str
-    province: str | None
     city: str
+
+
+class GeoLocation(GeoLocationSmall):
+    province: str | None
     latitude: float
     longitude: float

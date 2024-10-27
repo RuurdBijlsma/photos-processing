@@ -9,10 +9,14 @@ from sqlalchemy import (
     Interval, UniqueConstraint, Enum, ARRAY,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
-from photos.data.database.database import Base
 from photos.data.interfaces.auth_types import Role
+
+
+class Base(AsyncAttrs, DeclarativeBase):
+    pass
 
 
 class ImageModel(Base):
@@ -32,7 +36,6 @@ class ImageModel(Base):
     timezone_offset = mapped_column(Interval, nullable=True)
     datetime_source = mapped_column(String, nullable=False)
     data_url = mapped_column(String, nullable=False)
-    dominant_colors = mapped_column(ARRAY(String), nullable=False)
     # EXIF
     exif_tool = mapped_column(JSONB, nullable=False)
     file = mapped_column(JSONB, nullable=False)

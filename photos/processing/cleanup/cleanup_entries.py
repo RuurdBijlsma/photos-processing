@@ -20,7 +20,6 @@ async def cleanup_entries(
             print(
                 f"Deleting {image_model.relative_path}, the file does not exist anymore."
             )
-    await session.commit()
 
     locations_without_images = (await session.execute(
         select(GeoLocationModel)

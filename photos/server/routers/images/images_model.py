@@ -1,16 +1,24 @@
 from collections.abc import Sequence
+from datetime import date, timedelta
 
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from photos.data.models.image_models import ImageModel
 
 
-async def list_images(session: AsyncSession, page: int, limit: int) -> Sequence[ImageModel]:
-    offset = (page - 1) * limit
+async def list_images(
+    session: AsyncSession,
+    from_date: date,
+    to_date: date
+) -> Sequence[ImageModel]:
     images = (await session.execute(
-        select(ImageModel).offset(offset).limit(limit)
+        select(ImageModel)
+        .options(selectinload(ImageModel.location))
+        .where(ImageModel.datetime_local.between(from_date, to_date))
+        .order_by(ImageModel.datetime_local.desc())
     )).scalars().all()
 
     if not images:

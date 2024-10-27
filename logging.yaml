@@ -16,11 +16,6 @@ handlers:
     level: ERROR
     stream: ext://sys.stderr
     formatter: standard
-  file:
-    class: logging.FileHandler
-    level: DEBUG
-    filename: logs/app.log
-    formatter: standard
 
 loggers:
   uvicorn:

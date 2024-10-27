@@ -1,10 +1,9 @@
-import logging
 from datetime import datetime
 
 import reverse_geocode
 
+from photos.data.interfaces.image_info_types import GpsImageInfo, ExifImageInfo
 from photos.data.interfaces.location_types import GeoLocation
-from photos.data.interfaces.image_info_types import ExifImageInfo, GpsImageInfo
 
 
 def add_gps_info(image_info: ExifImageInfo) -> GpsImageInfo:

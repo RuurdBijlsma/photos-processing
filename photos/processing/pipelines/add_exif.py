@@ -5,8 +5,7 @@ from PIL.ExifTags import TAGS
 from exiftool import ExifToolHelper
 
 from photos.config.app_config import app_config
-from photos.data.interfaces.image_info_types import BaseImageInfo, ExifImageInfo, DominantColorImageInfo
-from photos.processing.process_utils import readable_bytes
+from photos.data.interfaces.image_info_types import BaseImageInfo, ExifImageInfo
 
 
 def parse_duration(duration_str: str) -> float:
@@ -77,7 +76,7 @@ def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
     return nested_dict
 
 
-def add_exif_info(image_info: DominantColorImageInfo) -> ExifImageInfo:
+def add_exif_info(image_info: BaseImageInfo) -> ExifImageInfo:
     with ExifToolHelper() as et:
         result = et.execute_json(app_config.images_dir / image_info.relative_path)
         if (

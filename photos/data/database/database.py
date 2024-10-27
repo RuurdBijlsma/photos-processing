@@ -6,22 +6,15 @@ from typing import Annotated, AsyncGenerator
 
 from async_lru import alru_cache
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, async_sessionmaker, AsyncSession, AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, async_sessionmaker, AsyncSession
 
 from photos.config.app_config import app_config
-
-
-class Base(AsyncAttrs, DeclarativeBase):
-    pass
+from photos.data.models.image_models import Base
 
 
 @alru_cache
 async def get_engine() -> AsyncEngine:
-    engine = create_async_engine(app_config.connection_string, echo=False)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    return engine
+    return create_async_engine(app_config.connection_string, echo=False)
 
 
 @alru_cache

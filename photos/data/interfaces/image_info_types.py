@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import field_serializer, BaseModel
 
-from photos.data.interfaces.location_types import GeoLocation
+from photos.data.interfaces.location_types import GeoLocation, GeoLocationSmall
 
 
 class BaseImageInfo(BaseModel):
@@ -18,23 +18,13 @@ class BaseImageInfo(BaseModel):
         return relative_path.as_posix()
 
 
-class DataUrlImageInfo(BaseImageInfo):
-    data_url: str
-
-
-class DominantColorImageInfo(DataUrlImageInfo):
-    dominant_colors: list[str]
-
-
-class ThumbImageInfo(DominantColorImageInfo):
+class ExifImageInfo(BaseImageInfo):
     width: int
     height: int
     duration: float | None
     size_bytes: int
     format: str
-
-
-class ExifImageInfo(ThumbImageInfo):
+    # exiftool output:
     exif_tool: dict[str, Any]
     file: dict[str, Any]
     composite: dict[str, Any]
@@ -47,7 +37,11 @@ class ExifImageInfo(ThumbImageInfo):
     matroska: dict[str, Any] | None
 
 
-class GpsImageInfo(ExifImageInfo):
+class DataUrlImageInfo(ExifImageInfo):
+    data_url: str
+
+
+class GpsImageInfo(DataUrlImageInfo):
     latitude: float | None = None
     longitude: float | None = None
     altitude: float | None = None
@@ -60,3 +54,15 @@ class TimeImageInfo(GpsImageInfo):
     datetime_source: str
     timezone_name: str | None
     timezone_offset: timedelta | None
+
+
+class GridImageInfo(BaseImageInfo):
+    """Image info representation for frontend."""
+    width: int
+    height: int
+    duration: float | None
+    size_bytes: int
+    format: str
+    data_url: str
+    datetime_local: datetime
+    location: GeoLocationSmall | None
