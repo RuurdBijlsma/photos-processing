@@ -28,6 +28,7 @@
 
 * Python
     * add tests
+    * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * alle model capabilities even op een rijtje zetten
         * clip (dubious): image en text embeddings in zelfde embedding space

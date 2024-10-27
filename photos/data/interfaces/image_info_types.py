@@ -55,14 +55,3 @@ class TimeImageInfo(GpsImageInfo):
     timezone_name: str | None
     timezone_offset: timedelta | None
 
-
-class GridImageInfo(BaseImageInfo):
-    """Image info representation for frontend."""
-    width: int
-    height: int
-    duration: float | None
-    size_bytes: int
-    format: str
-    data_url: str
-    datetime_local: datetime
-    location: GeoLocationSmall | None

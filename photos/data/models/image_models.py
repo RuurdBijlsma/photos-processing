@@ -6,8 +6,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     DateTime,
-    Interval, UniqueConstraint, Enum, ARRAY,
-)
+    Interval, UniqueConstraint, Enum, )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
@@ -21,20 +20,24 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 class ImageModel(Base):
     __tablename__ = "images"
-
+    # base info
     id = mapped_column(String, primary_key=True, index=True)
     filename = mapped_column(String, nullable=False, index=True)
-    relative_path = mapped_column(String, nullable=False, unique=True)
+    relative_path = mapped_column(String, nullable=False, unique=True, index=True)
     hash = mapped_column(String, nullable=False)
+    # image dimensions
     width = mapped_column(Integer, nullable=False)
     height = mapped_column(Integer, nullable=False)
     duration = mapped_column(Float, nullable=True)
     format = mapped_column(String, nullable=False)
     size_bytes = mapped_column(Integer, nullable=False)
-    datetime_local = mapped_column(DateTime(timezone=False), nullable=False)
+    # datetime
+    datetime_local = mapped_column(DateTime(timezone=False), nullable=False, index=True)
+    datetime_utc = mapped_column(DateTime(timezone=False), nullable=True, index=True)
+    datetime_source = mapped_column(String, nullable=False)
     timezone_name = mapped_column(String, nullable=True)
     timezone_offset = mapped_column(Interval, nullable=True)
-    datetime_source = mapped_column(String, nullable=False)
+    # data url
     data_url = mapped_column(String, nullable=False)
     # EXIF
     exif_tool = mapped_column(JSONB, nullable=False)
@@ -51,7 +54,6 @@ class ImageModel(Base):
     latitude = mapped_column(Float, nullable=True)
     longitude = mapped_column(Float, nullable=True)
     altitude = mapped_column(Float, nullable=True)
-    datetime_utc = mapped_column(DateTime(timezone=True), nullable=True)
     location_id = mapped_column(Integer, ForeignKey("geo_locations.id"), nullable=True)
     location: Mapped[GeoLocationModel | None] = relationship(
         "GeoLocationModel", back_populates="images"
