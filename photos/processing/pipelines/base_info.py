@@ -4,7 +4,7 @@ import uuid
 from pathlib import Path
 
 from photos.data.database.db_utils import rel_path
-from photos.data.interfaces.media_info_types import BaseImageInfo
+from photos.data.interfaces.image_info_types import BaseImageInfo
 
 
 def hash_image(image_path: Path, chunk_size: int = 65536) -> str:

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from photos.data.models.media_model import UserModel
+from photos.data.models.image_models import UserModel
 from photos.processing.cleanup.cleanup_thumbnails import cleanup_thumbnails
 from photos.processing.collection_processing.process_user import process_user_images
 

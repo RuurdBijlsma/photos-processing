@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from contextlib import asynccontextmanager
-from typing import Annotated
+from typing import Annotated, AsyncGenerator
 
 from async_lru import alru_cache
 from fastapi import Depends
@@ -30,7 +30,7 @@ async def get_session_maker() -> async_sessionmaker[AsyncSession]:
 
 
 @asynccontextmanager
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     session = (await get_session_maker())()
     try:
         yield session

@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from photos.data.models.media_model import ImageModel
+from photos.data.models.image_models import ImageModel
 
 
 async def list_images(session: AsyncSession, page: int, limit: int) -> Sequence[ImageModel]:

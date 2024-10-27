@@ -18,7 +18,15 @@ class BaseImageInfo(BaseModel):
         return relative_path.as_posix()
 
 
-class ThumbImageInfo(BaseImageInfo):
+class DataUrlImageInfo(BaseImageInfo):
+    data_url: str
+
+
+class DominantColorImageInfo(DataUrlImageInfo):
+    dominant_colors: list[str]
+
+
+class ThumbImageInfo(DominantColorImageInfo):
     width: int
     height: int
     duration: float | None

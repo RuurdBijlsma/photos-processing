@@ -10,7 +10,7 @@ from photos.config.app_config import app_config
 from photos.data.database.database import get_session
 from photos.data.database.db_utils import add_user
 from photos.data.database.migrations import migrate_db
-from photos.data.models.media_model import Role
+from photos.data.models.image_models import Role
 from photos.processing.collection_processing.process_all import process_all
 from photos.processing.watch.watch_for_changes import watch_files
 from photos.server.host_thumbnails import host_thumbnails

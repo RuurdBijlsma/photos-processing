@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from photos.data.database.database import SessionDep
 from photos.data.interfaces.auth_types import Token, User
-from photos.data.models.media_model import UserModel
+from photos.data.models.image_models import UserModel
 from photos.server.routers.auth.auth_model import UserDep, get_user_token
 
 auth_router = APIRouter(tags=["auth"])

@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from photos.data.database.db_utils import path_str
-from photos.data.models.media_model import ImageModel
+from photos.data.models.image_models import ImageModel
 
 
 async def drop_images_without_thumbnails(images_to_process: list[Path], session: AsyncSession) -> None:

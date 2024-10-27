@@ -8,7 +8,7 @@ from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreated
 from photos.config.app_config import app_config
 from photos.data.database.database import get_session_maker
 from photos.data.database.db_utils import rel_path, delete_media
-from photos.processing.process_media import process_media
+from photos.processing.process_image import process_media
 
 
 class NewMediaHandler(FileSystemEventHandler):

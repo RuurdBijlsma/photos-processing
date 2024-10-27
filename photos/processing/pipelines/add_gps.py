@@ -4,10 +4,10 @@ from datetime import datetime
 import reverse_geocode
 
 from photos.data.interfaces.location_types import GeoLocation
-from photos.data.interfaces.media_info_types import ExifImageInfo, GpsImageInfo
+from photos.data.interfaces.image_info_types import ExifImageInfo, GpsImageInfo
 
 
-def get_gps_image(image_info: ExifImageInfo) -> GpsImageInfo:
+def add_gps_info(image_info: ExifImageInfo) -> GpsImageInfo:
     if (
         not image_info.composite
         or "GPSLatitude" not in image_info.composite

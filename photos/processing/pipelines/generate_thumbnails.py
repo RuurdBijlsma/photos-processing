@@ -5,7 +5,7 @@ from pathlib import Path
 from parsed_ffmpeg import run_ffmpeg, FfmpegError
 
 from photos.config.app_config import app_config
-from photos.data.interfaces.media_info_types import BaseImageInfo
+from photos.data.interfaces.image_info_types import BaseImageInfo
 
 
 async def check_video_integrity(input_file: Path) -> bool:

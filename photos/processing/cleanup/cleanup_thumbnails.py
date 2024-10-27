@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from photos.config.app_config import app_config
-from photos.data.models.media_model import ImageModel
+from photos.data.models.image_models import ImageModel
 
 
 async def cleanup_thumbnails(session: AsyncSession) -> None:

@@ -3,7 +3,7 @@ from datetime import timezone, timedelta, datetime
 
 import pytz
 
-from photos.data.interfaces.media_info_types import GpsImageInfo, TimeImageInfo
+from photos.data.interfaces.image_info_types import GpsImageInfo, TimeImageInfo
 from photos.processing.post_processing.timezone_finder import timezone_finder
 
 
@@ -88,7 +88,7 @@ def get_timezone_info(
     return datetime_utc, timezone_name, timezone_offset
 
 
-def get_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
+def add_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
     datetime_taken, datetime_source = get_local_datetime(image_info)
     datetime_utc, timezone_name, timezone_offset = get_timezone_info(
         image_info, datetime_taken

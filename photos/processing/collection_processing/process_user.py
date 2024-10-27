@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 
 from sqlalchemy import select
@@ -7,11 +6,11 @@ from tqdm import tqdm
 
 from photos.config.app_config import app_config
 from photos.data.database.db_utils import path_str
-from photos.data.models.media_model import ImageModel, UserModel
+from photos.data.models.image_models import ImageModel
 from photos.processing.cleanup.cleanup_entries import cleanup_entries
 from photos.processing.cleanup.drop_images_without_thumbnails import drop_images_without_thumbnails
 from photos.processing.post_processing.fix_timezone import fill_timezone_gaps
-from photos.processing.process_media import process_media
+from photos.processing.process_image import process_media
 
 
 async def image_exists(image_path: Path, session: AsyncSession) -> bool:
@@ -42,7 +41,7 @@ async def process_image_list(session: AsyncSession, image_list: list[Path], user
         await process_media(image_path, user_id, session)
 
 
-async def process_user_images(user_id:int, username:str, session: AsyncSession) -> None:
+async def process_user_images(user_id: int, username: str, session: AsyncSession) -> None:
     """Check all images for processing."""
     directory = app_config.images_dir / str(user_id)
     print(f"Processing images for user {username}")

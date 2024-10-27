@@ -21,6 +21,7 @@ img_url = Path('data/images/1/20180812_150015.jpg')
 image = Image.open(img_url).convert("RGB")
 
 questions = [
+    "what search terms would you use to find this image?",
     "Perfectly describe this photo in detail, leave nothing out. The original image will be recreated from your response.",
     "You are a photographer who's creating a selection of images to show to family. "
     "The selection should have high quality and interesting images that tell part of the story. "

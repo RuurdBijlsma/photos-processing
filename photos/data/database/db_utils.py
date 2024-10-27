@@ -4,8 +4,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from photos.config.app_config import app_config
-from photos.data.interfaces.media_info_types import TimeImageInfo
-from photos.data.models.media_model import ImageModel, Role, UserModel, GeoLocationModel
+from photos.data.interfaces.image_info_types import TimeImageInfo
+from photos.data.models.image_models import ImageModel, Role, UserModel, GeoLocationModel
 from photos.processing.process_utils import clean_object
 from photos.server.routers.auth.auth_model import get_password_hash
 

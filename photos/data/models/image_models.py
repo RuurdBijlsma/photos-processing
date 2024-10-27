@@ -6,7 +6,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     DateTime,
-    Interval, UniqueConstraint, Enum,
+    Interval, UniqueConstraint, Enum, ARRAY,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -31,6 +31,8 @@ class ImageModel(Base):
     timezone_name = mapped_column(String, nullable=True)
     timezone_offset = mapped_column(Interval, nullable=True)
     datetime_source = mapped_column(String, nullable=False)
+    data_url = mapped_column(String, nullable=False)
+    dominant_colors = mapped_column(ARRAY(String), nullable=False)
     # EXIF
     exif_tool = mapped_column(JSONB, nullable=False)
     file = mapped_column(JSONB, nullable=False)
