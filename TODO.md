@@ -23,11 +23,11 @@
            3. update in db
     3. delete thumbnails where the source image does not exist anymore
 
-* project structure
-  1. 
 
 * Python
     * add tests
+    * it broke: greenlet spawn
+    * bij processen: weer data erbij doen van hoe warm t toen was.
     * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * alle model capabilities even op een rijtje zetten
@@ -86,9 +86,16 @@
     * Search bar
     * Upload from frontend
     * Map page with photos
-    * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
-    * vue component maken om motion photo te laten zien
-        * fetch blob, slice motion video mp4 eruit, laat die zien, als ie klaar is, laat foto zien
+    * Vue compnoent voor perfecte gallery
+      * carousel optioneel laten zien onderin van alle fotos
+      * infinite scroll support
+    * Vue component voor de perfecte image viewer
+      * support photo video
+      * zoomen (muis en touch)
+      * panoramas/360 photos in three.js laten zien
+      * hdr gainmap zit in de originele jpg, niet in generated thumbnails, laat zien in app/website?
+      * motion photo laten zien
+          * fetch blob, slice motion video mp4 eruit, laat die zien, als ie klaar is, laat foto zien
     * admin settings (frontend)
         * photos_dir
             * photos-dir/user_id/PIC.jpg

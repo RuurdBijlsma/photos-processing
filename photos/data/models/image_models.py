@@ -6,7 +6,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     DateTime,
-    Interval, UniqueConstraint, Enum, )
+    Interval, UniqueConstraint, Enum, Boolean, )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
@@ -31,6 +31,12 @@ class ImageModel(Base):
     duration = mapped_column(Float, nullable=True)
     format = mapped_column(String, nullable=False)
     size_bytes = mapped_column(Integer, nullable=False)
+    # frontend stuff
+    is_motion_photo = mapped_column(Boolean, nullable=False)
+    is_hdr = mapped_column(Boolean, nullable=False)
+    is_night_sight = mapped_column(Boolean, nullable=False)
+    is_selfie = mapped_column(Boolean, nullable=False)
+    is_panorama = mapped_column(Boolean, nullable=False)
     # datetime
     datetime_local = mapped_column(DateTime(timezone=False), nullable=False, index=True)
     datetime_utc = mapped_column(DateTime(timezone=False), nullable=True, index=True)

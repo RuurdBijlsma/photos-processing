@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import field_serializer, BaseModel
 
-from photos.data.interfaces.location_types import GeoLocation, GeoLocationSmall
+from photos.data.interfaces.location_types import GeoLocation
 
 
 class BaseImageInfo(BaseModel):
@@ -24,6 +24,12 @@ class ExifImageInfo(BaseImageInfo):
     duration: float | None
     size_bytes: int
     format: str
+    # frontend filters
+    is_motion_photo: bool
+    is_hdr: bool
+    is_night_sight: bool
+    is_selfie: bool
+    is_panorama: bool
     # exiftool output:
     exif_tool: dict[str, Any]
     file: dict[str, Any]
@@ -54,4 +60,3 @@ class TimeImageInfo(GpsImageInfo):
     datetime_source: str
     timezone_name: str | None
     timezone_offset: timedelta | None
-
