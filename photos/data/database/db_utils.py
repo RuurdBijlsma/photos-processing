@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from photos.config.app_config import app_config
-from photos.data.interfaces.image_info_types import TimeImageInfo
+from photos.data.interfaces.image_info_types import WeatherImageInfo
 from photos.data.models.image_models import ImageModel, Role, UserModel, GeoLocationModel
 from photos.processing.process_utils import clean_object
 from photos.server.routers.auth.auth_model import get_password_hash
@@ -49,7 +49,7 @@ async def add_user(session: AsyncSession, username: str, password: str, role: Ro
 
 
 async def store_image(
-    image_info: TimeImageInfo,
+    image_info: WeatherImageInfo,
     user_id: int,
     session: AsyncSession
 ) -> ImageModel:

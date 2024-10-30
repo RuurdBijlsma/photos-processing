@@ -11,6 +11,7 @@ from photos.processing.pipelines.add_time_taken import add_time_taken
 from photos.processing.pipelines.base_info import base_info
 from photos.processing.pipelines.generate_thumbnails import generate_thumbnails
 from photos.processing.process_utils import readable_bytes
+from processing.pipelines.add_weather import add_weather
 
 
 async def process_media(image_path: Path, user_id: int, session: AsyncSession) -> None:
@@ -36,6 +37,8 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
     image_info = add_gps_info(image_info)
     print(".", end="")
     image_info = add_time_taken(image_info)
+    print(".", end="")
+    image_info = add_weather(image_info)
     print(".", end="")
 
     await store_image(image_info, user_id, session)

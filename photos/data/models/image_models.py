@@ -11,6 +11,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
+from data.interfaces.weather_condition_codes import WeatherCondition
 from photos.data.interfaces.auth_types import Role
 
 
@@ -67,6 +68,16 @@ class ImageModel(Base):
     # User
     user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     owner: Mapped[UserModel] = relationship("UserModel", back_populates="images")
+    # Weather https://dev.meteostat.net/formats.html#weather-condition-codes
+    weather_recorded_at = mapped_column(DateTime(timezone=False), nullable=True)
+    weather_temperature = mapped_column(Float, nullable=True)
+    weather_dewpoint = mapped_column(Float, nullable=True)
+    weather_relative_humidity = mapped_column(Float, nullable=True)
+    weather_precipitation = mapped_column(Float, nullable=True)
+    weather_wind_gust = mapped_column(Float, nullable=True)
+    weather_pressure = mapped_column(Float, nullable=True)
+    weather_sun_hours = mapped_column(Float, nullable=True)
+    weather_condition = mapped_column(Enum(WeatherCondition), nullable=True)
 
 
 class GeoLocationModel(Base):

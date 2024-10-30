@@ -7,8 +7,7 @@ from photos.processing.collection_processing.process_user import process_user_im
 
 
 async def process_all(session: AsyncSession) -> None:
-    result = await session.stream_scalars(select(UserModel))
-    async for user in result:
-        assert isinstance(user, UserModel)
-        await process_user_images(user.id, user.username, session)
+    users = (await session.execute(select(UserModel))).scalars().all()
+    for user_id, username in [(user.id, user.username) for user in users]:
+        await process_user_images(user_id, username, session)
     await cleanup_thumbnails(session)

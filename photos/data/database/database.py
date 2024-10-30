@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from contextlib import asynccontextmanager
 from typing import Annotated, AsyncGenerator
 
@@ -9,7 +8,6 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, async_sessionmaker, AsyncSession
 
 from photos.config.app_config import app_config
-from photos.data.models.image_models import Base
 
 
 @alru_cache
@@ -31,7 +29,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         await session.close()
 
 
-async def _session_dependency() -> Generator[AsyncSession, None, None]:
+async def _session_dependency() -> AsyncGenerator[AsyncSession, None, None]:
     async with get_session() as session:
         yield session
 

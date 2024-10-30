@@ -29,11 +29,14 @@ pyjwt = "^2.9.0"
 passlib = { extras = ["bcrypt"], version = "^1.7.4" }
 python-multipart = "^0.0.16"
 pillow-avif-plugin = "^1.4.6"
+meteostat = "^1.6.8"
 
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.0.1"
 mypy = "^1.13.0"
+types-tqdm = "^4.66.0.20240417"
+types-pytz = "^2024.2.0.20241003"
 
 [build-system]
 requires = ["poetry-core"]

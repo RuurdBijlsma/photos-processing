@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from photos.data.database.database import Base
+from data.models.image_models import Base
 
 config = context.config
 
