@@ -9,7 +9,7 @@ from photos.data.models.image_models import ImageModel, UserModel
 tf = TimezoneFinder()
 
 
-async def fix_image_timezone(
+async def find_proximate_coordinate(
     image: ImageModel, user_id: int, session: AsyncSession
 ) -> None | tuple[float, float]:
     image_with_tz = (await session.execute(
@@ -31,14 +31,14 @@ async def fix_image_timezone(
 
 async def fill_timezone_gaps(session: AsyncSession, user_id: int) -> None:
     try:
-        images = (await session.execute(
+        no_tz_images = (await session.execute(
             select(ImageModel).where(ImageModel.timezone_name.is_(None))
         )).scalars().all()
         closest_image_coordinates: list[tuple[float, float] | None] = []
-        for image in tqdm(images, desc="Finding image timezones", unit="image"):
-            closest_image_coordinates.append(await fix_image_timezone(image, user_id, session))
+        for image in tqdm(no_tz_images, desc="Finding image timezones", unit="image"):
+            closest_image_coordinates.append(await find_proximate_coordinate(image, user_id, session))
         for image, coordinate in tqdm(
-            list(zip(images, closest_image_coordinates)),
+            list(zip(no_tz_images, closest_image_coordinates)),
             desc="Fixing timezones",
             unit="image",
         ):
