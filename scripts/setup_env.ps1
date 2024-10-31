@@ -1,4 +1,4 @@
-$dock_id = docker run --rm `
+$dock_id = podman run --rm `
     -e POSTGRES_PASSWORD=flyingsquirrel `
     -e POSTGRES_DB=photos `
     -p 5432:5432 `

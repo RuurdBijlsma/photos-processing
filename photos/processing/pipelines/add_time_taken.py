@@ -93,6 +93,8 @@ def add_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
     datetime_utc, timezone_name, timezone_offset = get_timezone_info(
         image_info, datetime_taken
     )
+    if datetime_utc is not None:
+        datetime_utc = datetime_utc.replace(tzinfo=None)
     image_info.datetime_utc = datetime_utc
     datetime_taken = datetime_taken.replace(tzinfo=None)
 

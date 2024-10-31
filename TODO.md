@@ -27,7 +27,6 @@
 * Python
     * add tests
     * it broke: datetime utc not being filled
-    * weather recorded at column isnt being filled
     * bij processen: weer data erbij doen van hoe warm t toen was.
     * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben

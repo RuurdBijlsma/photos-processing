@@ -69,9 +69,6 @@ async def store_image(
         if not location_model:
             location_model = GeoLocationModel(**location)
     image_model = ImageModel(**cleaned_dict, location=location_model, user_id=user_id)
-    # Remove tz info, database doesn't handle it well
-    if image_model.datetime_utc:
-        image_model.datetime_utc = image_model.datetime_utc.replace(tzinfo=None)
     session.add(image_model)
     await session.commit()
     await session.refresh(image_model)
