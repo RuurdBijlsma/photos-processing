@@ -16,10 +16,11 @@ model = model.to(device='cuda', dtype=torch.float16)
 tokenizer = AutoTokenizer.from_pretrained('openbmb/MiniCPM-V-2', trust_remote_code=True)
 model.eval()
 
-img_url = Path('data/images/1/20180812_150015.jpg')
+img_url = Path('ocr.jpg')
 image = Image.open(img_url).convert("RGB")
 
 questions = [
+    "You are an OCR bot, extract the text from this image.",  # werkt niet goed
     "what search terms would you use to find this image?",
     "Perfectly describe this photo in detail, leave nothing out. The original image will be recreated from your response.",
     "You are a photographer who's creating a selection of images to show to family. "
