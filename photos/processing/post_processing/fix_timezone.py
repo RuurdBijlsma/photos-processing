@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from timezonefinder import TimezoneFinder
 from tqdm import tqdm
 
-from photos.data.models.image_models import ImageModel, UserModel
+from photos.data.models.image_models import ImageModel
 
 tf = TimezoneFinder()
 
@@ -52,9 +52,12 @@ async def fill_timezone_gaps(session: AsyncSession, user_id: int) -> None:
             assert image.datetime_local is not None
             local_dt = local_tz.localize(image.datetime_local)
             assert local_dt is not None
-            image.datetime_utc = local_dt.astimezone(pytz.utc)
+            datetime_utc = local_dt.astimezone(pytz.utc)
+            datetime_utc = datetime_utc.replace(tzinfo=None)
+            image.datetime_utc = datetime_utc
             image.timezone_name = timezone_str
             image.timezone_offset = local_dt.utcoffset()
+            print(f"Fixed image: {image.filename}, {datetime_utc}")
         await session.commit()
     except Exception as e:
         await session.rollback()
