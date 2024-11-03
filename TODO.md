@@ -4,23 +4,44 @@
     * add tests
     * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
-    * alle model capabilities even op een rijtje zetten
-        * clip (dubious): image en text embeddings in zelfde embedding space
+    * pipeline models:
+      * CLIP for embedding text and image
+      * minicpm: ask questions for extra info about images + a text description
+        * llama 3.2: ask what questions to ask to improve caption
+      * multi-object classification, either:
+        * nvidia/segformer (segment pixel based)
+        * facebook/detr-resnet-50 (boundingbox per recognized object)
+      * face detection
+        1. bounding box face for every photo
+        2. extract face images from each photo
+        3. all_faces_table:
+           * id (uuid).
+           * face embedding
+           * image_id (relation to images table)
+           * also put in bounding box coords
+           * unique_face_id (relation to unique faces table)
+        4. unique faces table
+           * unique_face_id
+           * face name (user input)
+           * centroid_embedding (centroid of the cluster)
+        5. when a new photo is processed, find its cluster by looking at the nearest face embedding and copying that unique_face_id
+        6. re-cluster all embeddings in face table after `process_all`, and weekly (to accomodate new clusters(faces))
+           * calculate centroid embedding for each cluster
+      * scene recognition
+    * model capabilities (in order of usefulness):
+        * minicpm (very good): llm met vision (question images) (alleen vision geprobeerd)
+        * CLIP model kan image en text embeddings in zelfde space maken
         * llama 3.2 (very good):
             * llm
             * llm met vision mogelijkheid (vision niet geprobeerd)
             * kan text embeddings maken
-        * minicpm (very good): llm met vision (alleen vision geprobeerd)
-        * blip image captioning (basic but works): image to text captions
         * vit-base-patch16-224 (limited classification count, but can be useful): image classification: image to 1 of
           1000 classifications
         * nvidia/segformer (looks good but cant get it to run): image segmentation, en classification per segment.
           segments are per "pixel", not bounding boxes
         * facebook/detr-resnet-50: classify multiple objects per image, boundingbox per recognzied object
         * google/owlvit-base-patch32: clip van google (niet goed onderzocht)
-    * CLIP model kan image en text embeddings in zelfde space maken
-        * is clip wel goed? ik krijg niet zo hoge similarity scores
-        * beide proberen
+        * blip image captioning (basic but works): image to text captions
     * vergelijking maken van verschillende image caption methodes:
     * compare speed, accuracy, put in table
         * blip salesforce
