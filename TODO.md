@@ -1,33 +1,7 @@
 ## TODO
 
-* processing pipeline
-    1. Clean dangling db entries by deleting every database entry where there is no source image
-    2. for every user in db:
-        1. list files in photos dir
-        2. filter supported types (video, image)
-        3. find photos that aren't already completely processed, each photo must have:
-            1. every size thumbnail, and each video a vid.webm
-            2. an entry in the db
-        4. for each photo that has to processed (may be done multithreaded):
-            1. Generate basic metadata (id, path, hash)
-            2. generate thumbnails+webm if needed (thumbnail folder is named after image hash, so it may already exist)
-            3. generate metadata
-                1. exif
-                2. gps
-                3. time_taken
-            4. store image in database
-        5. for every photo that has no UTC time yet
-            1. find nearest image by datetime
-            2. calculate UTC time, timezone offset, and timezone name from the location of the nearest image + the local
-               datetime of the image.
-           3. update in db
-    3. delete thumbnails where the source image does not exist anymore
-
-
 * Python
     * add tests
-    * it broke: datetime utc not being filled
-    * bij processen: weer data erbij doen van hoe warm t toen was.
     * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * alle model capabilities even op een rijtje zetten

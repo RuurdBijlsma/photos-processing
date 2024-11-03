@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "scripts"
+version = "0.1.0"
+description = ""
+authors = ["Ruurd Bijlsma <ruurd@bijlsma.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pillow = "^11.0.0"
+transformers = "^4.46.1"
+llama-cpp-python = "^0.3.1"
+diffusers = "^0.31.0"
+timm = "^1.0.11"
+peft = "^0.13.2"
+torch = {version = "^2.5.1+cu124", source = "pytorch_gpu"}
+torchvision = {version = "^0.20.1+cu124", source = "pytorch_gpu"}
+
+
+[[tool.poetry.source]]
+name = "pytorch_gpu"
+url = "https://download.pytorch.org/whl/cu124"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
