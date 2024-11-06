@@ -30,6 +30,8 @@ passlib = { extras = ["bcrypt"], version = "^1.7.4" }
 python-multipart = "^0.0.16"
 pillow-avif-plugin = "^1.4.6"
 meteostat = "^1.6.8"
+torch = { version = "^2.5.1+cpu", source = "pytorch_cpu", platform = "linux" }
+torchvision = { version = "^0.20.1+cpu", source = "pytorch_cpu", platform = "linux" }
 
 
 [tool.poetry.group.dev.dependencies]
@@ -38,6 +40,12 @@ mypy = "^1.13.0"
 types-tqdm = "^4.66.0.20240417"
 types-pytz = "^2024.2.0.20241003"
 ruff = "^0.7.2"
+
+
+[[tool.poetry.source]]
+name = "pytorch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
