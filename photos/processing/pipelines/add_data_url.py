@@ -1,7 +1,6 @@
 import base64
 from io import BytesIO
 
-import pillow_avif  # type: ignore
 from PIL import Image
 
 from photos.config.app_config import app_config

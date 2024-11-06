@@ -1,8 +1,6 @@
 import asyncio
-import logging
 from pathlib import Path
 
-from sqlalchemy import select
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent, DirDeletedEvent, FileDeletedEvent
 
 from photos.config.app_config import app_config

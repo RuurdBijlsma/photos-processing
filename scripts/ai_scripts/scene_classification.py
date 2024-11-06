@@ -1,6 +1,5 @@
 from transformers import CLIPVisionModel
 from datasets import load_dataset
-from PIL import Image
 import torch
 import torchvision.transforms as T
 import numpy as np
