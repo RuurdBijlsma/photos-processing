@@ -28,4 +28,4 @@ jobs:
         run: poetry run mypy -p photos --strict --ignore-missing-imports
 
       - name: Run ruff for linting and auto-fix
-        run: poetry run ruff check --fix .
+        run: poetry run ruff check .
