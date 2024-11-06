@@ -4,6 +4,7 @@
     * add tests
     * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
+    * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output
     * pipeline models:
       * CLIP for embedding text and image
       * minicpm: ask questions for extra info about images + a text description
@@ -27,7 +28,8 @@
         5. when a new photo is processed, find its cluster by looking at the nearest face embedding and copying that unique_face_id
         6. re-cluster all embeddings in face table after `process_all`, and weekly (to accomodate new clusters(faces))
            * calculate centroid embedding for each cluster
-      * scene recognition
+      * scene recognition?
+      * if image has legible text, do ocr and put in db
     * model capabilities (in order of usefulness):
         * minicpm (very good): llm met vision (question images) (alleen vision geprobeerd)
         * CLIP model kan image en text embeddings in zelfde space maken

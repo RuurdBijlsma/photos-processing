@@ -1,7 +1,6 @@
 import torch
 from PIL import Image
 from transformers import AutoImageProcessor, AutoModelForImageClassification
-from transformers import AutoModel, AutoTokenizer
 
 model = AutoModelForImageClassification.from_pretrained(
     "miguelcarv/resnet-152-text-detector",
@@ -9,12 +8,10 @@ model = AutoModelForImageClassification.from_pretrained(
 
 processor = AutoImageProcessor.from_pretrained("microsoft/resnet-50", do_resize=False)
 
-image_path = "../../data/images/2/IMG_20171106_110319.jpg"
-# image_path = "ocr.jpg"
-image = Image.open(image_path).convert('RGB')
-smol_image = image.resize((300, 300))
-
-inputs = processor(smol_image, return_tensors="pt").pixel_values
+# image_path = "../../data/images/2/IMG_20171106_110319.jpg"
+image_path = "../imgs/ocr.jpg"
+image = Image.open(image_path).convert('RGB').resize((300, 300))
+inputs = processor(image, return_tensors="pt").pixel_values
 
 with torch.no_grad():
     outputs = model(inputs)
