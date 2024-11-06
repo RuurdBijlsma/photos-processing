@@ -25,7 +25,7 @@ jobs:
         run: poetry install
 
       - name: Run mypy for type-checking
-        run: poetry run mypy . --strict --ignore-missing-imports
+        run: poetry run mypy -p photos --strict --ignore-missing-imports
 
       - name: Run ruff for linting and auto-fix
         run: poetry run ruff check --fix .
