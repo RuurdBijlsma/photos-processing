@@ -2,7 +2,6 @@
 
 * Python
     * add tests
-    * timezones are broken still in datetime local, at least source=gps has problems
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output
     * pipeline models:
@@ -26,7 +25,7 @@
            * face name (user input)
            * centroid_embedding (centroid of the cluster)
         5. when a new photo is processed, find its cluster by looking at the nearest face embedding and copying that unique_face_id
-        6. re-cluster all embeddings in face table after `process_all`, and weekly (to accomodate new clusters(faces))
+        6. re-cluster all embeddings in face table after `process_all`, and weekly (to accommodate new clusters(faces))
            * calculate centroid embedding for each cluster
       * scene recognition?
       * if image has legible text, do ocr and put in db
