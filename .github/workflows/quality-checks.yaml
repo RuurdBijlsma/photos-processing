@@ -29,3 +29,6 @@ jobs:
 
       - name: Run ruff for linting and auto-fix
         run: poetry run ruff check .
+
+      - name: PyTest
+        run: poetry run pytest

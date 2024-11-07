@@ -24,14 +24,15 @@ reverse-geocode = "^1.6.5"
 parsed-ffmpeg = "^0.2.3"
 pytz = "^2024.2"
 timezonefinder = "^6.5.4"
-watchdog = "^5.0.3"
+watchdog = "6.0.0"
 pyjwt = "^2.9.0"
 passlib = { extras = ["bcrypt"], version = "^1.7.4" }
-python-multipart = "^0.0.16"
+python-multipart = "0.0.17"
 pillow-avif-plugin = "^1.4.6"
 meteostat = "^1.6.8"
-torch = { version = "^2.5.1+cpu", source = "pytorch_cpu", platform = "linux" }
-torchvision = { version = "^0.20.1+cpu", source = "pytorch_cpu", platform = "linux" }
+torch = { version = "^2.5.1+cu124", source = "pytorch_gpu" }
+torchvision = { version = "^0.20.1+cu124", source = "pytorch_gpu" }
+transformers = "^4.46.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -41,11 +42,12 @@ types-tqdm = "^4.66.0.20240417"
 types-pytz = "^2024.2.0.20241003"
 ruff = "^0.7.2"
 types-passlib = "^1.7.7.20240819"
+pytest = "^8.3.3"
 
 
 [[tool.poetry.source]]
-name = "pytorch_cpu"
-url = "https://download.pytorch.org/whl/cpu"
+name = "pytorch_gpu"
+url = "https://download.pytorch.org/whl/cu124"
 priority = "explicit"
 
 [build-system]
