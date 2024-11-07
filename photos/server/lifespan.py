@@ -10,13 +10,13 @@ from photos.config.app_config import app_config
 from photos.data.database.database import get_session
 from photos.data.database.db_utils import add_user
 from photos.data.database.migrations import migrate_db
-from photos.data.models.image_models import Role
+from photos.data.interfaces.auth_types import Role
 from photos.processing.collection_processing.process_all import process_all
 from photos.processing.watch.watch_for_changes import watch_files
 from photos.server.host_thumbnails import host_thumbnails
 
 
-async def add_test_users(session: AsyncSession):
+async def add_test_users(session: AsyncSession) -> None:
     await add_user(session, "RuteNL", "squirrel", Role.ADMIN)
     await add_user(session, "Ruurd", "squirrel", Role.USER)
     await add_user(session, "Bijlsma", "squirrel", Role.USER)

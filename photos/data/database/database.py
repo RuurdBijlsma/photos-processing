@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Annotated, AsyncGenerator
+from typing import Annotated
 
 from async_lru import alru_cache
 from fastapi import Depends
@@ -29,7 +30,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         await session.close()
 
 
-async def _session_dependency() -> AsyncGenerator[AsyncSession, None, None]:
+async def _session_dependency() -> AsyncGenerator[AsyncSession, None]:
     async with get_session() as session:
         yield session
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from data.interfaces.image_info_types import BaseImageInfo
-from data.interfaces.location_types import GeoLocationSmall
+from photos.data.interfaces.image_info_types import BaseImageInfo
+from photos.data.interfaces.location_types import GeoLocationSmall
 
 
 class GridImageInfo(BaseImageInfo):

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Query
 
-from data.interfaces.response_types import GridImageInfo
+from photos.data.interfaces.response_types import GridImageInfo
 from photos.data.database.database import SessionDep
 from photos.data.models.image_models import ImageModel
 from photos.server.routers.auth.auth_model import UserDep

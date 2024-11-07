@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
-from data.interfaces.weather_condition_codes import WeatherCondition
+from photos.data.interfaces.weather_condition_codes import WeatherCondition
 from photos.data.interfaces.auth_types import Role
 
 

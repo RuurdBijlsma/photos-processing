@@ -1,10 +1,10 @@
 import math
 from datetime import timedelta
 
-from data.interfaces.weather_condition_codes import WeatherCondition
 from meteostat import Hourly, Point
 
 from photos.data.interfaces.image_info_types import TimeImageInfo, WeatherImageInfo
+from photos.data.interfaces.weather_condition_codes import WeatherCondition
 
 
 def add_weather(image_info: TimeImageInfo) -> WeatherImageInfo:

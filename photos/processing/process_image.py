@@ -21,10 +21,10 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
     print(".", end="")
 
     try:
-        image_info = add_exif_info(image_info)
-        print(f"{readable_bytes(image_info.size_bytes)}, {image_info.width} x {image_info.height}", end="")
-        if image_info.duration is not None:
-            print(f", {image_info.duration}s", end="")
+        exif_info = add_exif_info(image_info)
+        print(f"{readable_bytes(exif_info.size_bytes)}, {exif_info.width} x {exif_info.height}", end="")
+        if exif_info.duration is not None:
+            print(f", {exif_info.duration}s", end="")
         print(".", end="")
     except ExifToolExecuteError:
         print(f"\nFailed to process {image_info}")
@@ -32,14 +32,14 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
 
     await generate_thumbnails(image_info)
     print(".", end="")
-    image_info = add_data_url(image_info)
+    data_info = add_data_url(exif_info)
     print(".", end="")
-    image_info = add_gps_info(image_info)
+    gps_info = add_gps_info(data_info)
     print(".", end="")
-    image_info = add_time_taken(image_info)
+    time_info = add_time_taken(gps_info)
     print(".", end="")
-    image_info = add_weather(image_info)
+    weather_info = add_weather(time_info)
     print(".", end="")
 
-    await store_image(image_info, user_id, session)
+    await store_image(weather_info, user_id, session)
     print("!")
