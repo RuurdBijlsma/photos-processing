@@ -1,6 +1,8 @@
 import logging
+from collections.abc import Callable, Awaitable
 
 from fastapi import FastAPI
+from fastapi.openapi.models import Response
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
@@ -15,7 +17,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.middleware("http")
-async def log_exceptions(request: Request, call_next):
+async def log_exceptions(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     try:
         return await call_next(request)
     except Exception as e:

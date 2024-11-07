@@ -4,7 +4,7 @@ function Run-Checks
     Write-Host "================================  $dir  ================================"
     Push-Location $dir
     poetry run pre-commit run --all-files
-    poetry run mypy . --strict --ignore-missing-imports
+    poetry run mypy -p photos --strict --ignore-missing-imports
     Pop-Location
 }
 

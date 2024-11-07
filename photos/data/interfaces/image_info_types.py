@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import field_serializer, BaseModel
 
-from data.interfaces.weather_condition_codes import WeatherCondition
+from photos.data.interfaces.weather_condition_codes import WeatherCondition
 from photos.data.interfaces.location_types import GeoLocation
 
 

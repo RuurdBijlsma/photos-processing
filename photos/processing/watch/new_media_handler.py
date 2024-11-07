@@ -1,8 +1,6 @@
 import asyncio
-import logging
 from pathlib import Path
 
-from sqlalchemy import select
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent, DirDeletedEvent, FileDeletedEvent
 
 from photos.config.app_config import app_config
@@ -28,4 +26,4 @@ class NewMediaHandler(FileSystemEventHandler):
     def on_deleted(self, event: DirDeletedEvent | FileDeletedEvent) -> None:
         source_path = Path(str(event.src_path))
         relative_path = rel_path(source_path)
-        delete_media(relative_path, self.session)
+        asyncio.run(delete_media(relative_path, self.session))

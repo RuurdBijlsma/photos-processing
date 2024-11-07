@@ -20,7 +20,7 @@ async def find_proximate_coordinate(
         .order_by(
             func.abs(
                 func.extract("epoch", ImageModel.datetime_local)
-                - func.extract("epoch", image.datetime_local)  # type: ignore
+                - func.extract("epoch", image.datetime_local)
             )
         )
     )).scalar()
