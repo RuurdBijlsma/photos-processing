@@ -22,7 +22,10 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
 
     try:
         exif_info = add_exif_info(image_info)
-        print(f"{readable_bytes(exif_info.size_bytes)}, {exif_info.width} x {exif_info.height}", end="")
+        print(
+            f"{readable_bytes(exif_info.size_bytes)}, {exif_info.width} x {exif_info.height}",
+            end="",
+        )
         if exif_info.duration is not None:
             print(f", {exif_info.duration}s", end="")
         print(".", end="")

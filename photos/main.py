@@ -17,7 +17,9 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.middleware("http")
-async def log_exceptions(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+async def log_exceptions(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
     try:
         return await call_next(request)
     except Exception as e:

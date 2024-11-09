@@ -23,9 +23,11 @@ async def delete_media(relative_path: Path, session: AsyncSession) -> None:
     if relative_path.exists():
         relative_path.unlink()
 
-    model = (await session.execute(
-        select(ImageModel).filter_by(relative_path=relative_path.as_posix())
-    )).scalar_one_or_none()
+    model = (
+        await session.execute(
+            select(ImageModel).filter_by(relative_path=relative_path.as_posix())
+        )
+    ).scalar_one_or_none()
 
     if model is not None and model.id is not None:
         thumb_folder = app_config.thumbnails_dir / model.id
@@ -34,10 +36,12 @@ async def delete_media(relative_path: Path, session: AsyncSession) -> None:
         await session.commit()
 
 
-async def add_user(session: AsyncSession, username: str, password: str, role: Role) -> None:
-    user_exists = (await session.execute(
-        select(UserModel).filter_by(username=username)
-    )).scalar_one_or_none()
+async def add_user(
+    session: AsyncSession, username: str, password: str, role: Role
+) -> None:
+    user_exists = (
+        await session.execute(select(UserModel).filter_by(username=username))
+    ).scalar_one_or_none()
     if user_exists:
         return
     admin = UserModel(
@@ -50,23 +54,22 @@ async def add_user(session: AsyncSession, username: str, password: str, role: Ro
 
 
 async def store_image(
-    image_info: WeatherImageInfo,
-    user_id: int,
-    session: AsyncSession
+    image_info: WeatherImageInfo, user_id: int, session: AsyncSession
 ) -> ImageModel:
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
     location = cleaned_dict.pop("location")
     location_model = None
     if location and image_info.location:
-        location_model = (await session.execute(
-            select(GeoLocationModel)
-            .filter_by(
-                city=image_info.location.city,
-                province=image_info.location.province,
-                country=image_info.location.country,
+        location_model = (
+            await session.execute(
+                select(GeoLocationModel).filter_by(
+                    city=image_info.location.city,
+                    province=image_info.location.province,
+                    country=image_info.location.country,
+                )
             )
-        )).scalar()
+        ).scalar()
         if not location_model:
             location_model = GeoLocationModel(**location)
     image_model = ImageModel(**cleaned_dict, location=location_model, user_id=user_id)

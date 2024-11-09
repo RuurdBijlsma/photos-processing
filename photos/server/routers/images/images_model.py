@@ -14,7 +14,7 @@ async def scroll_helper(
     session: AsyncSession,
     lower_date: datetime,
     upper_date: datetime,
-    statement: Select[tuple[ImageModel]]
+    statement: Select[tuple[ImageModel]],
 ) -> Sequence[ImageModel]:
     if lower_date > upper_date:
         raise HTTPException(status_code=422, detail="Incorrect date bounds")
@@ -34,17 +34,28 @@ async def scroll_up(
     limit: int,
 ) -> Sequence[ImageModel]:
     subquery = (
-        select(ImageModel)
-        .where(lower_date < ImageModel.datetime_local, ImageModel.datetime_local < upper_date)
-        .order_by(ImageModel.datetime_local.asc())
-        .limit(limit)
-    ).subquery().alias('subquery')
+        (
+            select(ImageModel)
+            .where(
+                lower_date < ImageModel.datetime_local,
+                ImageModel.datetime_local < upper_date,
+            )
+            .order_by(ImageModel.datetime_local.asc())
+            .limit(limit)
+        )
+        .subquery()
+        .alias("subquery")
+    )
     return await scroll_helper(
-        session, lower_date, upper_date,
-        (select(ImageModel)
-         .options(selectinload(ImageModel.location))
-         .join(subquery, ImageModel.id == subquery.c.id)
-         .order_by(ImageModel.datetime_local.desc()))
+        session,
+        lower_date,
+        upper_date,
+        (
+            select(ImageModel)
+            .options(selectinload(ImageModel.location))
+            .join(subquery, ImageModel.id == subquery.c.id)
+            .order_by(ImageModel.datetime_local.desc())
+        ),
     )
 
 
@@ -55,12 +66,17 @@ async def scroll_down(
     limit: int,
 ) -> Sequence[ImageModel]:
     return await scroll_helper(
-        session, lower_date, upper_date,
+        session,
+        lower_date,
+        upper_date,
         select(ImageModel)
         .options(selectinload(ImageModel.location))
-        .where(lower_date < ImageModel.datetime_local, ImageModel.datetime_local < upper_date)
+        .where(
+            lower_date < ImageModel.datetime_local,
+            ImageModel.datetime_local < upper_date,
+        )
         .order_by(ImageModel.datetime_local.desc())
-        .limit(limit)
+        .limit(limit),
     )
 
 

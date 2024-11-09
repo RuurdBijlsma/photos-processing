@@ -9,7 +9,9 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 # Load and preprocess the image
 image = Image.open("data/images/1/20180812_150015.jpg")
 image_inputs = processor(images=image, return_tensors="pt")
-text_inputs = processor(text="a pita with gyros in it", return_tensors="pt", padding=True, truncation=True)
+text_inputs = processor(
+    text="a pita with gyros in it", return_tensors="pt", padding=True, truncation=True
+)
 
 # Get the image embedding
 with torch.no_grad():

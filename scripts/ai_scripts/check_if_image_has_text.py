@@ -10,7 +10,7 @@ processor = AutoImageProcessor.from_pretrained("microsoft/resnet-50", do_resize=
 
 # image_path = "../../data/images/2/IMG_20171106_110319.jpg"
 image_path = "../imgs/ocr.jpg"
-image = Image.open(image_path).convert('RGB').resize((300, 300))
+image = Image.open(image_path).convert("RGB").resize((300, 300))
 inputs = processor(image, return_tensors="pt").pixel_values
 
 with torch.no_grad():
@@ -31,7 +31,7 @@ else:
 
     out_txt = ""
     for element in elements:
-        if hasattr(element, 'text'):
+        if hasattr(element, "text"):
             out_txt += element.text.strip() + "\n"
 
     print(out_txt)

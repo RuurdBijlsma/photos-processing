@@ -36,9 +36,11 @@ def get_password_hash(password: str) -> str:
 
 
 async def get_user(session: AsyncSession, username: str) -> UserModel | None:
-    return (await session.execute(
-        select(UserModel).filter(UserModel.username.ilike(username))
-    )).scalar_one_or_none()
+    return (
+        await session.execute(
+            select(UserModel).filter(UserModel.username.ilike(username))
+        )
+    ).scalar_one_or_none()
 
 
 async def authenticate_user(

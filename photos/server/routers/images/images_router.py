@@ -18,7 +18,9 @@ async def get_at_date(
     session: SessionDep,
     lower_date: datetime = Query(default_factory=lambda: datetime(1970, 1, 1, 1, 1, 1)),
     date: datetime = Query(default_factory=lambda: datetime.now()),
-    upper_date: datetime = Query(default_factory=lambda: datetime.now() + timedelta(days=1)),
+    upper_date: datetime = Query(
+        default_factory=lambda: datetime.now() + timedelta(days=1)
+    ),
     limit: int = Query(default=100, ge=1, le=200),
 ) -> Sequence[ImageModel]:
     return await at_date(session, lower_date, date, upper_date, limit)
@@ -29,7 +31,9 @@ async def get_scroll_up(
     _: UserDep,
     session: SessionDep,
     lower_date: datetime,
-    upper_date: datetime = Query(default_factory=lambda: datetime.now() + timedelta(days=1)),
+    upper_date: datetime = Query(
+        default_factory=lambda: datetime.now() + timedelta(days=1)
+    ),
     limit: int = Query(default=100, ge=1, le=200),
 ) -> Sequence[ImageModel]:
     """give newer photos. upper_date is next cached date in frontend."""

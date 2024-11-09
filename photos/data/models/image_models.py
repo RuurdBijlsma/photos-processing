@@ -6,7 +6,11 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     DateTime,
-    Interval, UniqueConstraint, Enum, Boolean, )
+    Interval,
+    UniqueConstraint,
+    Enum,
+    Boolean,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
@@ -105,6 +109,4 @@ class UserModel(Base):
     username = mapped_column(String, nullable=False, unique=True)
     hashed_password = mapped_column(String, nullable=False)
     role = mapped_column(Enum(Role), nullable=False)
-    images: Mapped[list[ImageModel]] = relationship(
-        ImageModel, back_populates="owner"
-    )
+    images: Mapped[list[ImageModel]] = relationship(ImageModel, back_populates="owner")

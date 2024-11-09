@@ -4,7 +4,9 @@ from diffusers import StableDiffusion3InpaintPipeline
 
 # Load the inpainting model
 model_id = "stabilityai/stable-diffusion-3.5-medium"
-pipe = StableDiffusion3InpaintPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+pipe = StableDiffusion3InpaintPipeline.from_pretrained(
+    model_id, torch_dtype=torch.float16
+)
 pipe = pipe.to("cuda")  # Use "cpu" if no GPU is available
 
 # Load your original image and mask
@@ -24,7 +26,7 @@ with torch.autocast("cuda"):
         num_inference_steps=num_inference_steps,
         guidance_scale=guidance_scale,
         width=image.width,
-        height=image.height
+        height=image.height,
     ).images[0]
 
 # Save or display the inpainted image

@@ -5,6 +5,7 @@ function Run-Checks
     Push-Location $dir
     poetry run pre-commit run --all-files
     poetry run mypy -p photos --strict --ignore-missing-imports
+    poetry run mypy -p tests --strict --ignore-missing-imports
     Pop-Location
 }
 

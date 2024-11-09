@@ -6,7 +6,12 @@ from typing import Annotated
 
 from async_lru import alru_cache
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    create_async_engine,
+    async_sessionmaker,
+    AsyncSession,
+)
 
 from photos.config.app_config import app_config
 
@@ -18,7 +23,12 @@ async def get_engine() -> AsyncEngine:
 
 @alru_cache
 async def get_session_maker() -> async_sessionmaker[AsyncSession]:
-    return async_sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=await get_engine())
+    return async_sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        expire_on_commit=False,
+        bind=await get_engine(),
+    )
 
 
 @asynccontextmanager

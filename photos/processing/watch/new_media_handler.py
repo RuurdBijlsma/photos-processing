@@ -1,7 +1,13 @@
 import asyncio
 from pathlib import Path
 
-from watchdog.events import FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent, DirDeletedEvent, FileDeletedEvent
+from watchdog.events import (
+    FileSystemEventHandler,
+    FileCreatedEvent,
+    DirCreatedEvent,
+    DirDeletedEvent,
+    FileDeletedEvent,
+)
 
 from photos.config.app_config import app_config
 from photos.data.database.database import get_session_maker
@@ -15,10 +21,7 @@ class NewMediaHandler(FileSystemEventHandler):
 
     def on_created(self, event: FileCreatedEvent | DirCreatedEvent) -> None:
         source_path = Path(str(event.src_path))
-        if (
-            not event.is_directory
-            and source_path.suffix in app_config.image_suffixes
-        ):
+        if not event.is_directory and source_path.suffix in app_config.image_suffixes:
             print("[watchdog] Processing new image!")
             user_folder = rel_path(source_path).parts[0]
             asyncio.run(process_media(source_path, int(user_folder), self.session))

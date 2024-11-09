@@ -23,6 +23,7 @@ sentencepiece = "^0.2.0"
 unstructured = {extras = ["all-docs"], version = "^0.16.4"}
 datasets = "^3.1.0"
 bitsandbytes = "^0.44.1"
+pytesseract = "^0.3.13"
 
 
 [[tool.poetry.source]]

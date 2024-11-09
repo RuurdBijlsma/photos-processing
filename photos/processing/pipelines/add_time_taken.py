@@ -22,7 +22,9 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
 
     def f2() -> tuple[datetime, str]:
         assert image_info.longitude and image_info.latitude
-        tz_name = timezone_finder.timezone_at(lng=image_info.longitude, lat=image_info.latitude)
+        tz_name = timezone_finder.timezone_at(
+            lng=image_info.longitude, lat=image_info.latitude
+        )
         assert tz_name is not None
         assert image_info.datetime_utc
         datetime_utc = image_info.datetime_utc.replace(tzinfo=pytz.utc)
@@ -75,7 +77,9 @@ def get_timezone_info(
     if not image_info.latitude or not image_info.longitude:
         return None, None, None
 
-    timezone_name = timezone_finder.timezone_at(lat=image_info.latitude, lng=image_info.longitude)
+    timezone_name = timezone_finder.timezone_at(
+        lat=image_info.latitude, lng=image_info.longitude
+    )
     if not timezone_name:
         return None, None, None
 

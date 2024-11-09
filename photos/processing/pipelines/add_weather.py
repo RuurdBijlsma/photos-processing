@@ -8,12 +8,16 @@ from photos.data.interfaces.weather_condition_codes import WeatherCondition
 
 
 def add_weather(image_info: TimeImageInfo) -> WeatherImageInfo:
-    if not image_info.datetime_utc or not image_info.latitude or not image_info.longitude:
+    if (
+        not image_info.datetime_utc
+        or not image_info.latitude
+        or not image_info.longitude
+    ):
         return WeatherImageInfo(**image_info.model_dump())
     data = Hourly(
         Point(lat=image_info.latitude, lon=image_info.longitude),
         image_info.datetime_utc - timedelta(minutes=30),
-        image_info.datetime_utc + timedelta(minutes=30)
+        image_info.datetime_utc + timedelta(minutes=30),
     )
     data = data.fetch()
     if len(data) == 0:
@@ -30,5 +34,7 @@ def add_weather(image_info: TimeImageInfo) -> WeatherImageInfo:
         weather_wind_gust=None if math.isnan(weather.wpgt) else weather.wpgt,
         weather_pressure=None if math.isnan(weather.pres) else weather.pres,
         weather_sun_hours=None if math.isnan(weather.tsun) else weather.tsun,
-        weather_condition=None if math.isnan(weather.coco) else WeatherCondition(int(weather.coco))
+        weather_condition=None
+        if math.isnan(weather.coco)
+        else WeatherCondition(int(weather.coco)),
     )

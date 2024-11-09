@@ -4,12 +4,16 @@ from pydantic_settings import BaseSettings
 
 
 class AppConfig(BaseSettings):
-    password_secret: str = "3df8944bf8afe568d4f0011db0d7fe1ef724f12227b6254116d128caf8c3bee5"
+    password_secret: str = (
+        "3df8944bf8afe568d4f0011db0d7fe1ef724f12227b6254116d128caf8c3bee5"
+    )
 
     debug: bool = True
     host_thumbnails: bool = True
     multithreaded_processing: bool = False
-    connection_string: str = "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
+    connection_string: str = (
+        "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
+    )
 
     images_dir: Path = Path("data/images")
     thumbnails_dir: Path = Path("data/thumbnails")

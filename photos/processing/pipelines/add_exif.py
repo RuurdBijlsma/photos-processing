@@ -136,7 +136,6 @@ def add_exif_info(image_info: BaseImageInfo) -> ExifImageInfo:
         gif=exif_dict.get("GIF"),
         quicktime=exif_dict.get("QuickTime"),
         matroska=exif_dict.get("Matroska"),
-
         is_motion_photo=False,
         is_hdr=False,
         is_night_sight=False,

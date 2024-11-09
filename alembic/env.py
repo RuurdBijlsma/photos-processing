@@ -22,7 +22,7 @@ def run_migrations_online():
                 context.config.get_section(context.config.config_ini_section),
                 prefix="sqlalchemy.",
                 poolclass=pool.NullPool,
-                future=True
+                future=True,
             )
         )
 

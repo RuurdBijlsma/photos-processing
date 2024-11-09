@@ -8,15 +8,19 @@ from photos.config.app_config import app_config
 from photos.data.database.db_utils import path_str
 from photos.data.models.image_models import ImageModel
 from photos.processing.cleanup.cleanup_entries import cleanup_entries
-from photos.processing.cleanup.drop_images_without_thumbnails import drop_images_without_thumbnails
+from photos.processing.cleanup.drop_images_without_thumbnails import (
+    drop_images_without_thumbnails,
+)
 from photos.processing.post_processing.fix_timezone import fill_timezone_gaps
 from photos.processing.process_image import process_media
 
 
 async def image_exists(image_path: Path, session: AsyncSession) -> bool:
-    image_model = (await session.execute(
-        select(ImageModel).filter_by(relative_path=path_str(image_path))
-    )).scalar_one_or_none()
+    image_model = (
+        await session.execute(
+            select(ImageModel).filter_by(relative_path=path_str(image_path))
+        )
+    ).scalar_one_or_none()
     if image_model is None:
         return False
 
@@ -35,13 +39,17 @@ async def image_exists(image_path: Path, session: AsyncSession) -> bool:
     return True
 
 
-async def process_image_list(session: AsyncSession, image_list: list[Path], user_id: int) -> None:
+async def process_image_list(
+    session: AsyncSession, image_list: list[Path], user_id: int
+) -> None:
     """Process a chunk of images with a separate db session."""
     for image_path in image_list:
         await process_media(image_path, user_id, session)
 
 
-async def process_user_images(user_id: int, username: str, session: AsyncSession) -> None:
+async def process_user_images(
+    user_id: int, username: str, session: AsyncSession
+) -> None:
     """Check all images for processing."""
     directory = app_config.images_dir / str(user_id)
     print(f"Processing images for user {username}")
