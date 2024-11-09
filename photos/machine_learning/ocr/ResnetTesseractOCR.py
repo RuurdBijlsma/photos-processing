@@ -35,7 +35,7 @@ class ResnetTesseractOCR(OCRProtocol):
             outputs = model(inputs)
         logits_per_image = outputs.logits
         probs = logits_per_image.softmax(dim=1)
-        has_legible_text = probs[0][1] > probs[0][0]
+        has_legible_text = (probs[0][1] > probs[0][0]).item()
         assert isinstance(has_legible_text, bool)
         return has_legible_text
 

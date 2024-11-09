@@ -5,8 +5,7 @@ from PIL import Image
 from photos.machine_learning.ocr.ResnetTesseractOCR import ResnetTesseractOCR
 
 
-def test_clip_embedder() -> None:
-    tests_folder = Path(__file__).parents[1]
+def test_resnet_tesseract_ocr(tests_folder: Path) -> None:
     image = Image.open(tests_folder / "assets/ocr.jpg")
     ocr = ResnetTesseractOCR()
     has_text = ocr.has_legible_text(image)
