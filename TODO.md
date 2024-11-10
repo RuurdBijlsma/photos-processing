@@ -2,8 +2,6 @@
 
 * Python
     * add tests
-    * What's better, minicpm v2 of minicpm v2.6 quantized (int4)
-      * compare speed and results
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output
     * pipeline models:
