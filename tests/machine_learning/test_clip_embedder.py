@@ -3,21 +3,20 @@ from pathlib import Path
 import numpy as np
 import pytest
 from PIL import Image
-from PIL.ImageFile import ImageFile
 from torch import Tensor
 
 from photos.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
 
 
 @pytest.fixture(scope="module")
-def setup_embedder(tests_folder: Path) -> tuple[CLIPEmbedder, list[ImageFile], Tensor]:
+def setup_embedder(tests_folder: Path) -> tuple[CLIPEmbedder, list[Image.Image], Tensor]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
     cat_img = Image.open(tests_folder / "assets/cat.jpg")
     cluster_img = Image.open(tests_folder / "assets/cluster.jpg")
     sunset_img = Image.open(tests_folder / "assets/sunset.jpg")
-    images = [cat_img, cluster_img, sunset_img]
+    images: list[Image.Image] = [cat_img, cluster_img, sunset_img]
     images_embedding = embedder.embed_images(images)
 
     return embedder, images, images_embedding
@@ -35,7 +34,7 @@ def setup_embedder(tests_folder: Path) -> tuple[CLIPEmbedder, list[ImageFile], T
     ],
 )
 def test_clip_embedder(
-    setup_embedder: tuple[CLIPEmbedder, list[ImageFile], Tensor],
+    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], Tensor],
     query: str,
     img_index: int,
 ) -> None:

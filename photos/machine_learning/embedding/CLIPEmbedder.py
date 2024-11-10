@@ -2,7 +2,7 @@ from functools import lru_cache
 
 import torch
 import torch.nn.functional as F
-from PIL.ImageFile import ImageFile
+from PIL.Image import Image
 from torch import Tensor
 from transformers import CLIPModel, CLIPProcessor, PreTrainedModel
 
@@ -27,10 +27,10 @@ class CLIPEmbedder(EmbedderProtocol):
             text_embedding = model.get_text_features(**inputs_text)
         return F.normalize(text_embedding, p=2, dim=-1)
 
-    def embed_image(self, image: ImageFile) -> Tensor:
+    def embed_image(self, image: Image) -> Tensor:
         return self.embed_images([image])[0]
 
-    def embed_images(self, images: list[ImageFile]) -> Tensor:
+    def embed_images(self, images: list[Image]) -> Tensor:
         model, processor = self.get_model_and_processor()
         inputs_image = processor(images=images, return_tensors="pt", padding=True)
         with torch.no_grad():

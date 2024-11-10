@@ -1,7 +1,8 @@
+from collections.abc import Generator
 from functools import lru_cache
 
 import torch
-from PIL.ImageFile import ImageFile
+from PIL.Image import Image
 from transformers import PreTrainedModel, AutoModel, AutoTokenizer, PreTrainedTokenizerFast
 
 from photos.machine_learning.visual_llm.VisualLLMProtocol import VisualLLMProtocol, ChatMessage, ChatRole
@@ -10,20 +11,18 @@ from photos.machine_learning.visual_llm.VisualLLMProtocol import VisualLLMProtoc
 class MiniCPMVisualLLM(VisualLLMProtocol):
     @lru_cache
     def get_model_and_tokenizer(self) -> tuple[PreTrainedModel, PreTrainedTokenizerFast]:
-        model = AutoModel.from_pretrained('openbmb/MiniCPM-V-2_6', trust_remote_code=True,
-                                          attn_implementation='sdpa',
-                                          torch_dtype=torch.bfloat16)
-        model = model.eval()
+        model = AutoModel.from_pretrained('openbmb/MiniCPM-V-2_6-int4', trust_remote_code=True)
+        model.eval()
         if torch.cuda.is_available():
-            model = model.cuda()
-        tokenizer = AutoTokenizer.from_pretrained('openbmb/MiniCPM-V-2_6', trust_remote_code=True)
+            model.cuda()
+        tokenizer = AutoTokenizer.from_pretrained('openbmb/MiniCPM-V-2_6-int4', trust_remote_code=True)
         return model, tokenizer
 
-    def image_question(self, image: ImageFile, question: str) -> str:
+    def image_question(self, image: Image, question: str) -> str:
         answer, _ = self.chat(ChatMessage(message=question, images=[image]))
         return answer
 
-    def images_question(self, images: list[ImageFile], question: str) -> str:
+    def images_question(self, images: list[Image], question: str) -> str:
         answer, _ = self.chat(ChatMessage(message=question, images=images))
         return answer
 
@@ -31,9 +30,39 @@ class MiniCPMVisualLLM(VisualLLMProtocol):
         self,
         message: ChatMessage,
         history: list[ChatMessage] | None = None,
-        image: ImageFile | None = None,
+        image: Image | None = None,
         convert_images: bool = True,
+        temperature=0.7,
     ) -> tuple[str, list[ChatMessage]]:
+        if history is None:
+            history = []
+        messages = history + [message]
+
+        answer = self._chat(message, history, image, convert_images, temperature, stream=False)
+        assert isinstance(answer, str)
+        return answer, messages + [ChatMessage(message=answer, role=ChatRole.ASSISTANT)]
+
+    def stream_chat(
+        self,
+        message: ChatMessage,
+        history: list[ChatMessage] | None = None,
+        image: Image | None = None,
+        convert_images: bool = True,
+        temperature=0.7,
+    ) -> Generator[str, None, None]:
+        result = self._chat(message, history, image, convert_images, temperature, stream=True)
+        assert isinstance(result, Generator)
+        return result
+
+    def _chat(
+        self,
+        message: ChatMessage,
+        history: list[ChatMessage] | None = None,
+        image: Image | None = None,
+        convert_images: bool = True,
+        temperature=0.7,
+        stream: bool = False
+    ) -> Generator[str, None, None] | str:
         if history is None:
             history = []
 
@@ -51,10 +80,11 @@ class MiniCPMVisualLLM(VisualLLMProtocol):
             {'role': msg.role.value.lower(), 'content': msg.images + [msg.message]}
             for msg in messages
         ]
-        answer = model.chat(
+        return model.chat(
             image=rgb_image,
             msgs=formatted_msgs,
             tokenizer=tokenizer,
+            sampling=stream if stream else None,
+            temperature=temperature,
+            stream=stream
         )
-        updated_messages = messages + [ChatMessage(role=ChatRole.ASSISTANT, message=answer)]
-        return answer, updated_messages

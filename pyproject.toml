@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{ include = "*", from = "photos" }]
 
 [tool.poetry.dependencies]
-python = "^3.12,<3.13"
+python = "^3.12"
 fastapi = "^0.115.3"
 pydantic = "^2.9.2"
 uvicorn = "^0.32.0"
@@ -44,6 +44,9 @@ torchvision = [
     { version = "^0.20.1", source = "pytorch_gpu", platform = "Windows" },
 ]
 pytesseract = "^0.3.13"
+bitsandbytes = "^0.44.1"
+accelerate = "^1.1.1"
+sentencepiece = "^0.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 import torch
-from PIL.ImageFile import ImageFile
+from PIL.Image import Image
 from pytesseract import pytesseract
 from transformers import (
     AutoModelForImageClassification,
@@ -26,7 +26,7 @@ class ResnetTesseractOCR(OCRProtocol):
         )
         return model, processor
 
-    def has_legible_text(self, image: ImageFile) -> bool:
+    def has_legible_text(self, image: Image) -> bool:
         resized_image = image.convert("RGB").resize((300, 300))
         model, processor = self.get_detector_model_and_processor()
         inputs = processor(resized_image, return_tensors="pt").pixel_values
@@ -39,7 +39,7 @@ class ResnetTesseractOCR(OCRProtocol):
         assert isinstance(has_legible_text, bool)
         return has_legible_text
 
-    def get_text(self, image: ImageFile) -> str:
+    def get_text(self, image: Image) -> str:
         extracted_text = pytesseract.image_to_string(image)
         assert isinstance(extracted_text, str)
         return extracted_text
