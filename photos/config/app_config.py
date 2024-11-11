@@ -14,6 +14,7 @@ class AppConfig(BaseSettings):
     connection_string: str = (
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
+    media_languages: list[str] = ["nld", "eng"]
 
     images_dir: Path = Path("data/images")
     thumbnails_dir: Path = Path("data/thumbnails")

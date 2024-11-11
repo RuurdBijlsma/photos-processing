@@ -2,7 +2,7 @@ from functools import lru_cache
 
 import torch
 from PIL.Image import Image
-from pytesseract import pytesseract
+from pytesseract import pytesseract, Output
 from transformers import (
     AutoModelForImageClassification,
     AutoImageProcessor,
@@ -10,7 +10,8 @@ from transformers import (
     ConvNextImageProcessor,
 )
 
-from photos.machine_learning.ocr.OCRProtocol import OCRProtocol
+from config.app_config import app_config
+from photos.machine_learning.ocr.OCRProtocol import OCRProtocol, OCRBox
 
 
 class ResnetTesseractOCR(OCRProtocol):
@@ -43,3 +44,24 @@ class ResnetTesseractOCR(OCRProtocol):
         extracted_text = pytesseract.image_to_string(image)
         assert isinstance(extracted_text, str)
         return extracted_text
+
+    def get_boxes(self, image: Image) -> list[OCRBox]:
+        ocr_data = pytesseract.image_to_data(
+            image, lang="+".join(app_config.media_languages), output_type=Output.DICT
+        )
+
+        boxes: list[OCRBox] = []
+        for i in range(0, len(ocr_data["level"])):
+            box = OCRBox(
+                top=ocr_data["top"][i],
+                left=ocr_data["left"][i],
+                width=ocr_data["width"][i],
+                height=ocr_data["height"][i],
+                text=ocr_data["text"][i],
+                confidence=ocr_data["conf"][i],
+            )
+            if box.text.strip() == "" or box.confidence < 0:
+                continue
+            boxes.append(box)
+
+        return boxes

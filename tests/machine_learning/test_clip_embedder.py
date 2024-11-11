@@ -9,7 +9,9 @@ from photos.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
 
 
 @pytest.fixture(scope="module")
-def setup_embedder(tests_folder: Path) -> tuple[CLIPEmbedder, list[Image.Image], Tensor]:
+def setup_embedder(
+    tests_folder: Path,
+) -> tuple[CLIPEmbedder, list[Image.Image], Tensor]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
