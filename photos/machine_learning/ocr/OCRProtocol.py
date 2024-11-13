@@ -1,17 +1,8 @@
-from dataclasses import dataclass
 from typing import Protocol
 
 from PIL.Image import Image
 
-
-@dataclass
-class OCRBox:
-    top: int
-    left: int
-    width: int
-    height: int
-    text: str
-    confidence: int
+from data.interfaces.ml_types import OCRBox
 
 
 class OCRProtocol(Protocol):

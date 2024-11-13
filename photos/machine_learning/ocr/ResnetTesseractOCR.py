@@ -11,7 +11,9 @@ from transformers import (
 )
 
 from config.app_config import app_config
-from photos.machine_learning.ocr.OCRProtocol import OCRProtocol, OCRBox
+from data.interfaces.ml_types import OCRBox
+from machine_learning.ocr.OCRProtocol import OCRProtocol
+from machine_learning.utils import coordinate_to_proportional
 
 
 class ResnetTesseractOCR(OCRProtocol):
@@ -53,10 +55,11 @@ class ResnetTesseractOCR(OCRProtocol):
         boxes: list[OCRBox] = []
         for i in range(0, len(ocr_data["level"])):
             box = OCRBox(
-                top=ocr_data["top"][i],
-                left=ocr_data["left"][i],
-                width=ocr_data["width"][i],
-                height=ocr_data["height"][i],
+                position=coordinate_to_proportional(
+                    [ocr_data["left"][i], ocr_data["top"][i]], image
+                ),
+                width=ocr_data["width"][i] / image.width,
+                height=ocr_data["height"][i] / image.height,
                 text=ocr_data["text"][i],
                 confidence=ocr_data["conf"][i],
             )

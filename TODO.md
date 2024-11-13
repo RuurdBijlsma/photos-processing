@@ -4,6 +4,9 @@
     * add tests
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output
+    * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
+      * input: image file path
+      * output: everything that's in an image db row. (apart from timezone fixes and facial recognition probably)
     * pipeline models:
       * CLIP for embedding text and image
       * minicpm: ask questions for extra info about images + a text description
@@ -14,13 +17,13 @@
       * face detection
         1. bounding box face for every photo
         2. extract face images from each photo
-        3. all_faces_table:
+        3. faces_table:
            * id (uuid).
            * face embedding
            * image_id (relation to images table)
            * also put in bounding box coords
            * unique_face_id (relation to unique faces table)
-        4. unique faces table
+        4. face_names_table
            * unique_face_id
            * face name (user input)
            * centroid_embedding (centroid of the cluster)
@@ -71,6 +74,7 @@
     * facial recognition (group by faces)
     * detect document -> OCR
     * For videos process a frame every fifth of the video or something.
+      * when searching seek to the part of the video where it first appears
 * Search photos
     * Semantic search (caption, object, ocr text)
     * postgres full text search
