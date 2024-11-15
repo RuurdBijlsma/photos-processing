@@ -29,7 +29,7 @@ async def cleanup_entries(
             .outerjoin(ImageModel, GeoLocationModel.id.__eq__(ImageModel.location_id))
             .filter(ImageModel.id.is_(None))
         )
-    ).all()
+    ).scalars().all()
     for location in locations_without_images:
         print(f"Deleting {location}, the location has no images anymore.")
         await session.delete(location)

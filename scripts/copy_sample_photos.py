@@ -21,7 +21,8 @@ def copy_random_files(
     # Check if the sample size is larger than the number of available files
     if sample_size > len(files):
         print(
-            f"Sample size {sample_size} is larger than available files {len(files)}. Reducing sample size."
+            f"Sample size {sample_size} is larger than available files {len(files)}. "
+            f"Reducing sample size."
         )
         sample_size = len(files)
 
@@ -37,5 +38,5 @@ def copy_random_files(
 
 if __name__ == "__main__":
     from_path = "D:/Backup/Photos/photos/photos"
-    to_path = "C:/Users/Ruurd/PycharmProjects/Photos/data/images/1"
-    copy_random_files(from_path, to_path, 50)
+    to_path = "C:/Users/Ruurd/PycharmProjects/Photos2/data/images/1"
+    copy_random_files(from_path, to_path, 350)

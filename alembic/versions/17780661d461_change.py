@@ -8,8 +8,8 @@ Create Date: 2024-11-03 21:50:40.840034
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
@@ -145,6 +145,7 @@ def upgrade() -> None:
         op.f("ix_images_relative_path"), "images", ["relative_path"], unique=True
     )
     # ### end Alembic commands ###
+    op.execute("CREATE EXTENSION IF NOT EXISTS vectors;")
 
 
 def downgrade() -> None:
@@ -159,3 +160,4 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_geo_locations_id"), table_name="geo_locations")
     op.drop_table("geo_locations")
     # ### end Alembic commands ###
+    op.execute("DROP EXTENSION IF EXISTS vectors;")

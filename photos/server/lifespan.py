@@ -24,7 +24,9 @@ async def add_test_users(session: AsyncSession) -> None:
 
 async def on_startup(app: FastAPI) -> None:
     if not app_config.thumbnails_dir.exists():
-        app_config.thumbnails_dir.mkdir(exist_ok=True)
+        app_config.thumbnails_dir.mkdir(exist_ok=True, parents=True)
+    if not app_config.images_dir.exists():
+        app_config.images_dir.mkdir(exist_ok=True, parents=True)
 
     print("Running migrations")
     await migrate_db(app_config.connection_string)

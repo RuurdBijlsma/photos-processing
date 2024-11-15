@@ -2,6 +2,7 @@
 
 * Python
     * add tests
+    * face recognition -> clustering (dbscan) en db stuff (pgvectors)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output
     * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
