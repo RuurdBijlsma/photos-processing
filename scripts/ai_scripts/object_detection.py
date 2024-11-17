@@ -4,7 +4,7 @@ import torch
 from PIL import Image
 from transformers import DetrImageProcessor, DetrForObjectDetection
 
-img_url = Path("./data/images/1/PXL_20220815_193513937.jpg")
+img_url = Path("./media/images/1/PXL_20220815_193513937.jpg")
 image = Image.open(img_url)
 
 # you can specify the revision tag if you don't want the timm dependency

@@ -5,7 +5,7 @@ import pytest
 from PIL import Image
 from torch import Tensor
 
-from photos.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
+from app import CLIPEmbedder
 
 
 @pytest.fixture(scope="module")

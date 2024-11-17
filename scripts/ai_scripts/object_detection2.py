@@ -7,7 +7,7 @@ from transformers import OwlViTProcessor, OwlViTForObjectDetection
 processor = OwlViTProcessor.from_pretrained("google/owlvit-base-patch32")
 model = OwlViTForObjectDetection.from_pretrained("google/owlvit-base-patch32")
 
-img_url = Path("./data/images/1/20150714_170022.jpg")
+img_url = Path("./media/images/1/20150714_170022.jpg")
 image = Image.open(img_url)
 
 texts = [["a photo of a cat", "a photo of a bicycle"]]

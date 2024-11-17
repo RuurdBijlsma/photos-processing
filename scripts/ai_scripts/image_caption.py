@@ -8,7 +8,7 @@ model = BlipForConditionalGeneration.from_pretrained(
     "Salesforce/blip-image-captioning-large"
 ).to("cuda")
 
-img_url = Path("./data/images/1/P_20230403_132322.jpg")
+img_url = Path("./media/images/1/P_20230403_132322.jpg")
 raw_image = Image.open(img_url).convert("RGB")
 
 # conditional image captioning

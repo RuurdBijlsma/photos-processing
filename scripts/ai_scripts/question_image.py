@@ -18,7 +18,7 @@ model = model.to(device="cuda", dtype=torch.float16)
 tokenizer = AutoTokenizer.from_pretrained("openbmb/MiniCPM-V-2", trust_remote_code=True)
 model.eval()
 
-img_url = Path("../../data/images/1/20170726_152057.jpg")
+img_url = Path("../../media/images/1/20170726_152057.jpg")
 image = Image.open(img_url).convert("RGB")
 
 questions = [

@@ -16,7 +16,7 @@ def image_to_base64_data_uri(file_path):
 
 
 # Replace with the actual path to your image file in WSL
-file_path = "./data/images/1/20170819_100607.jpg"
+file_path = "./media/images/1/20170819_100607.jpg"
 data_uri = image_to_base64_data_uri(file_path)
 
 # Initialize the chat handler

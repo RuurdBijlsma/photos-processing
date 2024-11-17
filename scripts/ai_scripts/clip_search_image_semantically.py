@@ -8,9 +8,9 @@ model = CLIPModel.from_pretrained("zer0int/CLIP-GmP-ViT-L-14")
 processor = CLIPProcessor.from_pretrained("zer0int/CLIP-GmP-ViT-L-14")
 
 # Load and preprocess the image
-kerk_img = Image.open("../../data/images/1/PXL_20230919_101307876.MP.jpg")
-hagedis_img = Image.open("../../data/images/1/PXL_20230917_151954823.jpg")
-boat_img = Image.open("../../data/images/1/PXL_20230911_180002232.jpg")
+kerk_img = Image.open("../../media/images/1/PXL_20230919_101307876.MP.jpg")
+hagedis_img = Image.open("../../media/images/1/PXL_20230917_151954823.jpg")
+boat_img = Image.open("../../media/images/1/PXL_20230911_180002232.jpg")
 inputs_images = processor(
     images=[kerk_img, hagedis_img, boat_img], return_tensors="pt", padding=True
 )

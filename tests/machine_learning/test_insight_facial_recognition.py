@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 from scipy.spatial.distance import cosine
 
-from photos.machine_learning.facial_recognition.InsightFacialRecognition import \
+from app import \
     InsightFacialRecognition
 
 
