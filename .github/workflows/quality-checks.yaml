@@ -24,14 +24,14 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Run ruff for linting and auto-fix
+        run: uv run ruff check .
+
       - name: Type check main app
         run: uv run mypy -p app --strict --ignore-missing-imports
 
       - name: Type check tests
         run: uv run mypy -p tests --strict --ignore-missing-imports
-
-      - name: Run ruff for linting and auto-fix
-        run: uv run ruff check .
 
       - name: Run tests
         run: uv run pytest

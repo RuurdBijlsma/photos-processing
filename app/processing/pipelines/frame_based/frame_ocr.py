@@ -1,6 +1,5 @@
 from PIL.Image import Image
 
-from app.data.interfaces.ml_types import OCRBox
 from app.data.interfaces.visual_information import EmbeddingVisualInformation, \
     OcrVisualInformation
 from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
@@ -17,10 +16,10 @@ def frame_ocr(
 ) -> OcrVisualInformation:
     has_text = ocr.has_legible_text(pil_image)
     extracted_text: str | None = None
-    boxes: list[OCRBox] | None = None
+    # boxes: list[OCRBox] | None = None
     if has_text:
         extracted_text = ocr.get_text(pil_image)
-        boxes = ocr.get_boxes(pil_image)
+        # boxes = ocr.get_boxes(pil_image)
 
     return OcrVisualInformation(
         **visual_info.model_dump(),

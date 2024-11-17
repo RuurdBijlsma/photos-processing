@@ -1,7 +1,6 @@
 from pathlib import Path
 
-# noinspection PyUnresolvedReferences
-import pillow_avif
+import pillow_avif  # noqa: F401
 from PIL import Image
 from exiftool.exceptions import ExifToolExecuteError
 from sqlalchemy.ext.asyncio import AsyncSession

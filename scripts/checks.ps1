@@ -3,9 +3,9 @@ function Run-Checks
     param ([string]$dir)
     Write-Host "================================  $dir  ================================"
     Push-Location $dir
-    poetry run pre-commit run --all-files
-    poetry run mypy -p photos --strict --ignore-missing-imports
-    poetry run mypy -p tests --strict --ignore-missing-imports
+    uv run ruff check . --fix
+    uv run mypy -p app --strict --ignore-missing-imports
+    uv run mypy -p tests --strict --ignore-missing-imports
     Pop-Location
 }
 
