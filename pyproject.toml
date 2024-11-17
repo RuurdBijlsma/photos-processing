@@ -66,3 +66,6 @@ explicit = true
 name = "pytorch_cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
+
+[tool.uv.workspace]
+members = ["scripts"]

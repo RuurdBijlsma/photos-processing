@@ -3,7 +3,7 @@ from pathlib import Path
 from PIL import Image
 from transformers import ViTImageProcessor, ViTForImageClassification
 
-img_url = Path("./media/images/1/P_20230403_132322.jpg")
+img_url = Path("../../media/images/1/IMG_20160927_121437.jpg")
 image = Image.open(img_url)
 
 processor = ViTImageProcessor.from_pretrained("google/vit-base-patch16-224")
