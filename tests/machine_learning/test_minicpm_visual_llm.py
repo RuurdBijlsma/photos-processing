@@ -1,11 +1,13 @@
 from pathlib import Path
 
+import pytest
 from PIL import Image
 
 from app.machine_learning.visual_llm.MiniCPMVisualLLM import MiniCPMVisualLLM
 from app.machine_learning.visual_llm.VisualLLMProtocol import ChatMessage
 
 
+@pytest.mark.cuda
 def test_minicpm_visual_llm(tests_folder: Path) -> None:
     visual_llm = MiniCPMVisualLLM()
     image = Image.open(tests_folder / "assets/cat.jpg")

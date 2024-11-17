@@ -21,6 +21,12 @@ jobs:
       - name: Set up Python
         run: uv python install
 
+      - name: Install Tesseract OCR
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+          tesseract --version
+
       - name: Install the project
         run: uv sync --all-extras --dev
 
@@ -34,4 +40,4 @@ jobs:
         run: uv run mypy -p tests --strict --ignore-missing-imports
 
       - name: Run tests
-        run: uv run pytest
+        run: uv run pytest -m "not cuda"
