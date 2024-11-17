@@ -102,6 +102,7 @@ class VisualInformationModel(Base):
     embedding = mapped_column(VECTOR(768), nullable=False)
     has_legible_text = mapped_column(Boolean, nullable=False)
     ocr_text = mapped_column(Text, nullable=True)
+    document_summary = mapped_column(Text, nullable=True)
 
 
 class GeoLocationModel(Base):

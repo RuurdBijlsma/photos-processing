@@ -3,6 +3,7 @@
 * Python
     * add tests
     * uv ipv poetry gebruiken
+    * moet ocr document detection threshold een config ding worden?
     * add ocr boxes to ocr frame
     * face recognition -> clustering (dbscan) en db stuff (pgvectors)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben

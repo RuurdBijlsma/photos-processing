@@ -12,4 +12,5 @@ class EmbeddingVisualInformation(BaseVisualInformation):
 class OcrVisualInformation(EmbeddingVisualInformation):
     has_legible_text: bool
     ocr_text: str | None
+    document_summary: str | None
     # ocr_boxes: list[OCRBox] | None
