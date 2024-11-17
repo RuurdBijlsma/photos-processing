@@ -2,7 +2,8 @@
 
 * Python
     * add tests
-    * uv ipv poetry gebruiken
+    * chatgpt implementatie maken van visual llm (met api key)
+      * het is nu pittig langzaam door de llm
     * moet ocr document detection threshold een config ding worden?
     * add ocr boxes to ocr frame
     * face recognition -> clustering (dbscan) en db stuff (pgvectors)

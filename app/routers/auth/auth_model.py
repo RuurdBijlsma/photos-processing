@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.app_config import app_config
 from app.data.database.database import SessionDep
 from app.data.interfaces.auth_types import TokenData, Token
-from app.data.models.image_models import UserModel
+from app.data.image_models import UserModel
 
 logging.getLogger("passlib").setLevel(logging.ERROR)
 

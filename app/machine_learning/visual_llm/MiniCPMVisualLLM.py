@@ -17,21 +17,21 @@ from app.machine_learning.visual_llm.VisualLLMProtocol import (
 )
 
 
+@lru_cache
+def get_model_and_tokenizer() -> tuple[PreTrainedModel, PreTrainedTokenizerFast]:
+    model = AutoModel.from_pretrained(
+        "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
+    )
+    model.eval()
+    if torch.cuda.is_available():
+        model.cuda()
+    tokenizer = AutoTokenizer.from_pretrained(
+        "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
+    )
+    return model, tokenizer
+
+
 class MiniCPMVisualLLM(VisualLLMProtocol):
-    @lru_cache
-    def get_model_and_tokenizer(
-        self,
-    ) -> tuple[PreTrainedModel, PreTrainedTokenizerFast]:
-        model = AutoModel.from_pretrained(
-            "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
-        )
-        model.eval()
-        if torch.cuda.is_available():
-            model.cuda()
-        tokenizer = AutoTokenizer.from_pretrained(
-            "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
-        )
-        return model, tokenizer
 
     def image_question(self, image: Image, question: str) -> str:
         answer, _ = self.chat(ChatMessage(message=question, images=[image]))
@@ -93,7 +93,7 @@ class MiniCPMVisualLLM(VisualLLMProtocol):
         else:
             rgb_image = image
 
-        model, tokenizer = self.get_model_and_tokenizer()
+        model, tokenizer = get_model_and_tokenizer()
         messages = history + [message]
         formatted_msgs = [
             {"role": msg.role.value.lower(), "content": msg.images + [msg.message]}

@@ -7,7 +7,7 @@ from sqlalchemy import select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.data.models.image_models import ImageModel
+from app.data.image_models import ImageModel
 
 
 async def scroll_helper(

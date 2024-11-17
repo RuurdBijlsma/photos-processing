@@ -4,11 +4,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
+from app.data.image_models import ImageModel, UserModel, GeoLocationModel, \
+    VisualInformationModel, OCRBoxModel, FaceBoxModel
 from app.data.interfaces.auth_types import Role
 from app.data.interfaces.image_info_types import WeatherImageInfo
-from app.data.interfaces.visual_information import OcrVisualInformation
-from app.data.models.image_models import ImageModel, UserModel, GeoLocationModel, \
-    VisualInformationModel
+from app.data.interfaces.visual_information import FacesVisualInformation, \
+    CaptionVisualInformation
 from app.processing.process_utils import clean_object
 from app.routers.auth.auth_model import get_password_hash
 
@@ -55,9 +56,14 @@ async def add_user(
     await session.commit()
 
 
+def without(dictionary, *keys_to_remove):
+    return {key: value for key, value in dictionary.items() if
+            key not in keys_to_remove}
+
+
 async def store_image(
     image_info: WeatherImageInfo,
-    visual_infos: list[OcrVisualInformation],
+    visual_infos: list[CaptionVisualInformation],
     user_id: int,
     session: AsyncSession
 ) -> ImageModel:
@@ -78,14 +84,24 @@ async def store_image(
         ).scalar()
         if not location_model:
             location_model = GeoLocationModel(**location)
+
     image_model = ImageModel(
         **cleaned_dict,
         location=location_model,
         visual_information=[
-            VisualInformationModel(**info.model_dump())
+            VisualInformationModel(**without(info.model_dump(), "ocr_boxes", "faces"),
+                                   ocr_boxes=[
+                                       OCRBoxModel(**box.model_dump())
+                                       for box in info.ocr_boxes
+                                   ],
+                                   faces=[
+                                       FaceBoxModel(**face.model_dump())
+                                       for face in info.faces
+                                   ]
+                                   )
             for info in visual_infos
         ],
-        user_id=user_id
+        user_id=user_id,
     )
     session.add(image_model)
     await session.commit()

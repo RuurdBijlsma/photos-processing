@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.data.database.database import SessionDep
 from app.data.interfaces.auth_types import Token, User
-from app.data.models.image_models import UserModel
+from app.data.image_models import UserModel
 from app.routers.auth.auth_model import UserDep, get_user_token
 
 auth_router = APIRouter(tags=["auth"])

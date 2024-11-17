@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from app.config.app_config import app_config
 from app.data.database.db_utils import path_str
-from app.data.models.image_models import ImageModel
+from app.data.image_models import ImageModel
 from app.processing.cleanup.cleanup_entries import cleanup_entries
 from app.processing.cleanup.drop_images_without_thumbnails import (
     drop_images_without_thumbnails,

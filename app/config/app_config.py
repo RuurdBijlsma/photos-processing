@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -16,6 +17,11 @@ class AppConfig(BaseSettings):
     )
     media_languages: list[str] = ["nld", "eng"]
 
+    document_detection_threshold: int = Field(
+        default=65,
+        description="How many characters should be recognized before classifying "
+                    "it as a document and making a summary."
+    )
     images_dir: Path = Path("media/images")
     thumbnails_dir: Path = Path("media/thumbnails")
     thumbnail_heights: list[int] = [240, 480, 1080]

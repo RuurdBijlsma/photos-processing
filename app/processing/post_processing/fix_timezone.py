@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from timezonefinder import TimezoneFinder
 from tqdm import tqdm
 
-from app.data.models.image_models import ImageModel
+from app.data.image_models import ImageModel
 
 tf = TimezoneFinder()
 

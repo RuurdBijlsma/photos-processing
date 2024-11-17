@@ -10,13 +10,14 @@ from sqlalchemy import (
     Interval,
     UniqueConstraint,
     Enum,
-    Boolean, Text,
+    Boolean, Text, ARRAY,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
 from app.data.interfaces.auth_types import Role
+from app.data.interfaces.ml_types import FaceSex
 from app.data.interfaces.weather_condition_codes import WeatherCondition
 
 
@@ -70,9 +71,6 @@ class ImageModel(Base):
     location: Mapped[GeoLocationModel | None] = relationship(
         "GeoLocationModel", back_populates="images"
     )
-    # User
-    user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
-    owner: Mapped[UserModel] = relationship("UserModel", back_populates="images")
     # Weather https://dev.meteostat.net/formats.html#weather-condition-codes
     weather_recorded_at = mapped_column(DateTime(timezone=False), nullable=True)
     weather_temperature = mapped_column(Float, nullable=True)
@@ -83,17 +81,20 @@ class ImageModel(Base):
     weather_pressure = mapped_column(Float, nullable=True)
     weather_sun_hours = mapped_column(Float, nullable=True)
     weather_condition = mapped_column(Enum(WeatherCondition), nullable=True)
-    # Visual info
+    # Relations
     visual_information: Mapped[list["VisualInformationModel"]] = relationship(
         "VisualInformationModel",
         back_populates="image",
         cascade="all, delete-orphan"
     )
+    # User
+    user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    owner: Mapped[UserModel] = relationship("UserModel", back_populates="images")
 
 
 class VisualInformationModel(Base):
     __tablename__ = "visual_information"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
     image_id: Mapped[str] = mapped_column(String, ForeignKey("images.id"))
     image: Mapped["ImageModel"] = relationship("ImageModel",
                                                back_populates="visual_information")
@@ -103,12 +104,76 @@ class VisualInformationModel(Base):
     has_legible_text = mapped_column(Boolean, nullable=False)
     ocr_text = mapped_column(Text, nullable=True)
     document_summary = mapped_column(Text, nullable=True)
+    # OCR
+    ocr_boxes: Mapped[list["OCRBoxModel"]] = relationship(
+        "OCRBoxModel",
+        back_populates="visual_information",
+        cascade="all, delete-orphan"
+    )
+    # Faces
+    faces: Mapped[list["FaceBoxModel"]] = relationship(
+        "FaceBoxModel",
+        back_populates="visual_information",
+        cascade="all, delete-orphan"
+    )
+    # Caption
+    caption = mapped_column(String, nullable=False)
+
+
+class OCRBoxModel(Base):
+    __tablename__ = 'ocr_boxes'
+
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visual_information_id = mapped_column(Integer, ForeignKey("visual_information.id"))
+    visual_information: Mapped["VisualInformationModel"] = relationship(
+        "VisualInformationModel",
+        back_populates="ocr_boxes"
+    )
+
+    position: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+    width = mapped_column(Float, nullable=False)
+    height = mapped_column(Float, nullable=False)
+    text = mapped_column(String, nullable=False)
+    confidence = mapped_column(Integer, nullable=False)
+
+
+class FaceBoxModel(Base):
+    __tablename__ = 'face_boxes'
+
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visual_information_id = mapped_column(Integer, ForeignKey("visual_information.id"))
+    visual_information: Mapped["VisualInformationModel"] = relationship(
+        "VisualInformationModel",
+        back_populates="faces"
+    )
+
+    # Position and dimensions
+    position: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+    width = mapped_column(Float, nullable=False)
+    height = mapped_column(Float, nullable=False)
+
+    # Attributes
+    age = mapped_column(Integer, nullable=False)
+    confidence = mapped_column(Float, nullable=False)
+    sex = mapped_column(Enum(FaceSex), nullable=False)
+
+    # Facial feature points
+    mouth_left: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float),
+                                                            nullable=False)
+    mouth_right: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float),
+                                                             nullable=False)
+    nose_tip: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+    eye_left: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+    eye_right: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+
+    # Embedding
+    embedding = mapped_column(VECTOR(512), nullable=False)
 
 
 class GeoLocationModel(Base):
     __tablename__ = "geo_locations"
 
-    id = mapped_column(Integer, primary_key=True, index=True)
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
     country = mapped_column(String, nullable=False)
     province = mapped_column(String, nullable=True)
     city = mapped_column(String, nullable=False)

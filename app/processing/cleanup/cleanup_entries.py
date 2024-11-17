@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.database.db_utils import path_str
-from app.data.models.image_models import ImageModel, GeoLocationModel
+from app.data.image_models import ImageModel, GeoLocationModel
 
 
 async def cleanup_entries(

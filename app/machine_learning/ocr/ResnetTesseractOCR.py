@@ -16,22 +16,24 @@ from app.machine_learning.ocr.OCRProtocol import OCRProtocol
 from app.machine_learning.utils import coordinate_to_proportional
 
 
+@lru_cache
+def get_detector_model_and_processor() -> tuple[
+    PreTrainedModel, ConvNextImageProcessor
+]:
+    model = AutoModelForImageClassification.from_pretrained(
+        "miguelcarv/resnet-152-text-detector"
+    )
+    processor = AutoImageProcessor.from_pretrained(
+        "microsoft/resnet-50", do_resize=False
+    )
+    return model, processor
+
+
 class ResnetTesseractOCR(OCRProtocol):
-    @lru_cache
-    def get_detector_model_and_processor(
-        self,
-    ) -> tuple[PreTrainedModel, ConvNextImageProcessor]:
-        model = AutoModelForImageClassification.from_pretrained(
-            "miguelcarv/resnet-152-text-detector"
-        )
-        processor = AutoImageProcessor.from_pretrained(
-            "microsoft/resnet-50", do_resize=False
-        )
-        return model, processor
 
     def has_legible_text(self, image: Image) -> bool:
         resized_image = image.convert("RGB").resize((300, 300))
-        model, processor = self.get_detector_model_and_processor()
+        model, processor = get_detector_model_and_processor()
         inputs = processor(resized_image, return_tensors="pt").pixel_values
 
         with torch.no_grad():

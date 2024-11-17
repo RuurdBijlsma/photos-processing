@@ -1,12 +1,11 @@
 from PIL.Image import Image
 
+from app.config.app_config import app_config
+from app.data.interfaces.ml_types import OCRBox
 from app.data.interfaces.visual_information import EmbeddingVisualInformation, \
-    OcrVisualInformation
-from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
+    OCRVisualInformation
 from app.machine_learning.ocr.ResnetTesseractOCR import ResnetTesseractOCR
 from app.machine_learning.visual_llm.MiniCPMVisualLLM import MiniCPMVisualLLM
-
-embedder = CLIPEmbedder()
 
 ocr = ResnetTesseractOCR()
 llm = MiniCPMVisualLLM()
@@ -15,20 +14,24 @@ llm = MiniCPMVisualLLM()
 def frame_ocr(
     visual_info: EmbeddingVisualInformation,
     pil_image: Image
-) -> OcrVisualInformation:
+) -> OCRVisualInformation:
     has_text = ocr.has_legible_text(pil_image)
     extracted_text: str | None = None
     summary: str | None = None
-    # boxes: list[OCRBox] | None = None
+    boxes: list[OCRBox] = []
     if has_text:
         extracted_text = ocr.get_text(pil_image)
         if extracted_text.strip() == "":
             has_text = False
             extracted_text = None
-        # boxes = ocr.get_boxes(pil_image)
+        boxes = ocr.get_boxes(pil_image)
 
     # Check if this could be a photo of a document
-    if has_text and extracted_text and len(extracted_text) > 65:
+    if (
+        has_text
+        and extracted_text
+        and len(extracted_text) > app_config.document_detection_threshold
+    ):
         prompt = """Analyze the image and provide the following details:
 
             Summary: A concise summary of the content in the photo, including any key points or important sections visible.
@@ -41,10 +44,10 @@ def frame_ocr(
 
         summary = llm.image_question(pil_image, prompt)
 
-    return OcrVisualInformation(
+    return OCRVisualInformation(
         **visual_info.model_dump(),
         has_legible_text=has_text,
         ocr_text=extracted_text,
-        document_summary=summary
-        # ocr_boxes=boxes
+        document_summary=summary,
+        ocr_boxes=boxes
     )

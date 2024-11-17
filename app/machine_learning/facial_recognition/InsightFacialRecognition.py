@@ -11,21 +11,23 @@ from app.machine_learning.facial_recognition.FacialRecognitionProtocol import \
 from app.machine_learning.utils import coordinate_to_proportional
 
 
+@lru_cache
+def get_app() -> FaceAnalysis:
+    app = FaceAnalysis(
+        root="~/.cache/insightface",
+        providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
+    )
+    app.prepare(ctx_id=0, det_size=(640, 640))
+    return app
+
+
 class InsightFacialRecognition(FacialRecognitionProtocol):
-    @lru_cache
-    def get_app(self) -> FaceAnalysis:
-        app = FaceAnalysis(
-            root="~/.cache/insightface",
-            providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
-        )
-        app.prepare(ctx_id=0, det_size=(640, 640))
-        return app
 
     def get_faces(self, image: Image) -> list[FaceBox]:
         cv_image = np.array(image)
         if cv_image.shape[2] == 3:
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
-        app = self.get_app()
+        app = get_app()
         faces = app.get(cv_image)
         return [
             FaceBox(

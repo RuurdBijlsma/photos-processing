@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query
 
 from app.data.database.database import SessionDep
 from app.data.interfaces.response_types import GridImageInfo
-from app.data.models.image_models import ImageModel
+from app.data.image_models import ImageModel
 from app.routers.auth.auth_model import UserDep
 from app.routers.images.images_model import scroll_down, scroll_up, at_date
 
