@@ -2,14 +2,14 @@ import logging
 from collections.abc import Callable, Awaitable
 
 from fastapi import FastAPI
-from fastapi.openapi.models import Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.models import Response
 from starlette.requests import Request
 
-from app.server.lifespan import lifespan
 from app.routers.auth.auth_router import auth_router
 from app.routers.health.health_router import health_router
 from app.routers.images.images_router import images_router
+from app.server.lifespan import lifespan
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)

@@ -3,15 +3,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 from PIL import Image
-from torch import Tensor
 
-from app import CLIPEmbedder
+from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
 
 
 @pytest.fixture(scope="module")
 def setup_embedder(
     tests_folder: Path,
-) -> tuple[CLIPEmbedder, list[Image.Image], Tensor]:
+) -> tuple[CLIPEmbedder, list[Image.Image], list[list[float]]]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
@@ -36,14 +35,14 @@ def setup_embedder(
     ],
 )
 def test_clip_embedder(
-    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], Tensor],
+    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], list[list[float]]],
     query: str,
     img_index: int,
 ) -> None:
     embedder, images, images_embedding = setup_embedder
 
-    text_embedding = embedder.embed_text(query).unsqueeze(0)
+    text_embedding = embedder.embed_text(query)
     # Calculate cosine similarities between text and each image
-    similarities = (images_embedding @ text_embedding.T).squeeze(1)  # Shape: (3,)
+    similarities = np.array(images_embedding) @ np.array(text_embedding)
     # Assert the highest similarity index matches the expected image index
     assert np.argmax(similarities).item() == img_index

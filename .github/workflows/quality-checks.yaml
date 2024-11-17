@@ -1,0 +1,37 @@
+name: Python Quality Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Type check main app
+        run: uv run mypy -p app --strict --ignore-missing-imports
+
+      - name: Type check tests
+        run: uv run mypy -p tests --strict --ignore-missing-imports
+
+      - name: Run ruff for linting and auto-fix
+        run: uv run ruff check .
+
+      - name: Run tests
+        run: uv run pytest

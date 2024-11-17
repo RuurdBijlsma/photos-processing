@@ -2,7 +2,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from app import ResnetTesseractOCR
+from app.machine_learning.ocr.ResnetTesseractOCR import ResnetTesseractOCR
 
 
 def test_resnet_tesseract_ocr_text(tests_folder: Path) -> None:

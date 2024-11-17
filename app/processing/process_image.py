@@ -1,14 +1,15 @@
 from pathlib import Path
 
-import pillow_avif  # type: ignore
+# noinspection PyUnresolvedReferences
+import pillow_avif
 from PIL import Image
 from exiftool.exceptions import ExifToolExecuteError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
 from app.data.database.db_utils import store_image
-from app.data.interfaces.visual_information import EmbeddingVisualInformation, \
-    BaseVisualInformation
+from app.data.interfaces.visual_information import BaseVisualInformation, \
+    OcrVisualInformation
 from app.processing.pipelines.frame_based.frame_embedding import frame_embedding
 from app.processing.pipelines.frame_based.frame_ocr import frame_ocr
 from app.processing.pipelines.generate_thumbnails import generate_thumbnails
@@ -53,7 +54,7 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
     # processing that must be done for multiple thumbnails in a video (ex. every 20%)
     # todo generate thumb every 20%
     #   and do this for every thumb
-    visual_infos: list[EmbeddingVisualInformation] = []
+    visual_infos: list[OcrVisualInformation] = []
     with Image.open(thumbnail_path) as pil_image:
         jpeg_image = pil_to_jpeg(pil_image)
 

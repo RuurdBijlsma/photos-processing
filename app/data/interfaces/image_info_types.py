@@ -76,4 +76,3 @@ class WeatherImageInfo(TimeImageInfo):
     weather_pressure: float | None = None
     weather_sun_hours: float | None = None
     weather_condition: WeatherCondition | None = None
-
