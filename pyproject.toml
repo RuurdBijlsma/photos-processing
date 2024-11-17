@@ -41,10 +41,20 @@ dependencies = [
     "watchdog>=6.0.0",
 ]
 
+[dependency-groups]
+dev = [
+    "mypy>=1.13.0",
+    "pytest>=8.3.3",
+    "ruff>=0.7.4",
+    "types-passlib>=1.7.7.20240819",
+    "types-pytz>=2024.2.0.20241003",
+    "types-tqdm>=4.66.0.20240417",
+]
+
 [tool.uv.sources]
 torch = [
   { index = "pytorch_gpu", marker = "sys_platform != 'linux'" },
-  { index = "pytorch_cpu", marker = "sys_platform == 'linux'" },
+  { index = "pytorch_gpu", marker = "sys_platform == 'linux'" },
 ]
 
 [[tool.uv.index]]
@@ -56,13 +66,3 @@ explicit = true
 name = "pytorch_cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
-
-[dependency-groups]
-dev = [
-    "mypy>=1.13.0",
-    "pytest>=8.3.3",
-    "ruff>=0.7.4",
-    "types-passlib>=1.7.7.20240819",
-    "types-pytz>=2024.2.0.20241003",
-    "types-tqdm>=4.66.0.20240417",
-]
