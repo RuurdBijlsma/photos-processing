@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pgvecto_rs.sqlalchemy import VECTOR
 from sqlalchemy import (
     Integer,
     String,
@@ -9,14 +10,14 @@ from sqlalchemy import (
     Interval,
     UniqueConstraint,
     Enum,
-    Boolean,
+    Boolean, Text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
-from photos.data.interfaces.weather_condition_codes import WeatherCondition
 from photos.data.interfaces.auth_types import Role
+from photos.data.interfaces.weather_condition_codes import WeatherCondition
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -82,6 +83,25 @@ class ImageModel(Base):
     weather_pressure = mapped_column(Float, nullable=True)
     weather_sun_hours = mapped_column(Float, nullable=True)
     weather_condition = mapped_column(Enum(WeatherCondition), nullable=True)
+    # Visual info
+    visual_information: Mapped[list["VisualInformationModel"]] = relationship(
+        "VisualInformationModel",
+        back_populates="image",
+        cascade="all, delete-orphan"
+    )
+
+
+class VisualInformationModel(Base):
+    __tablename__ = "visual_information"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    image_id: Mapped[str] = mapped_column(String, ForeignKey("images.id"))
+    image: Mapped["ImageModel"] = relationship("ImageModel",
+                                               back_populates="visual_information")
+    snapshot_time_ms = mapped_column(Integer, nullable=False)
+    # AI shit
+    embedding = mapped_column(VECTOR(768), nullable=False)
+    has_legible_text = mapped_column(Boolean, nullable=False)
+    ocr_text = mapped_column(Text, nullable=True)
 
 
 class GeoLocationModel(Base):

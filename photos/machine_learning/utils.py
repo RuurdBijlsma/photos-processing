@@ -1,6 +1,6 @@
 from PIL.Image import Image
 
-from data.interfaces.ml_types import Coordinate
+from photos.data.interfaces.ml_types import Coordinate
 
 
 def coordinate_to_proportional(

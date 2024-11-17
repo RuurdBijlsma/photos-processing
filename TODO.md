@@ -2,6 +2,8 @@
 
 * Python
     * add tests
+    * uv ipv poetry gebruiken
+    * add ocr boxes to ocr frame
     * face recognition -> clustering (dbscan) en db stuff (pgvectors)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output

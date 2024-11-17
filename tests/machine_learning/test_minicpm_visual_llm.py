@@ -2,8 +2,8 @@ from pathlib import Path
 
 from PIL import Image
 
-from machine_learning.visual_llm.VisualLLMProtocol import ChatMessage
 from photos.machine_learning.visual_llm.MiniCPMVisualLLM import MiniCPMVisualLLM
+from photos.machine_learning.visual_llm.VisualLLMProtocol import ChatMessage
 
 
 def test_minicpm_visual_llm(tests_folder: Path) -> None:

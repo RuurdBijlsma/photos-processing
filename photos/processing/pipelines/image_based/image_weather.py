@@ -7,7 +7,7 @@ from photos.data.interfaces.image_info_types import TimeImageInfo, WeatherImageI
 from photos.data.interfaces.weather_condition_codes import WeatherCondition
 
 
-def add_weather(image_info: TimeImageInfo) -> WeatherImageInfo:
+def image_weather(image_info: TimeImageInfo) -> WeatherImageInfo:
     if (
         not image_info.datetime_utc
         or not image_info.latitude

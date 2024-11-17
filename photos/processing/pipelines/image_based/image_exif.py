@@ -76,7 +76,7 @@ def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
     return nested_dict
 
 
-def add_exif_info(image_info: BaseImageInfo) -> ExifImageInfo:
+def image_exif_info(image_info: BaseImageInfo) -> ExifImageInfo:
     with ExifToolHelper() as et:
         result = et.execute_json(app_config.images_dir / image_info.relative_path)
         if (
@@ -93,7 +93,8 @@ def add_exif_info(image_info: BaseImageInfo) -> ExifImageInfo:
         alt_ref = exif_dict["EXIF"].get("GPSAltitudeRef")
         # altitude ref = 0 means above sea level
         # ref = 1 means below sea level
-        # LG G4 produces ref = 1.8 for some reason when above sea level (maybe also below?)
+        # LG G4 produces ref = 1.8 for some reason when above sea level
+        #   (maybe also below?)
         if alt_ref != 1 and alt_ref != 0 and alt_ref is not None:
             if "GPSAltitude" in exif_dict["Composite"]:
                 exif_dict["Composite"]["GPSAltitude"] = abs(

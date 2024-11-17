@@ -4,9 +4,8 @@ import numpy as np
 from PIL import Image
 from scipy.spatial.distance import cosine
 
-from machine_learning.facial_recognition.InsightFacialRecognition import (
-    InsightFacialRecognition,
-)
+from photos.machine_learning.facial_recognition.InsightFacialRecognition import \
+    InsightFacialRecognition
 
 
 def test_insight_facial_detection(tests_folder: Path) -> None:

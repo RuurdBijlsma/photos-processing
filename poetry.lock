@@ -2074,6 +2074,28 @@ build-docs = ["cloud-sptheme (>=1.10.1)", "sphinx (>=1.6)", "sphinxcontrib-fullt
 totp = ["cryptography"]
 
 [[package]]
+name = "pgvecto-rs"
+version = "0.2.2"
+description = "Python binding for pgvecto.rs"
+optional = false
+python-versions = "<3.13,>=3.8"
+files = [
+    {file = "pgvecto_rs-0.2.2-py3-none-any.whl", hash = "sha256:5f3f7f806813de408c45dc10a9eb418b986c4d7b7723e8fce9298f2f7d8fbbd5"},
+    {file = "pgvecto_rs-0.2.2.tar.gz", hash = "sha256:edaa913d1747152b1407cbdf6337d51ac852547b54953ef38997433be3a75a3b"},
+]
+
+[package.dependencies]
+numpy = ">=1.23"
+SQLAlchemy = {version = ">=2.0.23", optional = true, markers = "extra == \"sqlalchemy\""}
+toml = ">=0.10"
+
+[package.extras]
+django = ["Django (>=4.2)"]
+psycopg3 = ["psycopg[binary] (>=3.1.12)"]
+sdk = ["openai (>=1.2.2)", "pgvecto_rs[sqlalchemy]"]
+sqlalchemy = ["SQLAlchemy (>=2.0.23)"]
+
+[[package]]
 name = "pillow"
 version = "11.0.0"
 description = "Python Imaging Library (Fork)"
@@ -2390,10 +2412,7 @@ files = [
 [package.dependencies]
 annotated-types = ">=0.6.0"
 pydantic-core = "2.23.4"
-typing-extensions = [
-    {version = ">=4.12.2", markers = "python_version >= \"3.13\""},
-    {version = ">=4.6.1", markers = "python_version < \"3.13\""},
-]
+typing-extensions = {version = ">=4.6.1", markers = "python_version < \"3.13\""}
 
 [package.extras]
 email = ["email-validator (>=2.0.0)"]
@@ -3860,6 +3879,17 @@ docs = ["setuptools-rust", "sphinx", "sphinx-rtd-theme"]
 testing = ["black (==22.3)", "datasets", "numpy", "pytest", "requests", "ruff"]
 
 [[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
+
+[[package]]
 name = "torch"
 version = "2.5.1+cpu"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
@@ -4291,5 +4321,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.12"
-content-hash = "458b9bfced1e0a15bb4c80db3b1c9acd09c03f20358d04e6471a3164a7bfc938"
+python-versions = ">=3.12,<3.13"
+content-hash = "91f88b960ddd99d1042bbcd5ee47a48c611f308690f6bfb4d86c16326987afc8"

@@ -6,7 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from photos.config.app_config import app_config
 from photos.data.interfaces.auth_types import Role
 from photos.data.interfaces.image_info_types import WeatherImageInfo
-from photos.data.models.image_models import ImageModel, UserModel, GeoLocationModel
+from photos.data.interfaces.visual_information import OcrVisualInformation
+from photos.data.models.image_models import ImageModel, UserModel, GeoLocationModel, \
+    VisualInformationModel
 from photos.processing.process_utils import clean_object
 from photos.server.routers.auth.auth_model import get_password_hash
 
@@ -54,13 +56,17 @@ async def add_user(
 
 
 async def store_image(
-    image_info: WeatherImageInfo, user_id: int, session: AsyncSession
+    image_info: WeatherImageInfo,
+    visual_infos: list[OcrVisualInformation],
+    user_id: int,
+    session: AsyncSession
 ) -> ImageModel:
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
     location = cleaned_dict.pop("location")
     location_model = None
     if location and image_info.location:
+        # Check if location exists already, else create it
         location_model = (
             await session.execute(
                 select(GeoLocationModel).filter_by(
@@ -72,7 +78,15 @@ async def store_image(
         ).scalar()
         if not location_model:
             location_model = GeoLocationModel(**location)
-    image_model = ImageModel(**cleaned_dict, location=location_model, user_id=user_id)
+    image_model = ImageModel(
+        **cleaned_dict,
+        location=location_model,
+        visual_information=[
+            VisualInformationModel(**info.model_dump())
+            for info in visual_infos
+        ],
+        user_id=user_id
+    )
     session.add(image_model)
     await session.commit()
     await session.refresh(image_model)

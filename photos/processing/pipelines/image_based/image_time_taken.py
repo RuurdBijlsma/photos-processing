@@ -93,7 +93,7 @@ def get_timezone_info(
     return datetime_utc, timezone_name, timezone_offset
 
 
-def add_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
+def image_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
     datetime_taken, datetime_source = get_local_datetime(image_info)
     datetime_utc, timezone_name, timezone_offset = get_timezone_info(
         image_info, datetime_taken

@@ -10,10 +10,10 @@ from transformers import (
     ConvNextImageProcessor,
 )
 
-from config.app_config import app_config
-from data.interfaces.ml_types import OCRBox
-from machine_learning.ocr.OCRProtocol import OCRProtocol
-from machine_learning.utils import coordinate_to_proportional
+from photos.config.app_config import app_config
+from photos.data.interfaces.ml_types import OCRBox
+from photos.machine_learning.ocr.OCRProtocol import OCRProtocol
+from photos.machine_learning.utils import coordinate_to_proportional
 
 
 class ResnetTesseractOCR(OCRProtocol):

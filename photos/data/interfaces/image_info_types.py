@@ -4,8 +4,8 @@ from typing import Any
 
 from pydantic import field_serializer, BaseModel
 
-from photos.data.interfaces.weather_condition_codes import WeatherCondition
 from photos.data.interfaces.location_types import GeoLocation
+from photos.data.interfaces.weather_condition_codes import WeatherCondition
 
 
 class BaseImageInfo(BaseModel):
@@ -76,3 +76,4 @@ class WeatherImageInfo(TimeImageInfo):
     weather_pressure: float | None = None
     weather_sun_hours: float | None = None
     weather_condition: WeatherCondition | None = None
+

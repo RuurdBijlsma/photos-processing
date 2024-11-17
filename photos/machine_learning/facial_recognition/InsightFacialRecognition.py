@@ -5,11 +5,10 @@ import numpy as np
 from PIL.Image import Image
 from insightface.app import FaceAnalysis
 
-from data.interfaces.ml_types import FaceBox, FaceSex
-from machine_learning.facial_recognition.FacialRecognitionProtocol import (
-    FacialRecognitionProtocol,
-)
-from machine_learning.utils import coordinate_to_proportional
+from photos.data.interfaces.ml_types import FaceBox, FaceSex
+from photos.machine_learning.facial_recognition.FacialRecognitionProtocol import \
+    FacialRecognitionProtocol
+from photos.machine_learning.utils import coordinate_to_proportional
 
 
 class InsightFacialRecognition(FacialRecognitionProtocol):

@@ -2,7 +2,7 @@ from typing import Protocol
 
 from PIL.Image import Image
 
-from data.interfaces.ml_types import OCRBox
+from photos.data.interfaces.ml_types import OCRBox
 
 
 class OCRProtocol(Protocol):
