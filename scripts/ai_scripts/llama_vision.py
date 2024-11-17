@@ -11,36 +11,42 @@ def image_to_base64_data_uri(file_path):
         resized = img.resize((int(img.width / 1280 * 720), 720))
         buffer = BytesIO()
         resized.save(buffer, format="JPEG")
-        base_64_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        base_64_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
         return f"data:image/png;base64,{base_64_data}"
 
 
 # Replace with the actual path to your image file in WSL
-file_path = "./data/images/1/20170819_100607.jpg"
+file_path = "./media/images/1/20170819_100607.jpg"
 data_uri = image_to_base64_data_uri(file_path)
 
 # Initialize the chat handler
-chat_handler = MiniCPMv26ChatHandler(clip_model_path="./scripts/model/minicpm/mmproj-model-f16.gguf")
+chat_handler = MiniCPMv26ChatHandler(
+    clip_model_path="./scripts/model/minicpm/mmproj-model-f16.gguf"
+)
 
 # Initialize the Llama model
 llm = Llama(
     model_path="./scripts/model/minicpm/ggml-model-Q6_K.gguf",
     chat_handler=chat_handler,
-    n_ctx=2048  # Increase context window to accommodate the image embedding
+    n_ctx=2048,  # Increase context window to accommodate the image embedding
 )
 
 # Create the messages for the chat completion
 messages = [
     {
         "role": "system",
-        "content": "You are great at identifying objects in images, you keep you answers to a comma separated list of objects."},
+        "content": "You are great at identifying objects in images, you keep you answers to a comma separated list of objects.",
+    },
     {
         "role": "user",
         "content": [
             {"type": "image_url", "image_url": {"url": data_uri}},
-            {"type": "text", "text": "What are the main objects visible in this photo? (e.g., dog, car, table)?"}
-        ]
-    }
+            {
+                "type": "text",
+                "text": "What are the main objects visible in this photo? (e.g., dog, car, table)?",
+            },
+        ],
+    },
 ]
 
 # Generate the response

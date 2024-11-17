@@ -1,55 +1,68 @@
-[tool.poetry]
-name = "Ruurd Photos"
+[project]
+name = "photos"
 version = "2.0.0"
-description = ""
-authors = ["Ruurd Bijlsma <ruurd@bijlsma.dev>"]
-license = "AGPL"
+description = "Self-hosted photo and video management, including advanced search."
 readme = "README.md"
-packages = [{ include = "*", from = "photos" }]
+requires-python = ">=3.12,<3.13"
+authors = [
+    { name = "Ruurd Bijlsma", email = "ruurd@bijlsma.dev" }
+]
+dependencies = [
+    "accelerate>=1.1.1",
+    "alembic>=1.14.0",
+    "async-lru>=2.0.4",
+    "asyncpg>=0.30.0",
+    "bitsandbytes>=0.44.1",
+    "fastapi[standard]>=0.115.5",
+    "insightface>=0.7.3",
+    "meteostat>=1.6.8",
+    "onnxruntime>=1.20.0",
+    "opencv-python>=4.10.0.84",
+    "parsed-ffmpeg>=0.2.3",
+    "passlib[bcrypt]>=1.7.4",
+    "pgvecto-rs[sqlalchemy]>=0.2.2",
+    "pillow>=11.0.0",
+    "pillow-avif-plugin>=1.4.6",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.6.1",
+    "pyexiftool>=0.5.6",
+    "pyjwt>=2.10.0",
+    "pytesseract>=0.3.13",
+    "python-multipart>=0.0.17",
+    "pytz>=2024.2",
+    "reverse-geocode>=1.6.5",
+    "sentencepiece>=0.2.0",
+    "sqlalchemy>=2.0.36",
+    "timezonefinder>=6.5.4",
+    "torch>=2.5.1",
+    "torchvision>=0.20.1",
+    "tqdm>=4.67.0",
+    "transformers>=4.46.2",
+    "watchdog>=6.0.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.115.3"
-pydantic = "^2.9.2"
-uvicorn = "^0.32.0"
-pydantic-settings = "^2.6.0"
-alembic = "^1.13.3"
-sqlalchemy = { extras = ["asyncio"], version = "^2.0.36" }
-asyncpg = "^0.30.0"
-async-lru = "^2.0.4"
-pyexiftool = "^0.5.6"
-pillow = "^11.0.0"
-tqdm = "^4.66.5"
-reverse-geocode = "^1.6.5"
-parsed-ffmpeg = "^0.2.3"
-pytz = "^2024.2"
-timezonefinder = "^6.5.4"
-watchdog = "6.0.0"
-pyjwt = "^2.9.0"
-passlib = { extras = ["bcrypt"], version = "^1.7.4" }
-python-multipart = "0.0.17"
-pillow-avif-plugin = "^1.4.6"
-meteostat = "^1.6.8"
-torch = { version = "^2.5.1+cu124", source = "pytorch_gpu" }
-torchvision = { version = "^0.20.1+cu124", source = "pytorch_gpu" }
-transformers = "^4.46.2"
+[dependency-groups]
+dev = [
+    "mypy>=1.13.0",
+    "pytest>=8.3.3",
+    "ruff>=0.7.4",
+    "types-passlib>=1.7.7.20240819",
+    "types-pytz>=2024.2.0.20241003",
+    "types-tqdm>=4.66.0.20240417",
+]
 
+[tool.uv.sources]
+torch = [
+  { index = "pytorch_gpu", marker = "sys_platform != 'linux'" },
+  { index = "pytorch_gpu", marker = "sys_platform == 'linux'" },
+]
 
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^4.0.1"
-mypy = "^1.13.0"
-types-tqdm = "^4.66.0.20240417"
-types-pytz = "^2024.2.0.20241003"
-ruff = "^0.7.2"
-types-passlib = "^1.7.7.20240819"
-pytest = "^8.3.3"
-
-
-[[tool.poetry.source]]
+[[tool.uv.index]]
 name = "pytorch_gpu"
 url = "https://download.pytorch.org/whl/cu124"
-priority = "explicit"
+explicit = true
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[[tool.uv.index]]
+name = "pytorch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

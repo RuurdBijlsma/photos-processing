@@ -5,7 +5,7 @@ elements = partition_image("ocr.jpg")
 
 out_txt = ""
 for element in elements:
-    if hasattr(element, 'text'):
+    if hasattr(element, "text"):
         out_txt += element.text.strip() + "\n"
 
 print(out_txt)

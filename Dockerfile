@@ -1,32 +1,14 @@
-# The builder image, used to build the virtual environment
-FROM python:3.12.7 AS builder
+FROM python:3.12-slim
 
-RUN pip install poetry==1.8.3
+# Install uv.
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+# Copy the application into the container.
+COPY . /app
 
+# Install the application dependencies.
 WORKDIR /app
+RUN uv sync --frozen --no-cache
 
-COPY pyproject.toml poetry.lock ./
-RUN touch README.md && \
-    poetry install --without dev --no-root && rm -rf "$POETRY_CACHE_DIR"
-
-# The runtime image, used to just run the code provided its virtual environment
-FROM python:3.12.7-slim AS runtime
-WORKDIR /app
-ENV PYTHONPATH="/app"
-
-ENV VIRTUAL_ENV=/app/.venv \
-    PATH="/app/.venv/bin:$PATH"
-
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-
-COPY photos ./photos
-COPY alembic ./alembic
-COPY alembic.ini .
-
-EXPOSE 9475
-CMD ["fastapi", "run", "photos/server.py", "--port", "9475"]
+# Run the application.
+CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]

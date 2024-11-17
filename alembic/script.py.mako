@@ -9,6 +9,8 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from pgvecto_rs.sqlalchemy import VECTOR
+from pgvecto_rs.types import IndexOption, Hnsw
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.
