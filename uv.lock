@@ -1022,7 +1022,7 @@ sqlalchemy = [
 [[package]]
 name = "photos"
 version = "2.0.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "accelerate" },
     { name = "alembic" },
