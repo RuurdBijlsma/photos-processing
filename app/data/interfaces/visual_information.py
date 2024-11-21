@@ -23,7 +23,7 @@ class FacesVisualInformation(OCRVisualInformation):
 
 
 class CaptionVisualInformation(FacesVisualInformation):
-    caption: str
+    caption: str | None
 
 
 class ObjectsVisualInformation(CaptionVisualInformation):

@@ -123,7 +123,7 @@ class VisualInformationModel(Base):
         cascade="all, delete-orphan"
     )
     # Caption
-    caption = mapped_column(String, nullable=False)
+    caption = mapped_column(String, nullable=True)
 
 
 class ObjectBoxModel(Base):

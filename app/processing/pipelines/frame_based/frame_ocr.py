@@ -28,7 +28,8 @@ def frame_ocr(
 
     # Check if this could be a photo of a document
     if (
-        has_text
+        app_config.enable_llm
+        and has_text
         and extracted_text
         and len(extracted_text) > app_config.document_detection_threshold
     ):

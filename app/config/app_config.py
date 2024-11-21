@@ -16,6 +16,7 @@ class AppConfig(BaseSettings):
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
     media_languages: list[str] = ["nld", "eng"]
+    enable_llm: bool = False
 
     document_detection_threshold: int = Field(
         default=65,
