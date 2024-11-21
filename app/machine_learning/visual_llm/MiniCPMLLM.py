@@ -19,19 +19,20 @@ from app.machine_learning.visual_llm.VisualLLMProtocol import (
 
 @lru_cache
 def get_model_and_tokenizer() -> tuple[PreTrainedModel, PreTrainedTokenizerFast]:
-    model = AutoModel.from_pretrained(
-        "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
-    )
-    model.eval()
-    if torch.cuda.is_available():
-        model.cuda()
+    with torch.no_grad():
+        model = AutoModel.from_pretrained(
+            "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
+        )
+        model.eval()
+        if torch.cuda.is_available():
+            model.cuda()
     tokenizer = AutoTokenizer.from_pretrained(
         "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
     )
     return model, tokenizer
 
 
-class MiniCPMVisualLLM(VisualLLMProtocol):
+class MiniCPMLLM(VisualLLMProtocol):
 
     def image_question(self, image: Image, question: str) -> str:
         answer, _ = self.chat(ChatMessage(message=question, images=[image]))
@@ -48,13 +49,20 @@ class MiniCPMVisualLLM(VisualLLMProtocol):
         image: Image | None = None,
         convert_images: bool = True,
         temperature: float = 0.7,
+        max_tokens: int = 500,
     ) -> tuple[str, list[ChatMessage]]:
         if history is None:
             history = []
         messages = history + [message]
 
         answer = self._chat(
-            message, history, image, convert_images, temperature, stream=False
+            message,
+            history,
+            image,
+            convert_images,
+            temperature,
+            max_tokens,
+            stream=False
         )
         assert isinstance(answer, str)
         return answer, messages + [ChatMessage(message=answer, role=ChatRole.ASSISTANT)]
@@ -66,9 +74,16 @@ class MiniCPMVisualLLM(VisualLLMProtocol):
         image: Image | None = None,
         convert_images: bool = True,
         temperature: float = 0.7,
+        max_tokens: int = 500,
     ) -> Generator[str, None, None]:
         result = self._chat(
-            message, history, image, convert_images, temperature, stream=True
+            message,
+            history,
+            image,
+            convert_images,
+            temperature,
+            max_tokens,
+            stream=True
         )
         assert isinstance(result, Generator)
         return result
@@ -80,6 +95,7 @@ class MiniCPMVisualLLM(VisualLLMProtocol):
         image: Image | None = None,
         convert_images: bool = True,
         temperature: float = 0.7,
+        max_tokens: int = 500,
         stream: bool = False,
     ) -> Generator[str, None, None] | str:
         if history is None:

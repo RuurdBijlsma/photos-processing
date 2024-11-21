@@ -334,6 +334,15 @@ wheels = [
 ]
 
 [[package]]
+name = "distro"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/f8/98eea607f65de6527f8a2e8885fc8015d3e6f5775df186e443e0964a11c3/distro-1.9.0.tar.gz", hash = "sha256:2fa77c6fd8940f116ee1d6b94a2f90b13b5ea8d019b98bc8bafdcabcdd9bdbed", size = 60722 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/b3/231ffd4ab1fc9d679809f356cebee130ac7daa00d6d6f3206dd4fd137e9e/distro-1.9.0-py3-none-any.whl", hash = "sha256:7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2", size = 20277 },
+]
+
+[[package]]
 name = "dnspython"
 version = "2.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -647,6 +656,26 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ed/55/39036716d19cab0747a5020fc7e907f362fbf48c984b14e62127f7e68e5d/jinja2-3.1.4.tar.gz", hash = "sha256:4a3aee7acbbe7303aede8e9648d13b8bf88a429282aa6122a993f0ac800cb369", size = 240245 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/80/3a54838c3fb461f6fec263ebf3a3a41771bd05190238de3486aae8540c36/jinja2-3.1.4-py3-none-any.whl", hash = "sha256:bc5dd2abb727a5319567b7a813e6a2e7318c39f4f487cfe6c89c6f9c7d25197d", size = 133271 },
+]
+
+[[package]]
+name = "jiter"
+version = "0.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/46/e5/50ff23c9bba2722d2f0f55ba51e57f7cbab9a4be758e6b9b263ef51e6024/jiter-0.7.1.tar.gz", hash = "sha256:448cf4f74f7363c34cdef26214da527e8eeffd88ba06d0b80b485ad0667baf5d", size = 162334 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/b3/de89eae8f57dc0ee5f6e3aa1ffcdee0364ef9ef85be81006fd17d7710ffa/jiter-0.7.1-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:ad36a1155cbd92e7a084a568f7dc6023497df781adf2390c345dd77a120905ca", size = 291900 },
+    { url = "https://files.pythonhosted.org/packages/c0/ff/0d804eff4751fceeabc6311d4b07e956daa06fa58f05931887dc7454466b/jiter-0.7.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7ba52e6aaed2dc5c81a3d9b5e4ab95b039c4592c66ac973879ba57c3506492bb", size = 304390 },
+    { url = "https://files.pythonhosted.org/packages/e8/26/c258bef532d113a7ac26242893fc9760040a4846dec731098b7f5ac3fca7/jiter-0.7.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2b7de0b6f6728b678540c7927587e23f715284596724be203af952418acb8a2d", size = 328710 },
+    { url = "https://files.pythonhosted.org/packages/71/92/644dc215cbb9816112e28f3b43a8c8e769f083434a05fc3afd269c444f51/jiter-0.7.1-cp312-cp312-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:9463b62bd53c2fb85529c700c6a3beb2ee54fde8bef714b150601616dcb184a6", size = 347569 },
+    { url = "https://files.pythonhosted.org/packages/c6/02/795a3535262c54595bd97e375cc03b443717febb37723a7f9c077049825b/jiter-0.7.1-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:627164ec01d28af56e1f549da84caf0fe06da3880ebc7b7ee1ca15df106ae172", size = 373641 },
+    { url = "https://files.pythonhosted.org/packages/7d/35/c7e9a06a49116e3618954f6c8a26816a7959c0f9e5617b0073e4145c5d6d/jiter-0.7.1-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:25d0e5bf64e368b0aa9e0a559c3ab2f9b67e35fe7269e8a0d81f48bbd10e8963", size = 388828 },
+    { url = "https://files.pythonhosted.org/packages/fb/05/894144e4cbc1b9d46756db512268a90f84fc1d8bd28f1a17e0fef5aaf5c5/jiter-0.7.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c244261306f08f8008b3087059601997016549cb8bb23cf4317a4827f07b7d74", size = 325511 },
+    { url = "https://files.pythonhosted.org/packages/19/d3/e6674ac34de53787504e4fb309084f824df321f24113121d94bf53808be3/jiter-0.7.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:7ded4e4b75b68b843b7cea5cd7c55f738c20e1394c68c2cb10adb655526c5f1b", size = 365940 },
+    { url = "https://files.pythonhosted.org/packages/e9/ca/c773f0ce186090cc69a2c97b8dab3dad14ae9988a657a20d879458a8407e/jiter-0.7.1-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:80dae4f1889b9d09e5f4de6b58c490d9c8ce7730e35e0b8643ab62b1538f095c", size = 515430 },
+    { url = "https://files.pythonhosted.org/packages/16/5f/c98f6e6362fbc7c87ad384ba8506983fca9bb55ea0af7efcb23e7dd22817/jiter-0.7.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:5970cf8ec943b51bce7f4b98d2e1ed3ada170c2a789e2db3cb484486591a176a", size = 497389 },
+    { url = "https://files.pythonhosted.org/packages/30/60/f60e12469afc9096bac3df0fda53de707ed5105d84322a0d1bc4ad03ee3e/jiter-0.7.1-cp312-none-win32.whl", hash = "sha256:701d90220d6ecb3125d46853c8ca8a5bc158de8c49af60fd706475a49fee157e", size = 198546 },
+    { url = "https://files.pythonhosted.org/packages/01/d2/d8ec257544f7991384a46fccee6abdc5065cfede26354bb2c86251858a92/jiter-0.7.1-cp312-none-win_amd64.whl", hash = "sha256:7824c3ecf9ecf3321c37f4e4d4411aad49c666ee5bc2a937071bdd80917e4533", size = 202792 },
 ]
 
 [[package]]
@@ -1017,6 +1046,25 @@ wheels = [
 ]
 
 [[package]]
+name = "openai"
+version = "1.54.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "jiter" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/29/d480df62c061ce065d33976b263806bad334597c178948e69907db256a77/openai-1.54.5.tar.gz", hash = "sha256:2aab4f9755a3e1e04d8a45ac1f4ce7b6948bab76646020c6386256d7e5cbb7e0", size = 313838 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/90/7f6621a79de8b32f120e9790441c24dd9afafb2f1ca41fd3b9f4faaf8f9f/openai-1.54.5-py3-none-any.whl", hash = "sha256:f55a4450f38501814b53e76311ed7845a6f7f35bab46d0fb2a3728035d7a72d8", size = 389475 },
+]
+
+[[package]]
 name = "opencv-python"
 version = "4.10.0.84"
 source = { registry = "https://pypi.org/simple" }
@@ -1135,6 +1183,7 @@ dependencies = [
     { name = "insightface" },
     { name = "meteostat" },
     { name = "onnxruntime" },
+    { name = "openai" },
     { name = "opencv-python" },
     { name = "parsed-ffmpeg" },
     { name = "passlib", extra = ["bcrypt"] },
@@ -1180,6 +1229,7 @@ requires-dist = [
     { name = "insightface", specifier = ">=0.7.3" },
     { name = "meteostat", specifier = ">=1.6.8" },
     { name = "onnxruntime", specifier = ">=1.20.0" },
+    { name = "openai", specifier = ">=1.54.5" },
     { name = "opencv-python", specifier = ">=4.10.0.84" },
     { name = "parsed-ffmpeg", specifier = ">=0.2.3" },
     { name = "passlib", extras = ["bcrypt"], specifier = ">=1.7.4" },

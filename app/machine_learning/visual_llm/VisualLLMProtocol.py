@@ -9,6 +9,7 @@ from PIL.Image import Image
 class ChatRole(StrEnum):
     ASSISTANT = auto()
     USER = auto()
+    SYSTEM = auto()
 
 
 @dataclass
@@ -30,6 +31,7 @@ class VisualLLMProtocol(Protocol):
         image: Image | None = None,
         convert_images: bool = True,
         temperature: float = 0.7,
+        max_tokens: int = 500,
     ) -> tuple[str, list[ChatMessage]]: ...
 
     def stream_chat(
@@ -39,4 +41,5 @@ class VisualLLMProtocol(Protocol):
         image: Image | None = None,
         convert_images: bool = True,
         temperature: float = 0.7,
+        max_tokens: int = 500,
     ) -> Generator[str, None, None]: ...

@@ -17,6 +17,7 @@ dependencies = [
     "insightface>=0.7.3",
     "meteostat>=1.6.8",
     "onnxruntime>=1.20.0",
+    "openai>=1.54.5",
     "opencv-python>=4.10.0.84",
     "parsed-ffmpeg>=0.2.3",
     "passlib[bcrypt]>=1.7.4",
