@@ -2,9 +2,9 @@ from PIL.Image import Image
 
 from app.data.interfaces.visual_information import CaptionVisualInformation, \
     FacesVisualInformation
-from app.machine_learning.visual_llm.MiniCPMVisualLLM import MiniCPMVisualLLM
+from app.machine_learning.visual_llm.MiniCPMLLM import MiniCPMLLM
 
-llm = MiniCPMVisualLLM()
+llm = MiniCPMLLM()
 
 
 def frame_caption(

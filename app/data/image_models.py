@@ -104,6 +104,12 @@ class VisualInformationModel(Base):
     has_legible_text = mapped_column(Boolean, nullable=False)
     ocr_text = mapped_column(Text, nullable=True)
     document_summary = mapped_column(Text, nullable=True)
+    # Objects
+    objects: Mapped[list["ObjectBoxModel"]] = relationship(
+        "ObjectBoxModel",
+        back_populates="visual_information",
+        cascade="all, delete-orphan"
+    )
     # OCR
     ocr_boxes: Mapped[list["OCRBoxModel"]] = relationship(
         "OCRBoxModel",
@@ -120,6 +126,23 @@ class VisualInformationModel(Base):
     caption = mapped_column(String, nullable=False)
 
 
+class ObjectBoxModel(Base):
+    __tablename__ = 'object_boxes'
+
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visual_information_id = mapped_column(Integer, ForeignKey("visual_information.id"))
+    visual_information: Mapped["VisualInformationModel"] = relationship(
+        "VisualInformationModel",
+        back_populates="objects"
+    )
+
+    position: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+    width = mapped_column(Float, nullable=False)
+    height = mapped_column(Float, nullable=False)
+    label = mapped_column(String, nullable=False)
+    confidence = mapped_column(Float, nullable=False)
+
+
 class OCRBoxModel(Base):
     __tablename__ = 'ocr_boxes'
 
@@ -134,7 +157,7 @@ class OCRBoxModel(Base):
     width = mapped_column(Float, nullable=False)
     height = mapped_column(Float, nullable=False)
     text = mapped_column(String, nullable=False)
-    confidence = mapped_column(Integer, nullable=False)
+    confidence = mapped_column(Float, nullable=False)
 
 
 class FaceBoxModel(Base):

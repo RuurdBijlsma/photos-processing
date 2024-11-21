@@ -4,5 +4,5 @@ import pytest
 
 
 @pytest.fixture(scope="module")
-def tests_folder() -> Path:
-    return Path(__file__).parent
+def assets_folder() -> Path:
+    return Path(__file__).parent / "assets"

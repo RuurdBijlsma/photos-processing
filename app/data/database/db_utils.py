@@ -5,11 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
 from app.data.image_models import ImageModel, UserModel, GeoLocationModel, \
-    VisualInformationModel, OCRBoxModel, FaceBoxModel
+    VisualInformationModel, OCRBoxModel, FaceBoxModel, ObjectBoxModel
 from app.data.interfaces.auth_types import Role
 from app.data.interfaces.image_info_types import WeatherImageInfo
-from app.data.interfaces.visual_information import FacesVisualInformation, \
-    CaptionVisualInformation
+from app.data.interfaces.visual_information import ObjectsVisualInformation
 from app.processing.process_utils import clean_object
 from app.routers.auth.auth_model import get_password_hash
 
@@ -63,7 +62,7 @@ def without(dictionary, *keys_to_remove):
 
 async def store_image(
     image_info: WeatherImageInfo,
-    visual_infos: list[CaptionVisualInformation],
+    visual_infos: list[ObjectsVisualInformation],
     user_id: int,
     session: AsyncSession
 ) -> ImageModel:
@@ -89,15 +88,22 @@ async def store_image(
         **cleaned_dict,
         location=location_model,
         visual_information=[
-            VisualInformationModel(**without(info.model_dump(), "ocr_boxes", "faces"),
+            VisualInformationModel(**without(
+                info.model_dump(),
+                "ocr_boxes", "faces", "objects"
+            ),
                                    ocr_boxes=[
                                        OCRBoxModel(**box.model_dump())
                                        for box in info.ocr_boxes
                                    ],
+                                   objects=[
+                                       ObjectBoxModel(**box.model_dump())
+                                       for box in info.objects
+                                   ],
                                    faces=[
                                        FaceBoxModel(**face.model_dump())
                                        for face in info.faces
-                                   ]
+                                   ],
                                    )
             for info in visual_infos
         ],

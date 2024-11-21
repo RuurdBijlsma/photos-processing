@@ -8,10 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.app_config import app_config
 from app.data.database.db_utils import store_image
 from app.data.interfaces.visual_information import BaseVisualInformation, \
-    CaptionVisualInformation
+    ObjectsVisualInformation
 from app.processing.pipelines.frame_based.frame_caption import frame_caption
 from app.processing.pipelines.frame_based.frame_embedding import frame_embedding
 from app.processing.pipelines.frame_based.frame_faces import frame_faces
+from app.processing.pipelines.frame_based.frame_object_detection import \
+    frame_object_detection
 from app.processing.pipelines.frame_based.frame_ocr import frame_ocr
 from app.processing.pipelines.generate_thumbnails import generate_thumbnails
 from app.processing.pipelines.image_based.base_info import base_info
@@ -53,7 +55,7 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
     # processing that must be done for multiple thumbnails in a video (ex. every 20%)
     # todo generate thumb every 20%
     #   and do this for every thumb
-    visual_infos: list[CaptionVisualInformation] = []
+    visual_infos: list[ObjectsVisualInformation] = []
     with Image.open(thumbnail_path) as pil_image:
         jpeg_image = pil_to_jpeg(pil_image)
 
@@ -62,7 +64,8 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
         ocr_info = frame_ocr(embed_info, jpeg_image)
         faces_info = frame_faces(ocr_info, jpeg_image)
         caption_info = frame_caption(faces_info, jpeg_image)
-        visual_infos.append(caption_info)
+        objects_info = frame_object_detection(caption_info, jpeg_image)
+        visual_infos.append(objects_info)
 
         jpeg_image.close()
 

@@ -6,10 +6,11 @@ from scipy.spatial.distance import cosine
 
 from app.machine_learning.facial_recognition.InsightFacialRecognition import \
     InsightFacialRecognition
+from app.machine_learning.utils import draw_bounding_box
 
 
-def test_insight_facial_detection(tests_folder: Path) -> None:
-    image = Image.open(tests_folder / "assets/faces.webp")
+def test_insight_facial_detection(assets_folder: Path) -> None:
+    image = Image.open(assets_folder / "faces.webp")
     facial_recognition = InsightFacialRecognition()
 
     faces = facial_recognition.get_faces(image)
@@ -17,11 +18,11 @@ def test_insight_facial_detection(tests_folder: Path) -> None:
     assert len(faces) == 15
 
 
-def test_insight_facial_recognition(tests_folder: Path) -> None:
-    img_1_a = Image.open(tests_folder / "assets/face1_a.jpg")
-    img_1_b = Image.open(tests_folder / "assets/face1_b.jpg")
-    img_2_a = Image.open(tests_folder / "assets/face2_a.jpg")
-    img_2_b = Image.open(tests_folder / "assets/face2_b.jpg")
+def test_insight_facial_recognition(assets_folder: Path) -> None:
+    img_1_a = Image.open(assets_folder / "face1_a.jpg")
+    img_1_b = Image.open(assets_folder / "face1_b.jpg")
+    img_2_a = Image.open(assets_folder / "face2_a.jpg")
+    img_2_b = Image.open(assets_folder / "face2_b.jpg")
     facial_recognition = InsightFacialRecognition()
 
     face1_a = facial_recognition.get_faces(img_1_a)[0]
@@ -31,6 +32,7 @@ def test_insight_facial_recognition(tests_folder: Path) -> None:
 
     walter = [face1_a, face1_b]
     micheal = [face2_a, face2_b]
+    draw_bounding_box(face2_a, img_2_a, f"test_img_out/face.jpg")
 
     faces = [face1_a, face1_b, face2_a, face2_b]
     for face in faces:

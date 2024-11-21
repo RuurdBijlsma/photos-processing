@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.data.interfaces.ml_types import OCRBox, FaceBox
+from app.data.interfaces.ml_types import OCRBox, FaceBox, ObjectBox
 
 
 class BaseVisualInformation(BaseModel):
@@ -24,3 +24,7 @@ class FacesVisualInformation(OCRVisualInformation):
 
 class CaptionVisualInformation(FacesVisualInformation):
     caption: str
+
+
+class ObjectsVisualInformation(CaptionVisualInformation):
+    objects: list[ObjectBox]

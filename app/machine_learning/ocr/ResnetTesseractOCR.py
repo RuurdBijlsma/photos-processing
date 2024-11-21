@@ -63,7 +63,7 @@ class ResnetTesseractOCR(OCRProtocol):
                 width=ocr_data["width"][i] / image.width,
                 height=ocr_data["height"][i] / image.height,
                 text=ocr_data["text"][i],
-                confidence=ocr_data["conf"][i],
+                confidence=ocr_data["conf"][i] / 100,
             )
             if box.text.strip() == "" or box.confidence < 0:
                 continue

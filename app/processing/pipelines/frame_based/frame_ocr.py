@@ -5,10 +5,10 @@ from app.data.interfaces.ml_types import OCRBox
 from app.data.interfaces.visual_information import EmbeddingVisualInformation, \
     OCRVisualInformation
 from app.machine_learning.ocr.ResnetTesseractOCR import ResnetTesseractOCR
-from app.machine_learning.visual_llm.MiniCPMVisualLLM import MiniCPMVisualLLM
+from app.machine_learning.visual_llm.MiniCPMLLM import MiniCPMLLM
 
 ocr = ResnetTesseractOCR()
-llm = MiniCPMVisualLLM()
+llm = MiniCPMLLM()
 
 
 def frame_ocr(

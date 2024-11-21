@@ -17,3 +17,4 @@ logs
 *.gguf
 *.safetensors
 postgres/*.deb
+test_img_out

@@ -3,13 +3,20 @@ from enum import StrEnum
 from pydantic import BaseModel
 
 
-class OCRBox(BaseModel):
+class BaseBoundingBox(BaseModel):
+    # position, width, height are proportional to full image width/height
     position: tuple[float, float]
-    # width, height are proportional to full image width/height
     width: float
     height: float
+    confidence: float
+
+
+class ObjectBox(BaseBoundingBox):
+    label: str
+
+
+class OCRBox(BaseBoundingBox):
     text: str
-    confidence: int
 
 
 class FaceSex(StrEnum):
@@ -17,13 +24,8 @@ class FaceSex(StrEnum):
     Female = "F"
 
 
-class FaceBox(BaseModel):
-    position: tuple[float, float]
-    # width, height are proportional to full image width/height
-    width: float
-    height: float
+class FaceBox(BaseBoundingBox):
     age: int
-    confidence: float
     sex: FaceSex
     mouth_left: tuple[float, float]
     mouth_right: tuple[float, float]

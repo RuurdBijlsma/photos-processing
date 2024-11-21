@@ -9,14 +9,14 @@ from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
 
 @pytest.fixture(scope="module")
 def setup_embedder(
-    tests_folder: Path,
+    assets_folder: Path,
 ) -> tuple[CLIPEmbedder, list[Image.Image], list[list[float]]]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
-    cat_img = Image.open(tests_folder / "assets/cat.jpg")
-    cluster_img = Image.open(tests_folder / "assets/cluster.jpg")
-    sunset_img = Image.open(tests_folder / "assets/sunset.jpg")
+    cat_img = Image.open(assets_folder / "cat.jpg")
+    cluster_img = Image.open(assets_folder / "cluster.jpg")
+    sunset_img = Image.open(assets_folder / "sunset.jpg")
     images: list[Image.Image] = [cat_img, cluster_img, sunset_img]
     images_embedding = embedder.embed_images(images)
 

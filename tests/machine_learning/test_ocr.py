@@ -3,10 +3,11 @@ from pathlib import Path
 from PIL import Image
 
 from app.machine_learning.ocr.ResnetTesseractOCR import ResnetTesseractOCR
+from app.machine_learning.utils import draw_bounding_box
 
 
-def test_resnet_tesseract_ocr_text(tests_folder: Path) -> None:
-    image = Image.open(tests_folder / "assets/ocr.jpg")
+def test_resnet_tesseract_ocr_text(assets_folder: Path) -> None:
+    image = Image.open(assets_folder / "ocr.jpg")
     ocr = ResnetTesseractOCR()
     has_text = ocr.has_legible_text(image)
     assert has_text
@@ -15,11 +16,13 @@ def test_resnet_tesseract_ocr_text(tests_folder: Path) -> None:
     assert "SPAGHETTI" in extracted_text.upper()
 
 
-def test_resnet_tesseract_ocr_boxes(tests_folder: Path) -> None:
-    image = Image.open(tests_folder / "assets/ocr.jpg")
+def test_resnet_tesseract_ocr_boxes(assets_folder: Path) -> None:
+    image = Image.open(assets_folder / "ocr.jpg")
     ocr = ResnetTesseractOCR()
 
     boxes = ocr.get_boxes(image)
+    for box in boxes:
+        draw_bounding_box(box, image, f"test_img_out/{box.text}_out_ocr.jpg")
     assert len(boxes) > 50
     found_spaghetti = False
     for box in boxes:
