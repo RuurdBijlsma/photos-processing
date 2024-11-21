@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,9 @@ from app.machine_learning.visual_llm.VisualLLMProtocol import ChatMessage, \
 @pytest.mark.cuda
 @pytest.mark.parametrize("visual_llm", [MiniCPMLLM(), OpenAILLM()])
 def test_minicpm_visual_llm(tests_folder: Path, visual_llm: VisualLLMProtocol) -> None:
+    if isinstance(visual_llm, OpenAILLM) and os.environ.get("OPENAI_API_KEY") == None:
+        # Only run test if OPENAI_API_KEY is set.
+        pytest.skip("OPENAI_API_KEY is not set, so OpenAILLM test is skipped.")
     image = Image.open(tests_folder / "assets/cat.jpg")
     answer = visual_llm.image_question(
         image=image, question="What creature is laying on this bed?"

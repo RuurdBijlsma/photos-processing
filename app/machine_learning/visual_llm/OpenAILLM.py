@@ -1,4 +1,5 @@
 import base64
+import os
 from collections.abc import Generator
 from io import BytesIO
 
@@ -11,7 +12,8 @@ from app.machine_learning.visual_llm.VisualLLMProtocol import (
     ChatMessage, ChatRole,
 )
 
-client = OpenAI()
+if os.environ.get("OPENAI_API_KEY") is not None:
+    client = OpenAI()
 
 
 def to_base64_url(image: Image, max_size=720):
