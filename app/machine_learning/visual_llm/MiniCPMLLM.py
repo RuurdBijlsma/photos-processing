@@ -25,7 +25,9 @@ def get_model_and_tokenizer() -> tuple[PreTrainedModel, PreTrainedTokenizerFast]
         )
         model.eval()
         if torch.cuda.is_available():
-            model.cuda()
+            model.to(torch.device("cuda"))
+        if torch.backends.mps.is_available():
+            model.to(torch.device("mps"))
     tokenizer = AutoTokenizer.from_pretrained(
         "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
     )

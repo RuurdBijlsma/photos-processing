@@ -54,18 +54,12 @@ dev = [
 
 [tool.uv.sources]
 torch = [
-  { index = "pytorch_gpu", marker = "sys_platform != 'linux'" },
-  { index = "pytorch_gpu", marker = "sys_platform == 'linux'" },
+    { index = "pytorch_gpu", marker = "sys_platform != 'darwin'" },
 ]
 
 [[tool.uv.index]]
 name = "pytorch_gpu"
 url = "https://download.pytorch.org/whl/cu124"
-explicit = true
-
-[[tool.uv.index]]
-name = "pytorch_cpu"
-url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
 [tool.uv.workspace]
