@@ -2,6 +2,8 @@
 
 * Python
     * add tests
+    * Cluster images!
+      * werkt best leuk, ik krijg allemaal poekie images
     * face recognition -> clustering (dbscan) en db stuff (pgvectors)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * periodically recluster faces
