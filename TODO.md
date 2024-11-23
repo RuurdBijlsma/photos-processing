@@ -4,6 +4,8 @@
     * add tests
     * face recognition -> clustering (dbscan) en db stuff (pgvectors)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
+    * periodically recluster faces
+      * when reclustering, how do i keep user labels for cluster labels? (compare embeddings of centroids)
     * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
       * input: image file path
       * output: everything that's in an image db row. (apart from timezone fixes and facial recognition probably)

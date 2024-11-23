@@ -35,15 +35,9 @@ async def find_proximate_coordinate(
 
 async def fill_timezone_gaps(session: AsyncSession, user_id: int) -> None:
     try:
-        no_tz_images = (
-            (
-                await session.execute(
-                    select(ImageModel).where(ImageModel.timezone_name.is_(None))
-                )
-            )
-            .scalars()
-            .all()
-        )
+        no_tz_images = (await session.execute(
+            select(ImageModel).where(ImageModel.timezone_name.is_(None))
+        )).scalars().all()
         closest_image_coordinates: list[tuple[float, float] | None] = []
         for image in tqdm(no_tz_images, desc="Finding image timezones", unit="image"):
             closest_image_coordinates.append(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pgvecto_rs.sqlalchemy import VECTOR
+from pgvecto_rs.types import Vector
 from sqlalchemy import (
     Integer,
     String,
@@ -100,7 +101,7 @@ class VisualInformationModel(Base):
                                                back_populates="visual_information")
     snapshot_time_ms = mapped_column(Integer, nullable=False)
     # AI shit
-    embedding = mapped_column(VECTOR(768), nullable=False)
+    embedding: Mapped[Vector] = mapped_column(VECTOR(768), nullable=False)
     has_legible_text = mapped_column(Boolean, nullable=False)
     ocr_text = mapped_column(Text, nullable=True)
     document_summary = mapped_column(Text, nullable=True)
@@ -169,6 +170,11 @@ class FaceBoxModel(Base):
         "VisualInformationModel",
         back_populates="faces"
     )
+    unique_face_id = mapped_column(Integer, ForeignKey("unique_faces.id"))
+    unique_face: Mapped["UniqueFaceModel"] = relationship(
+        "UniqueFaceModel",
+        back_populates="faces"
+    )
 
     # Position and dimensions
     position: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
@@ -190,7 +196,20 @@ class FaceBoxModel(Base):
     eye_right: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
 
     # Embedding
-    embedding = mapped_column(VECTOR(512), nullable=False)
+    embedding: Mapped[Vector] = mapped_column(VECTOR(512), nullable=False)
+
+
+class UniqueFaceModel(Base):
+    __tablename__ = "unique_faces"
+
+    id = mapped_column(Integer, primary_key=True)
+    centroid: Mapped[Vector] = mapped_column(VECTOR(512), nullable=False)
+    user_provided_label = mapped_column(String, nullable=True)
+
+    # One-to-many relationship with FaceBox
+    faces: Mapped[list[FaceBoxModel]] = relationship(
+        FaceBoxModel, back_populates="unique_face"
+    )
 
 
 class GeoLocationModel(Base):

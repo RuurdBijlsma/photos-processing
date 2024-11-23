@@ -12,7 +12,7 @@ from watchdog.events import (
 from app.config.app_config import app_config
 from app.data.database.database import get_session_maker
 from app.data.database.db_utils import rel_path, delete_media
-from app.processing.process_image import process_media
+from app.processing.pipelines.process_image import process_media
 
 
 class NewMediaHandler(FileSystemEventHandler):

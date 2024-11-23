@@ -12,7 +12,7 @@ from app.processing.cleanup.drop_images_without_thumbnails import (
     drop_images_without_thumbnails,
 )
 from app.processing.post_processing.fix_timezone import fill_timezone_gaps
-from app.processing.process_image import process_media
+from app.processing.pipelines.process_image import process_media
 
 
 async def image_exists(image_path: Path, session: AsyncSession) -> bool:

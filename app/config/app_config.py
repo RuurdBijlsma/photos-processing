@@ -18,13 +18,19 @@ class AppConfig(BaseSettings):
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
     media_languages: list[str] = ["nld", "eng"]
-    enable_llm: bool = True
-    llm_provider: LLMProvider = LLMProvider.OPENAI
+    enable_llm: bool = False
+    llm_provider: LLMProvider = LLMProvider.MINICPM
 
     document_detection_threshold: int = Field(
         default=65,
         description="How many characters should be recognized before classifying "
                     "it as a document and making a summary."
+    )
+    face_detection_threshold: float = Field(
+        default=0.7,
+        description="The minimum confidence threshold for detecting a face. "
+                    "Values should be between 0 and 1. Higher values mean higher "
+                    "confidence in the detection."
     )
     images_dir: Path = Path("media/images")
     thumbnails_dir: Path = Path("media/thumbnails")
