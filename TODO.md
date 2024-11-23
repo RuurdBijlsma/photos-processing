@@ -2,23 +2,12 @@
 
 * Python
     * add tests
-    * chatgpt implementatie maken van visual llm (met api key)
-      * het is nu pittig langzaam door de llm
-    * moet ocr document detection threshold een config ding worden?
-    * add ocr boxes to ocr frame
     * face recognition -> clustering (dbscan) en db stuff (pgvectors)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
-    * make pipeline models interchangable with other ones, maybe make them as a local package that has input->output
     * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
       * input: image file path
       * output: everything that's in an image db row. (apart from timezone fixes and facial recognition probably)
     * pipeline models:
-      * CLIP for embedding text and image
-      * minicpm: ask questions for extra info about images + a text description
-        * llama 3.2: ask what questions to ask to improve caption
-      * multi-object classification, either:
-        * nvidia/segformer (segment pixel based)
-        * facebook/detr-resnet-50 (boundingbox per recognized object)
       * face detection
         1. bounding box face for every photo
         2. extract face images from each photo
@@ -36,7 +25,6 @@
         6. re-cluster all embeddings in face table after `process_all`, and weekly (to accommodate new clusters(faces))
            * calculate centroid embedding for each cluster
       * scene recognition?
-      * if image has legible text, do ocr and put in db
     * model capabilities (in order of usefulness):
         * minicpm (very good): llm met vision (question images) (alleen vision geprobeerd)
         * CLIP model kan image en text embeddings in zelfde space maken

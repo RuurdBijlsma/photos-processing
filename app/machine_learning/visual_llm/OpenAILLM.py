@@ -1,5 +1,4 @@
 import base64
-import os
 from collections.abc import Generator
 from io import BytesIO
 
@@ -11,9 +10,6 @@ from app.machine_learning.visual_llm.MiniCPMLLM import MiniCPMLLM
 from app.machine_learning.visual_llm.VisualLLMProtocol import (
     ChatMessage, ChatRole,
 )
-
-if os.environ.get("OPENAI_API_KEY") is not None:
-    client = OpenAI()
 
 
 def to_base64_url(image: Image, max_size=720):
@@ -50,9 +46,11 @@ def chat_to_dict(chat: ChatMessage) -> dict:
 
 class OpenAILLM(MiniCPMLLM):
     model_name: str
+    client: OpenAI
 
     def __init__(self, model_name="gpt-4o-mini"):
         self.model_name = model_name
+        self.client = OpenAI()
 
     def chat(
         self,
@@ -111,9 +109,8 @@ class OpenAILLM(MiniCPMLLM):
             history = []
         messages = history + [message]
         dict_messages = list(map(chat_to_dict, messages))
-        print(stream)
 
-        response = client.chat.completions.create(
+        response = self.client.chat.completions.create(
             model=self.model_name,
             messages=dict_messages,
             max_tokens=max_tokens,

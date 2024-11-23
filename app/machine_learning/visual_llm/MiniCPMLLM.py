@@ -26,7 +26,7 @@ def get_model_and_tokenizer() -> tuple[PreTrainedModel, PreTrainedTokenizerFast]
         model.eval()
         if torch.cuda.is_available():
             model.to(torch.device("cuda"))
-        if torch.backends.mps.is_available():
+        elif torch.backends.mps.is_available():
             model.to(torch.device("mps"))
     tokenizer = AutoTokenizer.from_pretrained(
         "openbmb/MiniCPM-V-2_6-int4", trust_remote_code=True
@@ -84,7 +84,6 @@ class MiniCPMLLM(VisualLLMProtocol):
             image,
             convert_images,
             temperature,
-            max_tokens,
             stream=True
         )
         assert isinstance(result, Generator)
@@ -97,7 +96,6 @@ class MiniCPMLLM(VisualLLMProtocol):
         image: Image | None = None,
         convert_images: bool = True,
         temperature: float = 0.7,
-        max_tokens: int = 500,
         stream: bool = False,
     ) -> Generator[str, None, None] | str:
         if history is None:

@@ -3,6 +3,8 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from app.config.config_types import LLMProvider
+
 
 class AppConfig(BaseSettings):
     password_secret: str = (
@@ -16,7 +18,8 @@ class AppConfig(BaseSettings):
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
     media_languages: list[str] = ["nld", "eng"]
-    enable_llm: bool = False
+    enable_llm: bool = True
+    llm_provider: LLMProvider = LLMProvider.OPENAI
 
     document_detection_threshold: int = Field(
         default=65,
