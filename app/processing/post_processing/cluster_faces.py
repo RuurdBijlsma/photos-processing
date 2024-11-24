@@ -3,19 +3,40 @@ import os
 
 import cv2
 import numpy as np
-from sqlalchemy import select, delete
+from scipy.spatial.distance import cdist
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
 from app.data.database.database import get_session
 from app.data.image_models import FaceBoxModel, VisualInformationModel, ImageModel, \
     UniqueFaceModel
-from app.machine_learning.clustering.hdbscan_clustering import perform_clustering
+from app.machine_learning.clustering.hdbscan_clustering import perform_clustering, \
+    predict_new_point
 
 
-async def cluster_faces(session: AsyncSession) -> None:
-    # TODO:
-    #   Preserve user provided labels for new clusters
+def index_of_closest_embedding(
+    embedding: np.ndarray,
+    embedding_list: np.ndarray
+) -> int:
+    embedding = embedding[np.newaxis, :]  # Add batch dimension
+    similarities = 1 - cdist(embedding, embedding_list, metric='cosine')
+    closest_index = np.argmax(similarities)
+    return int(closest_index)
+
+
+def cluster_new_face(face_embedding: np.ndarray) -> int:
+    return predict_new_point(
+        face_embedding,
+        app_config.cluster_cache_file
+    )
+
+
+async def re_cluster_faces(session: AsyncSession) -> None:
+    existing_unique_faces = (await session.execute(
+        select(UniqueFaceModel)
+    )).scalars().all()
+    await session.execute(update(FaceBoxModel).values(unique_face_id=None))
     await session.execute(delete(UniqueFaceModel))
     faces = (await session.execute(
         select(FaceBoxModel)
@@ -25,15 +46,17 @@ async def cluster_faces(session: AsyncSession) -> None:
     cluster_labels = perform_clustering(
         embeddings,
         min_samples=2,
-        min_cluster_size=4
+        min_cluster_size=4,
+        cache_file=app_config.cluster_cache_file
     )
     # make set of unique labels:
     unique_labels = np.unique(cluster_labels)
+    unique_faces: list[UniqueFaceModel] = []
     # create UniqueFaceModel and insert it to db
     for label in unique_labels:
         if label == -1:
             continue
-        # Filter faces by label and extract embeddings
+        # Filter faces by label and get embeddings
         label_faces = [face for face_label, face in
                        zip(cluster_labels, faces) if face_label == label]
         label_embeddings = [face.embedding.to_numpy() for face in label_faces]
@@ -42,10 +65,21 @@ async def cluster_faces(session: AsyncSession) -> None:
             id=label,
             centroid=np.mean(label_embeddings, axis=0),
         )
+        unique_faces.append(unique_face)
         session.add(unique_face)
         for face in label_faces:
             face.unique_face = unique_face
             session.add(face)
+
+    for existing_unique_face in existing_unique_faces:
+        centroids = np.vstack([face.centroid for face in unique_faces])
+        closest_i = index_of_closest_embedding(
+            existing_unique_face.centroid.to_numpy(),
+            centroids
+        )
+        unique_faces[closest_i].user_provided_label = (
+            existing_unique_face.user_provided_label
+        )
 
     await session.commit()
 
@@ -53,7 +87,13 @@ async def cluster_faces(session: AsyncSession) -> None:
 async def experiment(draw_face_experiment: bool = False):
     if not draw_face_experiment:
         async with get_session() as session:
-            await cluster_faces(session)
+            await re_cluster_faces(session)
+        f = (await session.execute(
+            select(FaceBoxModel)
+            .order_by(FaceBoxModel.id)
+        )).scalars().all()
+        new_face_label = cluster_new_face(f[56].embedding.to_numpy())
+        print(new_face_label)
         return
 
     async with get_session() as session:
@@ -96,4 +136,4 @@ async def experiment(draw_face_experiment: bool = False):
 
 
 if __name__ == "__main__":
-    asyncio.run(experiment(draw_face_experiment=True))
+    asyncio.run(experiment(draw_face_experiment=False))

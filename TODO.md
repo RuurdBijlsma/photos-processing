@@ -2,12 +2,20 @@
 
 * Python
     * add tests
+    * batch processing voor thumbnails
+      * thumbnails eerst processen, dan de rest van processing
     * Cluster images!
       * werkt best leuk, ik krijg allemaal poekie images
-    * face recognition -> clustering (dbscan) en db stuff (pgvectors)
+    * use BLIP for captions if llm is disabled
+    * add short captions per image so albums can get an automatic title from that 
+      * (ask llm to make album title based on many 2-3 word descriptions of images)
+    * face recognition -> clustering (hdbscan) en db stuff (pgvectors)
+    * fix distance metric in face clustering 
+      * (l2 normalize all embeddings first, then do Euclidean, or get cosine working)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * periodically recluster faces
       * when reclustering, how do i keep user labels for cluster labels? (compare embeddings of centroids)
+    * allow user to change cluster params, then rerun clustering
     * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
       * input: image file path
       * output: everything that's in an image db row. (apart from timezone fixes and facial recognition probably)
