@@ -102,9 +102,6 @@ class VisualInformationModel(Base):
     snapshot_time_ms = mapped_column(Integer, nullable=False)
     # AI shit
     embedding: Mapped[Vector] = mapped_column(VECTOR(768), nullable=False)
-    has_legible_text = mapped_column(Boolean, nullable=False)
-    ocr_text = mapped_column(Text, nullable=True)
-    document_summary = mapped_column(Text, nullable=True)
     # Objects
     objects: Mapped[list["ObjectBoxModel"]] = relationship(
         "ObjectBoxModel",
@@ -123,8 +120,14 @@ class VisualInformationModel(Base):
         back_populates="visual_information",
         cascade="all, delete-orphan"
     )
-    # Caption
-    caption = mapped_column(String, nullable=True)
+    # Image to text
+    #   OCR
+    has_legible_text = mapped_column(Boolean, nullable=False)
+    ocr_text = mapped_column(Text, nullable=True)
+    document_summary = mapped_column(Text, nullable=True)
+    #   --
+    summary = mapped_column(String, nullable=True)
+    caption = mapped_column(String, nullable=False)
 
 
 class ObjectBoxModel(Base):

@@ -84,27 +84,21 @@ async def store_image(
         if not location_model:
             location_model = GeoLocationModel(**location)
 
+    def fix_nested_visual_information(info: dict) -> dict:
+        overrides = {
+            "ocr_boxes": OCRBoxModel,
+            "faces": FaceBoxModel,
+            "objects": ObjectBoxModel,
+        }
+        for key, value in overrides.items():
+            info[key] = [value(**item) for item in info[key]]
+        return info
+
     image_model = ImageModel(
         **cleaned_dict,
         location=location_model,
         visual_information=[
-            VisualInformationModel(**without(
-                info.model_dump(),
-                "ocr_boxes", "faces", "objects"
-            ),
-                                   ocr_boxes=[
-                                       OCRBoxModel(**box.model_dump())
-                                       for box in info.ocr_boxes
-                                   ],
-                                   objects=[
-                                       ObjectBoxModel(**box.model_dump())
-                                       for box in info.objects
-                                   ],
-                                   faces=[
-                                       FaceBoxModel(**face.model_dump())
-                                       for face in info.faces
-                                   ],
-                                   )
+            VisualInformationModel(**fix_nested_visual_information(info.model_dump()))
             for info in visual_infos
         ],
         user_id=user_id,

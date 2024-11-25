@@ -21,11 +21,19 @@ def invalidate_cache(func: Callable, *args: Any):
 
 
 @lru_cache
-def get_clusterer(min_samples: int, min_cluster_size: int, prediction_data: bool):
+def get_clusterer(
+    min_samples: int,
+    min_cluster_size: int,
+    prediction_data: bool,
+    cluster_selection_method='eom',
+    cluster_selection_epsilon: float = 0.0,
+):
     return hdbscan.HDBSCAN(
         min_samples=min_samples,
         min_cluster_size=min_cluster_size,
-        prediction_data=True,
+        prediction_data=prediction_data,
+        cluster_selection_epsilon=cluster_selection_epsilon,
+        cluster_selection_method=cluster_selection_method,
         metric="euclidean"
     )
 
@@ -49,15 +57,21 @@ def predict_new_point(embedding: np.ndarray, cache_file: Path):
 
 def perform_clustering(
     embeddings: np.ndarray,
-    min_samples=5,
-    min_cluster_size=10,
+    min_samples: int = 5,
+    min_cluster_size: int = 10,
+    cluster_selection_method='eom',
+    cluster_selection_epsilon: float = 0.0,
     cache_file: Path | None = None
 ):
+    # l2 normalize, so that euclidean metric will work similar to cosine metric would
+    #   cosine is not supported in hdbscan
     normalized = preprocessing.normalize(embeddings)
     clusterer = get_clusterer(
         min_samples,
         min_cluster_size,
         cache_file is not None,
+        cluster_selection_method=cluster_selection_method,
+        cluster_selection_epsilon=cluster_selection_epsilon,
     )
     cluster_labels = clusterer.fit_predict(normalized)
     if cache_file is not None:

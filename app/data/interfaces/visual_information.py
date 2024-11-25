@@ -22,8 +22,12 @@ class FacesVisualInformation(OCRVisualInformation):
     faces: list[FaceBox]
 
 
-class CaptionVisualInformation(FacesVisualInformation):
-    caption: str | None
+class TextSummaryVisualInformation(FacesVisualInformation):
+    summary: str | None
+
+
+class CaptionVisualInformation(TextSummaryVisualInformation):
+    caption: str
 
 
 class ObjectsVisualInformation(CaptionVisualInformation):

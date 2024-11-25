@@ -15,6 +15,7 @@ from app.processing.pipelines.frame_based.frame_faces import frame_faces
 from app.processing.pipelines.frame_based.frame_object_detection import \
     frame_object_detection
 from app.processing.pipelines.frame_based.frame_ocr import frame_ocr
+from app.processing.pipelines.frame_based.frame_text_summary import frame_text_summary
 from app.processing.pipelines.generate_thumbnails import generate_thumbnails
 from app.processing.pipelines.image_based.base_info import base_info
 from app.processing.pipelines.image_based.image_data_url import image_data_url
@@ -63,7 +64,8 @@ async def process_media(image_path: Path, user_id: int, session: AsyncSession) -
         embed_info = frame_embedding(visual_info, jpeg_image)
         ocr_info = frame_ocr(embed_info, jpeg_image)
         faces_info = frame_faces(ocr_info, jpeg_image)
-        caption_info = frame_caption(faces_info, jpeg_image)
+        summary_info = frame_text_summary(faces_info, jpeg_image)
+        caption_info = frame_caption(summary_info, jpeg_image)
         objects_info = frame_object_detection(caption_info, jpeg_image)
         visual_infos.append(objects_info)
 

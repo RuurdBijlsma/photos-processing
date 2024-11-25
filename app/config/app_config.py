@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from app.config.config_types import LLMProvider
+from app.config.config_types import LLMProvider, CaptionerProvider
 
 
 class AppConfig(BaseSettings):
@@ -18,9 +18,22 @@ class AppConfig(BaseSettings):
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
     media_languages: list[str] = ["nld", "eng"]
-    enable_llm: bool = False
-    llm_provider: LLMProvider = LLMProvider.MINICPM
 
+    captions_provider: CaptionerProvider = CaptionerProvider.BLIP
+    llm_provider: LLMProvider = LLMProvider.OPENAI
+    enable_text_summary: bool = Field(
+        default=False,
+        description="A text summary can be generate of an image or video with an LLM, "
+                    "improving search capabilities."
+                    "This operation requires a CUDA gpu and can take a lot of time "
+                    "if a local LLM is used."
+    )
+    enable_document_summary: bool = Field(
+        default=True,
+        description="If a document is detected, a summary can be made using an LLM. "
+                    "This operation requires a CUDA gpu and can take a lot of time "
+                    "if a local LLM is used."
+    )
     document_detection_threshold: int = Field(
         default=65,
         description="How many characters should be recognized before classifying "
@@ -32,6 +45,7 @@ class AppConfig(BaseSettings):
                     "Values should be between 0 and 1. Higher values mean higher "
                     "confidence in the detection."
     )
+
     images_dir: Path = Path("media/images")
     thumbnails_dir: Path = Path("media/thumbnails")
     cluster_cache_file: Path = Path("media/cache/face_clusterer.pkl")

@@ -63,7 +63,6 @@ class MiniCPMLLM(VisualLLMProtocol):
             image,
             convert_images,
             temperature,
-            max_tokens,
             stream=False
         )
         assert isinstance(answer, str)

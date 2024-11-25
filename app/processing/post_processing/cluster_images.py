@@ -5,6 +5,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 from sqlalchemy import select
+from tqdm import tqdm
 
 from app.config.app_config import app_config
 from app.data.database.database import get_session
@@ -22,10 +23,12 @@ async def experiment():
         cluster_labels = perform_clustering(
             embeddings,
             min_samples=2,
-            min_cluster_size=4
+            min_cluster_size=3,
+            cluster_selection_method='leaf',
+            cluster_selection_epsilon=0.1
         )
 
-        for i, (frame, relative_path) in enumerate(frames):
+        for i, (frame, relative_path) in tqdm(enumerate(frames), total=len(frames)):
             image = cv2.imread(app_config.images_dir / relative_path)
             if image is None:
                 print(f"SKIP: {relative_path}")

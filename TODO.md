@@ -2,13 +2,20 @@
 
 * Python
     * add tests
+    * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
     * batch processing voor thumbnails
       * thumbnails eerst processen, dan de rest van processing
+    * is panorama, is selfie, is night sight, etc is all not being set yet.
     * Cluster images!
       * werkt best leuk, ik krijg allemaal poekie images
     * use BLIP for captions if llm is disabled
     * add short captions per image so albums can get an automatic title from that 
       * (ask llm to make album title based on many 2-3 word descriptions of images)
+      * give more info than that^
+        * locations (countries/cities)
+        * duration of from start to end of album (weekend/year/day)
+        * names of people in photos (unique faces labels)
+        * start and end date of photos
     * face recognition -> clustering (hdbscan) en db stuff (pgvectors)
     * fix distance metric in face clustering 
       * (l2 normalize all embeddings first, then do Euclidean, or get cosine working)
@@ -134,3 +141,46 @@
     * depth estimation -> smart cropping?
     * image->image upscaler?
     * stable diffusion inpainting?
+
+
+
+album title creation prompt (make sure given example input in prompt matches input structure):
+also use for unprompted collection generation.
+
+```
+You are an expert in summarizing photo albums. Using the provided data, create a concise, engaging, and specific title for the album. Incorporate key details such as the primary locations, significant individuals, the date range, recurring themes, and the general mood of the album. The title should feel personal and reflective of the album's content.
+
+Input Data:
+
+    {input_json like in ex. below}
+
+Output Requirements:
+
+    Create a single descriptive title no longer than 15 words.
+    Ensure the title reflects the essence of the album using the data provided.
+
+Example Input:
+
+{
+  "people": [
+    {"name": "Alice", "photo_count": 15},
+    {"name": "Bob", "photo_count": 6}
+  ],
+  "locations": [
+    {"country": "France", "city": "Paris", "photo_count": 10},
+    {"country": "Italy", "city": "Rome", "photo_count": 5}
+  ],
+  "daterange": {
+    "from": "2023-06-10",
+    "to": "2023-06-20"
+  },
+  "photos": [
+    {"caption": "Eiffel Tower at sunset", "date": "2023-06-10", "time": "18:30", "type": "image"},
+    {"caption": "Colosseum during the day", "date": "2023-06-15", "time": "14:00", "type": "image"}
+  ]
+}
+
+Example Output:
+"Exploring Paris and Rome: Alice and Bob’s Summer Journey (June 2023)"
+
+```
