@@ -4,7 +4,7 @@ from datetime import timedelta
 from meteostat import Hourly, Point
 
 from app.data.interfaces.image_info_types import TimeImageInfo, WeatherImageInfo
-from app.data.interfaces.weather_condition_codes import WeatherCondition
+from app.data.interfaces.enums.weather_condition_codes import WeatherCondition
 
 
 def image_weather(image_info: TimeImageInfo) -> WeatherImageInfo:

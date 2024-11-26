@@ -2,6 +2,8 @@ from enum import StrEnum
 
 from pydantic import BaseModel
 
+from app.data.enums.face_sex import FaceSex
+
 
 class BaseBoundingBox(BaseModel):
     # position, width, height are proportional to full image width/height
@@ -18,10 +20,6 @@ class ObjectBox(BaseBoundingBox):
 class OCRBox(BaseBoundingBox):
     text: str
 
-
-class FaceSex(StrEnum):
-    Male = "M"
-    Female = "F"
 
 
 class FaceBox(BaseBoundingBox):

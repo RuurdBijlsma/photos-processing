@@ -19,7 +19,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
 from app.data.interfaces.auth_types import Role
 from app.data.interfaces.ml_types import FaceSex
-from app.data.interfaces.weather_condition_codes import WeatherCondition
+from app.data.interfaces.enums.weather_condition_codes import WeatherCondition
 
 
 class Base(AsyncAttrs, DeclarativeBase):

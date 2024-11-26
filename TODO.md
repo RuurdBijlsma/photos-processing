@@ -2,7 +2,17 @@
 
 * Python
     * add tests
+    * add classification to pipeline
+    * make all embedding types ndarray
+    * add weathercondition enum classification if outside=true
+    * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
+    * ik kan heel veel classificatie met de CLIP embedding doen
+      * clip embed "dit is een selfie foto" & "dit is niet een selfie foto" (idk de prompt hier)
+      * clip embed image
+      * zie hoeveel similarity er is en zet is_selfie in database
+      * doe met heel veel classificatie tasks
+        * scene recognition? (beach, field, kitchen... (haal scene labels van internet))
     * batch processing voor thumbnails
       * thumbnails eerst processen, dan de rest van processing
     * is panorama, is selfie, is night sight, etc is all not being set yet.

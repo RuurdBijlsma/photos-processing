@@ -5,7 +5,6 @@ from typing import Any
 from pydantic import field_serializer, BaseModel
 
 from app.data.interfaces.location_types import GeoLocation
-from app.data.interfaces.weather_condition_codes import WeatherCondition
 
 
 class BaseImageInfo(BaseModel):

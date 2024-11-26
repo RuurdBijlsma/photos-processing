@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from PIL.Image import Image
@@ -18,22 +19,22 @@ def get_model_and_processor() -> tuple[PreTrainedModel, CLIPProcessor]:
 
 class CLIPEmbedder(EmbedderProtocol):
 
-    def embed_text(self, text: str) -> list[float]:
+    def embed_text(self, text: str) -> np.ndarray:
         return self.embed_texts([text])[0]
 
-    def embed_texts(self, texts: list[str]) -> list[list[float]]:
+    def embed_texts(self, texts: list[str]) -> np.ndarray:
         model, processor = get_model_and_processor()
         inputs_text = processor(text=texts, return_tensors="pt", padding=True)
         with torch.no_grad():
             text_embedding = model.get_text_features(**inputs_text)
-        return F.normalize(text_embedding, p=2, dim=-1).tolist()
+        return F.normalize(text_embedding, p=2, dim=-1)
 
-    def embed_image(self, image: Image) -> list[float]:
+    def embed_image(self, image: Image) -> np.ndarray:
         return self.embed_images([image])[0]
 
-    def embed_images(self, images: list[Image]) -> list[list[float]]:
+    def embed_images(self, images: list[Image]) -> np.ndarray:
         model, processor = get_model_and_processor()
         inputs_image = processor(images=images, return_tensors="pt", padding=True)
         with torch.no_grad():
             text_embedding = model.get_image_features(**inputs_image)
-        return F.normalize(text_embedding, p=2, dim=-1).tolist()
+        return F.normalize(text_embedding, p=2, dim=-1)
