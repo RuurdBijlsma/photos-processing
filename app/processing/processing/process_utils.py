@@ -108,7 +108,6 @@ async def image_needs_processing(image_path: Path, session: AsyncSession) -> boo
     return False
 
 
-@lru_cache
 def hash_image(image_path: Path, chunk_size: int = 65536) -> str:
     hasher = hashlib.sha256()
 

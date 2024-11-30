@@ -44,14 +44,22 @@ async def process_user_images(
 
     await drop_images_without_thumbnails(photos_to_process + videos_to_process, session)
 
-    generate_photo_thumbnails(photos_to_process)
-    await generate_video_thumbnails(videos_to_process)
+    failed_photos = generate_photo_thumbnails(photos_to_process)
+    failed_videos = await generate_video_thumbnails(videos_to_process)
 
-    for image_path in tqdm(
-        photos_to_process + videos_to_process,
+    to_process_zip = (
+        list(zip(photos_to_process, failed_photos)) +
+        list(zip(videos_to_process, failed_videos))
+    )
+
+    for image_path, has_thumbnails in tqdm(
+        to_process_zip,
         desc="Gathering image metadata.",
         unit="file",
     ):
+        if not has_thumbnails:
+            print(f"Skipping {image_path}, the thumbnail for it failed.")
+            continue
         image_hash = hash_image(image_path)
         image_info, frames = scan_image(
             image_path,
