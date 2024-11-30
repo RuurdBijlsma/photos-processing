@@ -5,25 +5,13 @@
     * make modules out of pipelines so i can get timing stats for them (which is slowe)
     * dont use pytz anymore
     * fix logspam
-    * add classification to pipeline
-    * make all embedding types ndarray
+    * make all embedding types ndarray (difficult, can't be a type in pydantic basemodel)
     * face embedding new points support (dont just recluster for every new photo)
-    * add weathercondition enum classification if outside=true
     * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
-    * ik kan heel veel classificatie met de CLIP embedding doen
-      * clip embed "dit is een selfie foto" & "dit is niet een selfie foto" (idk de prompt hier)
-      * clip embed image
-      * zie hoeveel similarity er is en zet is_selfie in database
-      * doe met heel veel classificatie tasks
-        * scene recognition? (beach, field, kitchen... (haal scene labels van internet))
-    * batch processing voor thumbnails
-      * process to temp folder, then move if done
-      * thumbnails eerst processen, dan de rest van processing
     * is panorama, is selfie, is night sight, etc is all not being set yet.
     * Cluster images!
       * werkt best leuk, ik krijg allemaal poekie images
-    * use BLIP for captions if llm is disabled
     * add short captions per image so albums can get an automatic title from that 
       * (ask llm to make album title based on many 2-3 word descriptions of images)
       * give more info than that^
@@ -31,9 +19,6 @@
         * duration of from start to end of album (weekend/year/day)
         * names of people in photos (unique faces labels)
         * start and end date of photos
-    * face recognition -> clustering (hdbscan) en db stuff (pgvectors)
-    * fix distance metric in face clustering 
-      * (l2 normalize all embeddings first, then do Euclidean, or get cosine working)
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * periodically recluster faces
       * when reclustering, how do i keep user labels for cluster labels? (compare embeddings of centroids)
@@ -41,72 +26,23 @@
     * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
       * input: image file path
       * output: everything that's in an image db row. (apart from timezone fixes and facial recognition probably)
-    * pipeline models:
-      * face detection
-        1. bounding box face for every photo
-        2. extract face images from each photo
-        3. faces_table:
-           * id (uuid).
-           * face embedding
-           * image_id (relation to images table)
-           * also put in bounding box coords
-           * unique_face_id (relation to unique faces table)
-        4. face_names_table
-           * unique_face_id
-           * face name (user input)
-           * centroid_embedding (centroid of the cluster)
-        5. when a new photo is processed, find its cluster by looking at the nearest face embedding and copying that unique_face_id
-        6. re-cluster all embeddings in face table after `process_all`, and weekly (to accommodate new clusters(faces))
-           * calculate centroid embedding for each cluster
-      * scene recognition?
-    * model capabilities (in order of usefulness):
-        * minicpm (very good): llm met vision (question images) (alleen vision geprobeerd)
-        * CLIP model kan image en text embeddings in zelfde space maken
-        * llama 3.2 (very good):
-            * llm
-            * llm met vision mogelijkheid (vision niet geprobeerd)
-            * kan text embeddings maken
-        * vit-base-patch16-224 (limited classification count, but can be useful): image classification: image to 1 of
-          1000 classifications
-        * nvidia/segformer (looks good but cant get it to run): image segmentation, en classification per segment.
-          segments are per "pixel", not bounding boxes
-        * facebook/detr-resnet-50: classify multiple objects per image, boundingbox per recognzied object
-        * google/owlvit-base-patch32: clip van google (niet goed onderzocht)
-        * blip image captioning (basic but works): image to text captions
-    * vergelijking maken van verschillende image caption methodes:
-    * compare speed, accuracy, put in table
-        * blip salesforce
-        * llama vision
-        * question_image
-    * vision llm-> ask many questions, then cluster on embeddings of answers to get collections of photos, example:
-        * what type of place is this photo taken? (e.g. park, beach, city) keep you answer direct and to the point.
-        * then make embedding of answer
-        * with every photo having such an embedding, cluster on this column to make collections of types of places, for
-          example beach collection
-    * watch for photo deletion and delete from db?
+    * check if watchdog works
     * use nginx for image hosting instead of fastapi endpoints
-    * ci/cd?
     * add table: failed images, so it doesn't try to process them again?
-    * add button [optimize library], to convert all images to avif, and all videos to vp9 codec (av1 in the future?)
+    * add button [optimize library], to convert all source images to full size avif, and all videos to vp9 codec (av1 in the future?) (video is less important it's already h265)
     * make .env file for user to set base photos dir
     * Get exiftool and ffmpeg binaries automatically?
 * Add albums
+    * very important
     * Shared albums between servers (shared secret to access other server's album)
-* Add AI processing
-    * image caption (text and embedding)
-        * Cluster on caption embeddings? kmeans op embeddings
-        * pca to reduce dimensionality of embeddings? for speed
-        * periodically run algorithm to determine amount of clusters (elbow method)
-    * image object detection (list of objects in image?)
-    * facial recognition (group by faces)
-    * detect document -> OCR
-    * For videos process a frame every fifth of the video or something.
-      * when searching seek to the part of the video where it first appears
+* For videos process a frame every fifth of the video or something.
+    * when searching seek to the part of the video where it first appears
 * Search photos
-    * Semantic search (caption, object, ocr text)
-    * postgres full text search
-    * search by location (from reverse geocode)
-    * search by date/time
+  * hybrid search op embedding + heel veel text fields in full text search
+  * search by location (from reverse geocode)
+  * search by date/time
+  * how much filtering do i want? I have a lotta tags
+* make android app before frontend?
 * Create frontend
     * hosted on github pages?
     * Photos grid front page (infinite scroll, fitting layout, scroll to date)
@@ -145,6 +81,10 @@
         * resource usage (cpu,ram,etc)
         * media processing info
 * Create android gallery app with local and cloud photos
+* stuur notificaties (maak generieke notificatie systeem, web push, android notificatie)
+  * notificatie voor "on this day 8 years ago" soms
+  * notificatie voor random gemaakt album op basis van image clustering
+  * notificatie voor "on this day 8 years ago was de eerste foto van dit album" om te zien dat je op vakantie ging op deze dag
 * Album titel generate met llm? op basis van captions, locations/countries
 * Iets van auto album generatie op basis van locatie, als je een foto maakt als je thuis bent na 10+ foto's en 2+ dagen
   niet thuis, vraag of er een album van moet komen.

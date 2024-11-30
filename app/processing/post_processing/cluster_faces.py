@@ -35,6 +35,7 @@ def cluster_new_face(face_embedding: np.ndarray) -> int:
 async def re_cluster_faces(session: AsyncSession) -> None:
     existing_unique_faces = (await session.execute(
         select(UniqueFaceModel)
+        .where(UniqueFaceModel.user_provided_label.isnot(None))
     )).scalars().all()
     await session.execute(update(FaceBoxModel).values(unique_face_id=None))
     await session.execute(delete(UniqueFaceModel))
