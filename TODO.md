@@ -2,8 +2,12 @@
 
 * Python
     * add tests
+    * make modules out of pipelines so i can get timing stats for them (which is slowe)
+    * dont use pytz anymore
+    * fix logspam
     * add classification to pipeline
     * make all embedding types ndarray
+    * face embedding new points support (dont just recluster for every new photo)
     * add weathercondition enum classification if outside=true
     * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
@@ -14,6 +18,7 @@
       * doe met heel veel classificatie tasks
         * scene recognition? (beach, field, kitchen... (haal scene labels van internet))
     * batch processing voor thumbnails
+      * process to temp folder, then move if done
       * thumbnails eerst processen, dan de rest van processing
     * is panorama, is selfie, is night sight, etc is all not being set yet.
     * Cluster images!

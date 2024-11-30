@@ -1,6 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, Any
+from typing import Any
 
 import hdbscan
 import joblib
@@ -9,7 +9,7 @@ from hdbscan import approximate_predict
 from sklearn import preprocessing
 
 
-def invalidate_cache(func: Callable, *args: Any):
+def invalidate_cache(func: Any, *args: Any) -> None:
     try:
         key = func.cache_key(*args)
         del func.cache_info()._cache[key]
@@ -25,9 +25,9 @@ def get_clusterer(
     min_samples: int,
     min_cluster_size: int,
     prediction_data: bool,
-    cluster_selection_method='eom',
+    cluster_selection_method: str = 'eom',
     cluster_selection_epsilon: float = 0.0,
-):
+) -> hdbscan.HDBSCAN:
     return hdbscan.HDBSCAN(
         min_samples=min_samples,
         min_cluster_size=min_cluster_size,
@@ -43,7 +43,7 @@ def get_cached_clusterer(file: Path) -> hdbscan.HDBSCAN:
     return joblib.load(file)
 
 
-def predict_new_point(embedding: np.ndarray, cache_file: Path):
+def predict_new_point(embedding: np.ndarray, cache_file: Path) -> int:
     # This isn't used for now, full clustering seems fast enough.
     if not cache_file.exists():
         raise FileNotFoundError(f"Clusterer cache file does not exist {cache_file}")
@@ -52,17 +52,19 @@ def predict_new_point(embedding: np.ndarray, cache_file: Path):
         loaded_clusterer,
         [embedding]
     )
-    return labels[0].item()
+    label = labels[0].item()
+    assert isinstance(label, int)
+    return label
 
 
 def perform_clustering(
     embeddings: np.ndarray,
     min_samples: int = 5,
     min_cluster_size: int = 10,
-    cluster_selection_method='eom',
+    cluster_selection_method: str = 'eom',
     cluster_selection_epsilon: float = 0.0,
     cache_file: Path | None = None
-):
+) -> list[int]:
     # l2 normalize, so that euclidean metric will work similar to cosine metric would
     #   cosine is not supported in hdbscan
     normalized = preprocessing.normalize(embeddings)
@@ -80,4 +82,5 @@ def perform_clustering(
             out_folder.mkdir(parents=True)
         invalidate_cache(get_cached_clusterer, cache_file)
         joblib.dump(clusterer, cache_file)
+    assert isinstance(cluster_labels, list)
     return cluster_labels

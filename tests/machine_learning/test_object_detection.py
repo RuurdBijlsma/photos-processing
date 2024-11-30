@@ -2,7 +2,6 @@ from pathlib import Path
 
 import PIL
 import pytest
-from PIL.Image import Image
 
 from app.machine_learning.object_detection.ResnetObjectDetection import \
     ResnetObjectDetection
@@ -13,7 +12,11 @@ from app.machine_learning.utils import draw_bounding_box
     ("cat.jpg", ["cat"]),
     ("cluster.jpg", ["laptop"])
 ])
-def test_resnet_object_detection(assets_folder: Path, image: str, objects: list[str]):
+def test_resnet_object_detection(
+    assets_folder: Path,
+    image: str,
+    objects: list[str]
+) -> None:
     detector = ResnetObjectDetection()
     pil_image = PIL.Image.open(assets_folder / image)
     detections = detector.detect_objects(pil_image)

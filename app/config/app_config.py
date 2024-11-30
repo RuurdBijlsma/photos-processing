@@ -48,9 +48,9 @@ class AppConfig(BaseSettings):
 
     images_dir: Path = Path("media/images")
     thumbnails_dir: Path = Path("media/thumbnails")
-    cluster_cache_file: Path = Path("media/cache/face_clusterer.pkl")
-    thumbnail_heights: list[int] = [240, 480, 1080]
-    web_video_height: int = 1080
+    thumbnail_heights: list[int] = [200, 250, 300, 400, 500, 750, 1080]
+    video_screenshot_percentages: list[int] = [1, 33, 66, 95]
+    web_video_height_and_quality: list[tuple[int, int]] = [(360, 40), (1080, 35)]
     photo_suffixes: tuple[str, ...] = (
         ".png",
         ".jpg",

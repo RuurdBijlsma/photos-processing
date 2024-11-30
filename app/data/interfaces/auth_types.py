@@ -1,7 +1,6 @@
-from enum import Enum
-
 from pydantic import BaseModel
 
+from app.data.enums.user_role import Role
 
 
 class Token(BaseModel):

@@ -38,7 +38,7 @@ class ResnetObjectDetection(ObjectDetectionProtocol):
         target_sizes = torch.tensor([image.size[::-1]])
         results = processor.post_process_object_detection(
             outputs,
-            target_sizes=target_sizes,  # type: ignore
+            target_sizes=target_sizes,
             threshold=0.8
         )[0]
 

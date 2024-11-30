@@ -4,6 +4,7 @@ from typing import Any
 
 from pydantic import field_serializer, BaseModel
 
+from app.data.enums.weather_condition import WeatherCondition
 from app.data.interfaces.location_types import GeoLocation
 
 

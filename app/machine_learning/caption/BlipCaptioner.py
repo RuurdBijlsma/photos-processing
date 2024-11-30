@@ -7,7 +7,7 @@ from app.machine_learning.caption.CaptionerProtocol import CaptionerProtocol
 
 
 @lru_cache
-def get_processor_and_model():
+def get_processor_and_model() -> tuple[BlipProcessor, BlipForConditionalGeneration]:
     processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
     model = BlipForConditionalGeneration.from_pretrained(
         "Salesforce/blip-image-captioning-large").to("cuda")
@@ -37,4 +37,6 @@ class BlipCaptioner(CaptionerProtocol):
         else:
             inputs = processor(rgb_image, conditional, return_tensors="pt").to("cuda")
         out = model.generate(**inputs)
-        return processor.decode(out[0], skip_special_tokens=True)
+        caption = processor.decode(out[0], skip_special_tokens=True)
+        assert isinstance(caption, str)
+        return caption

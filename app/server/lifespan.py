@@ -10,8 +10,8 @@ from app.config.app_config import app_config
 from app.data.database.database import get_session
 from app.data.database.db_utils import add_user
 from app.data.database.migrations import migrate_db
-from app.data.interfaces.auth_types import Role
-from app.processing.collection_processing.process_all import process_all
+from app.data.enums.user_role import Role
+from app.processing.processing.process_all import process_all
 from app.processing.watch.watch_for_changes import watch_files
 from app.server.host_thumbnails import host_thumbnails
 

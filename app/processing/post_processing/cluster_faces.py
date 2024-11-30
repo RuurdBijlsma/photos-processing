@@ -42,12 +42,13 @@ async def re_cluster_faces(session: AsyncSession) -> None:
         select(FaceBoxModel)
         .order_by(FaceBoxModel.id)
     )).scalars().all()
+    if len(faces) < 1:
+        return
     embeddings = np.vstack([face.embedding.to_numpy() for face in faces])
     cluster_labels = perform_clustering(
         embeddings,
         min_samples=2,
         min_cluster_size=4,
-        cache_file=app_config.cluster_cache_file
     )
     # make set of unique labels:
     unique_labels = np.unique(cluster_labels)

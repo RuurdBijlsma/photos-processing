@@ -13,8 +13,10 @@ from app.data.enums.event_type import EventType
 from app.data.enums.object_type import ObjectType
 from app.data.enums.people_type import PeopleType
 from app.data.enums.scene_type import SceneType
-from app.data.interfaces.visual_information import TextSummaryVisualInformation, \
-    CaptionVisualInformation
+from app.data.enums.weather_condition import WeatherCondition, \
+    weather_condition_descriptions
+from app.data.interfaces.visual_information import EmbeddingVisualInformation, \
+    ClassificationVisualInformation
 from app.machine_learning.classifier.CLIPClassifier import CLIPClassifier
 from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
 
@@ -42,159 +44,68 @@ def classify_image_scene(image_embedding: np.ndarray) -> tuple[SceneType, float]
 
 
 def binary_classifications(image_embedding: np.ndarray):
-    people_type: PeopleType | None = None
-    animal_type: AnimalType | None = None
-    document_type: DocumentType | None = None
-    object_type: ObjectType | None = None
-    activity_type: ActivityType | None = None
-    event_type: EventType | None = None
-
-    contains_people, _ = classifier.binary_classify_image(
+    people_type = classifier.classify_to_enum_with_descriptions(
         image_embedding,
         "This image contains people or a person.",
-        "There are no people in this image."
-    )
-    if contains_people:
-        best_index, _ = classifier.classify_image(image_embedding, [
-            "This is a selfie where a person holds the camera, "
-            "showing their face prominently.",
-            "This is a group photo",
-            "This is a portrait photo of a person or persons",
-            "This is a crowd of people",
-        ])
-        people_type = [
-            PeopleType.SELFIE,
-            PeopleType.GROUP,
-            PeopleType.PORTRAIT,
-            PeopleType.CROWD,
-        ][best_index]
+        "There are no people in this image.",
+        {
 
-    contains_animal, _ = classifier.binary_classify_image(
+            PeopleType.SELFIE: "This is a selfie where a person holds the camera, "
+                               "showing their face prominently.",
+            PeopleType.GROUP: "This is a group photo",
+            PeopleType.PORTRAIT: "This is a portrait photo of a person or persons",
+            PeopleType.CROWD: "This is a crowd of people",
+        }
+    )
+
+    animal_type = classifier.classify_to_enum(
         image_embedding,
-        "There is an animal or a pet, such as a cat, dog, guinea pig, "
-        "rabbit, hamster, rat, bird or wildlife.",
-        "There is no pet or animal here."
+        "This photo shows an animal or a pet, such as a cat, dog, "
+        "guinea pig, rabbit, hamster, rat, chicken, or bird.",
+        "There is no pet or animal here.",
+        AnimalType,
     )
-    if contains_animal:
-        best_index, _ = classifier.classify_image(image_embedding, [
-            "This is a cat",
-            "This is a dog",
-            "This is a guinea pig",
-            "This is a rabbit",
-            "This is a hamster",
-            "This is a rat",
-            "This is bird",
-            "This is wildlife",
-        ])
-        animal_type = [
-            AnimalType.CAT,
-            AnimalType.DOG,
-            AnimalType.GUINEA_PIG,
-            AnimalType.RABBIT,
-            AnimalType.HAMSTER,
-            AnimalType.RAT,
-            AnimalType.BIRD,
-            AnimalType.WILDLIFE,
-        ][best_index]
 
-    is_document, _ = classifier.binary_classify_image(
+    document_type = classifier.classify_to_enum_with_descriptions(
         image_embedding,
         "This is a document, such as a receipt, book, "
         "ID card, passport, payment method, screenshot, event ticket, menu, "
         "recipe, or notes.",
-        "This is not a document."
+        "This is not a document.",
+        {
+            DocumentType.BOOK_OR_MAGAZINE: "This is a book or a magazine.",
+            DocumentType.RECEIPT: "This is a receipt or proof of payment.",
+            DocumentType.SCREENSHOT: "This is a digital screenshot from a phone or a "
+                                     "computer.",
+            DocumentType.TICKET: "This is an event ticket, with information about the "
+                                 "event and or the ticket holder.",
+            DocumentType.IDENTITY: "This is an identity document, such as an ID card, "
+                                   "passport, drivers license, or other identifiable "
+                                   "card.",
+            DocumentType.NOTES: "This is a person's notes, notebook, or homework.",
+            DocumentType.PAYMENT_METHOD: "This is a payment method, such as a "
+                                         "credit card or debit card.",
+            DocumentType.MENU: "This is a restaurant menu.",
+            DocumentType.RECIPE: "This is a recipe to create a meal.",
+        }
     )
-    if is_document:
-        best_index, _ = classifier.classify_image(image_embedding, [
-            "This is a book or a magazine.",
-            "This is a receipt or proof of payment.",
-            "This is a digital screenshot from a phone or a computer.",
-            "This is an event ticket, with information "
-            "about the event and or the ticket holder.",
-            "This is an identity document, such as an ID card, passport, "
-            "drivers license, or other identifiable card.",
-            "This is a person's notes, notebook, or homework.",
-            "This is a payment method, such as a credit card or debit card.",
-            "This is a restaurant menu.",
-            "This is a recipe to create a meal.",
-        ])
-        document_type = [
-            DocumentType.BOOK_OR_MAGAZINE,
-            DocumentType.RECEIPT,
-            DocumentType.SCREENSHOT,
-            DocumentType.TICKET,
-            DocumentType.IDENTITY,
-            DocumentType.NOTES,
-            DocumentType.PAYMENT_METHOD,
-            DocumentType.MENU,
-            DocumentType.RECIPE,
-        ][best_index]
 
-    is_object, _ = classifier.binary_classify_image(
+    object_type = classifier.classify_to_enum(
         image_embedding,
         "This is object-focused photo, such as food, a vehicle, artwork,"
         " a device, a piece of clothing, a drink, sports equipment, or a toy.",
-        "The focus is not an object."
+        "The focus is not an object.",
+        ObjectType
     )
-    if is_object:
-        best_index, _ = classifier.classify_image(image_embedding, [
-            "food",
-            "car",
-            "boat",
-            "plane",
-            "painting",
-            "sculpture",
-            "a device, such as a remote, or speakers, or a monitor, or a computer,"
-            " or any other technological device.",
-            "clothing",
-            "A glass, jug, bottle or cup to drink from",
-            "sports equipment",
-            "document",
-            "toy",
-        ])
-        object_type = [
-            ObjectType.FOOD,
-            ObjectType.CAR,
-            ObjectType.BOAT,
-            ObjectType.PLANE,
-            ObjectType.PAINTING,
-            ObjectType.SCULPTURE,
-            ObjectType.DEVICE,
-            ObjectType.CLOTHING,
-            ObjectType.DRINK,
-            ObjectType.SPORTS,
-            ObjectType.DOCUMENT,
-            ObjectType.TOY,
-        ][best_index]
 
-    is_activity, _ = classifier.binary_classify_image(
+    activity_type = classifier.classify_to_enum(
         image_embedding,
         "An activity is performed in this image, such as "
         "sports, fitness, dancing, photography, writing, "
         "leisure activities, traveling, camping or water activities.",
-        "No activity is actively performed in this image."
+        "No activity is actively performed in this image.",
+        ActivityType
     )
-    if is_activity:
-        best_index, _ = classifier.classify_image(
-            image_embedding,
-            [e.value.replace("_", " ") for e in ActivityType]
-        )
-        activity_type = list(ActivityType)[best_index]
-
-    # is_event, _ = classifier.binary_classify_image(
-    #     image_embedding,
-    #     "An event is taking place in this image, such as "
-    #     "a wedding, birthday, other celebration, party, concert, work conference, "
-    #     "meeting, funeral, christmas, halloween, new years, a sports game, "
-    #     "competition, marathon, protest, parade, carnival, trip or picnic.",
-    #     "No specific event or celebration is happening."
-    # )
-    # if is_event:
-    #     best_index, _ = classifier.classify_image(
-    #         image_embedding,
-    #         [e.value.replace("_", " ") for e in EventType]
-    #     )
-    #     event_type = list(EventType)[best_index]
 
     event_type = classifier.classify_to_enum(
         image_embedding,
@@ -225,10 +136,20 @@ def binary_classifications(image_embedding: np.ndarray):
     is_travel, _ = classifier.binary_classify_image(
         image_embedding,
         "This photo was taken during travel, featuring landmarks, "
-        "airports, or exotic locations..",
+        "airports, campsites, or exotic locations..",
         "This photo was not taken during travel or does not suggest "
         "a travel context."
     )
+
+    weather_type: WeatherCondition | None = None
+    if is_outside:
+        weather_type = classifier.classify_to_enum_with_descriptions(
+            image_embedding,
+            "The type of weather can be clearly determined "
+            "from this photo.",
+            "The weather conditions in this photo can not be determined.",
+            weather_condition_descriptions
+        )
 
     return (
         people_type,
@@ -237,6 +158,7 @@ def binary_classifications(image_embedding: np.ndarray):
         object_type,
         activity_type,
         event_type,
+        weather_type,
         is_outside,
         is_landscape,
         is_cityscape,
@@ -246,7 +168,7 @@ def binary_classifications(image_embedding: np.ndarray):
 
 def experiment():
     embedder = CLIPEmbedder()
-    with PIL.Image.open("../../../../media/images/1/20180815_183921.jpg") as img:
+    with PIL.Image.open("media/images/1/IMG_20190717_172849.jpg") as img:
         image_embedding = embedder.embed_image(img)
 
         scene, conf = classify_image_scene(image_embedding)
@@ -256,13 +178,39 @@ def experiment():
         print(binary_dict)
 
 
-def frame_caption(
-    visual_info: TextSummaryVisualInformation,
-    pil_image: Image
-) -> CaptionVisualInformation:
+def frame_classification(
+    visual_info: EmbeddingVisualInformation,
+    _: Image
+) -> ClassificationVisualInformation:
+    (
+        people_type,
+        animal_type,
+        document_type,
+        object_type,
+        activity_type,
+        event_type,
+        weather_type,
+        is_outside,
+        is_landscape,
+        is_cityscape,
+        is_travel
+    ) = binary_classifications(np.array(visual_info.embedding))
+    scene, conf = classify_image_scene(np.array(visual_info.embedding))
 
-    return CaptionVisualInformation(
+    return ClassificationVisualInformation(
         **visual_info.model_dump(),
+        people_type=people_type,
+        animal_type=animal_type,
+        document_type=document_type,
+        object_type=object_type,
+        activity_type=activity_type,
+        event_type=event_type,
+        weather_condition=weather_type,
+        is_outside=is_outside,
+        is_landscape=is_landscape,
+        is_cityscape=is_cityscape,
+        is_travel=is_travel,
+        scene_type=scene,
     )
 
 

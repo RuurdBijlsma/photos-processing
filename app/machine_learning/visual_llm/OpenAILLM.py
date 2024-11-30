@@ -1,6 +1,7 @@
 import base64
 from collections.abc import Generator
 from io import BytesIO
+from typing import Any
 
 from PIL.Image import Image
 from openai import OpenAI, Stream
@@ -12,7 +13,7 @@ from app.machine_learning.visual_llm.VisualLLMProtocol import (
 )
 
 
-def to_base64_url(image: Image, max_size=720):
+def to_base64_url(image: Image, max_size: int = 720) -> str:
     image.thumbnail((max_size, max_size))
     buffered = BytesIO()
     image.save(buffered, format="JPEG", optimize=True)
@@ -20,7 +21,7 @@ def to_base64_url(image: Image, max_size=720):
     return f"data:image/jpeg;base64,{b64}"
 
 
-def chat_to_dict(chat: ChatMessage) -> dict:
+def chat_to_dict(chat: ChatMessage) -> dict[str, Any]:
     if len(chat.images) == 0:
         return {
             "role": str(chat.role),
@@ -48,7 +49,7 @@ class OpenAILLM(MiniCPMLLM):
     model_name: str
     client: OpenAI
 
-    def __init__(self, model_name="gpt-4o-mini"):
+    def __init__(self, model_name: str = "gpt-4o-mini"):
         self.model_name = model_name
         self.client = OpenAI()
 
@@ -94,8 +95,9 @@ class OpenAILLM(MiniCPMLLM):
             stream=True
         )
         for chunk in response:
-            if chunk.choices[0].delta.content is not None:
-                yield chunk.choices[0].delta.content
+            chunk_content: str | None = chunk.choices[0].delta.content
+            if chunk_content is not None:
+                yield chunk_content
 
     def _chat_openai(
         self,
@@ -112,7 +114,7 @@ class OpenAILLM(MiniCPMLLM):
 
         response = self.client.chat.completions.create(
             model=self.model_name,
-            messages=dict_messages,
+            messages=dict_messages,  # type: ignore
             max_tokens=max_tokens,
             temperature=temperature,
             stream=stream,

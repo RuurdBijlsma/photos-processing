@@ -32,7 +32,7 @@ def test_insight_facial_recognition(assets_folder: Path) -> None:
 
     walter = [face1_a, face1_b]
     micheal = [face2_a, face2_b]
-    draw_bounding_box(face2_a, img_2_a, f"test_img_out/face.jpg")
+    draw_bounding_box(face2_a, img_2_a, "test_img_out/face.jpg")
 
     faces = [face1_a, face1_b, face2_a, face2_b]
     for face in faces:

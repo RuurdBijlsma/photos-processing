@@ -5,7 +5,8 @@ import numpy as np
 from PIL.Image import Image
 from insightface.app import FaceAnalysis
 
-from app.data.interfaces.ml_types import FaceBox, FaceSex
+from app.data.enums.face_sex import FaceSex
+from app.data.interfaces.ml_types import FaceBox
 from app.machine_learning.facial_recognition.FacialRecognitionProtocol import \
     FacialRecognitionProtocol
 from app.machine_learning.utils import coordinate_to_proportional

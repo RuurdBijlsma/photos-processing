@@ -17,9 +17,16 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
+from app.data.enums.activity_type import ActivityType
+from app.data.enums.animal_type import AnimalType
+from app.data.enums.document_type import DocumentType
+from app.data.enums.event_type import EventType
+from app.data.enums.object_type import ObjectType
+from app.data.enums.people_type import PeopleType
+from app.data.enums.scene_type import SceneType
+from app.data.enums.weather_condition import WeatherCondition
 from app.data.interfaces.auth_types import Role
 from app.data.interfaces.ml_types import FaceSex
-from app.data.interfaces.enums.weather_condition_codes import WeatherCondition
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -99,7 +106,7 @@ class VisualInformationModel(Base):
     image_id: Mapped[str] = mapped_column(String, ForeignKey("images.id"))
     image: Mapped["ImageModel"] = relationship("ImageModel",
                                                back_populates="visual_information")
-    snapshot_time_ms = mapped_column(Integer, nullable=False)
+    frame_percentage = mapped_column(Integer, nullable=False)
     # AI shit
     embedding: Mapped[Vector] = mapped_column(VECTOR(768), nullable=False)
     # Objects
@@ -120,6 +127,35 @@ class VisualInformationModel(Base):
         back_populates="visual_information",
         cascade="all, delete-orphan"
     )
+    # Classifications
+    scene_type: Mapped[SceneType] = mapped_column(
+        Enum(SceneType), nullable=False
+    )
+    people_type: Mapped[PeopleType | None] = mapped_column(
+        Enum(PeopleType), nullable=True
+    )
+    animal_type: Mapped[AnimalType | None] = mapped_column(
+        Enum(AnimalType), nullable=True
+    )
+    document_type: Mapped[DocumentType | None] = mapped_column(
+        Enum(DocumentType), nullable=True
+    )
+    object_type: Mapped[ObjectType | None] = mapped_column(
+        Enum(ObjectType), nullable=True
+    )
+    activity_type: Mapped[ActivityType | None] = mapped_column(
+        Enum(ActivityType), nullable=True
+    )
+    event_type: Mapped[EventType | None] = mapped_column(
+        Enum(EventType), nullable=True
+    )
+    weather_condition: Mapped[WeatherCondition | None] = mapped_column(
+        Enum(WeatherCondition), nullable=True
+    )
+    is_outside = mapped_column(Boolean, nullable=False)
+    is_landscape = mapped_column(Boolean, nullable=False)
+    is_cityscape = mapped_column(Boolean, nullable=False)
+    is_travel = mapped_column(Boolean, nullable=False)
     # Image to text
     #   OCR
     has_legible_text = mapped_column(Boolean, nullable=False)

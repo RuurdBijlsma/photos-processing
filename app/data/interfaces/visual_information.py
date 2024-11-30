@@ -1,14 +1,18 @@
 from pydantic import BaseModel
 
 from app.data.enums.activity_type import ActivityType
+from app.data.enums.animal_type import AnimalType
 from app.data.enums.document_type import DocumentType
+from app.data.enums.event_type import EventType
+from app.data.enums.object_type import ObjectType
+from app.data.enums.people_type import PeopleType
 from app.data.enums.scene_type import SceneType
 from app.data.enums.weather_condition import WeatherCondition
 from app.data.interfaces.ml_types import OCRBox, FaceBox, ObjectBox
 
 
 class BaseVisualInformation(BaseModel):
-    snapshot_time_ms: int
+    frame_percentage: int
 
 
 class EmbeddingVisualInformation(BaseVisualInformation):
@@ -16,29 +20,18 @@ class EmbeddingVisualInformation(BaseVisualInformation):
 
 
 class ClassificationVisualInformation(EmbeddingVisualInformation):
-    is_selfie: bool
-    is_pet: bool
-    includes_animal: bool
-    is_document: bool
-    is_panorama: bool
-    is_motion_photo: bool
-    is_hdr: bool
-    is_night_sight: bool
-    is_activity: bool
-    is_event: bool
-    is_group_of_people: bool
+    scene_type: SceneType
+    people_type: PeopleType | None
+    animal_type: AnimalType | None
+    document_type: DocumentType | None
+    object_type: ObjectType | None
+    activity_type: ActivityType | None
+    event_type: EventType | None
+    weather_condition: WeatherCondition | None
+    is_outside: bool
     is_landscape: bool
     is_cityscape: bool
-    is_food: bool
     is_travel: bool
-    is_art: bool
-    is_car: bool
-    is_outside: bool
-
-    weather: WeatherCondition | None
-    scene_type: SceneType
-    document_type: DocumentType | None
-    activity_type: ActivityType | None
 
 
 class OCRVisualInformation(ClassificationVisualInformation):

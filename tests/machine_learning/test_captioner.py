@@ -19,18 +19,6 @@ def test_blip_captioner(
     assert len(caption) > 3
 
 
-@pytest.mark.cuda
-def test_minicpm_captioner(
-    assets_folder: Path,
-) -> None:
-    image = Image.open(assets_folder / "sunset.jpg")
-    llm = LLMCaptioner(LLMProvider.MINICPM)
-    caption = llm.caption(image)
-    print(caption)
-    assert isinstance(caption, str)
-    assert len(caption) > 3
-
-
 @pytest.mark.parametrize("llm_provider", [
     pytest.param(LLMProvider.MINICPM, marks=pytest.mark.cuda),
     LLMProvider.OPENAI

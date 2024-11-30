@@ -32,6 +32,7 @@ dependencies = [
     "pytesseract>=0.3.13",
     "python-multipart>=0.0.17",
     "pytz>=2024.2",
+    "pyvips>=2.2.3",
     "reverse-geocode>=1.6.5",
     "sentencepiece>=0.2.0",
     "sqlalchemy>=2.0.36",
