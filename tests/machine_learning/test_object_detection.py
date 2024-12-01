@@ -3,7 +3,7 @@ from pathlib import Path
 import PIL
 import pytest
 
-from app.machine_learning.object_detection.ResnetObjectDetection import \
+from app.machine_learning.object_detection.resnet_object_detection import \
     ResnetObjectDetection
 from app.machine_learning.utils import draw_bounding_box
 

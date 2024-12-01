@@ -4,13 +4,13 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
+from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 
 
 @pytest.fixture(scope="module")
 def setup_embedder(
     assets_folder: Path,
-) -> tuple[CLIPEmbedder, list[Image.Image], list[list[float]]]:
+) -> tuple[CLIPEmbedder, list[Image.Image], np.ndarray]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
@@ -35,7 +35,7 @@ def setup_embedder(
     ],
 )
 def test_clip_embedder(
-    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], list[list[float]]],
+    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], np.ndarray],
     query: str,
     img_index: int,
 ) -> None:
@@ -43,6 +43,6 @@ def test_clip_embedder(
 
     text_embedding = embedder.embed_text(query)
     # Calculate cosine similarities between text and each image
-    similarities = np.array(images_embedding) @ np.array(text_embedding)
+    similarities = images_embedding @ np.array(text_embedding)
     # Assert the highest similarity index matches the expected image index
     assert np.argmax(similarities).item() == img_index

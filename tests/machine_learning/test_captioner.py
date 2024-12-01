@@ -5,8 +5,8 @@ import pytest
 from PIL import Image
 
 from app.config.config_types import LLMProvider
-from app.machine_learning.caption.BlipCaptioner import BlipCaptioner
-from app.machine_learning.caption.LLMCaptioner import LLMCaptioner
+from app.machine_learning.caption.blip_captioner import BlipCaptioner
+from app.machine_learning.caption.llm_captioner import LLMCaptioner
 
 
 def test_blip_captioner(

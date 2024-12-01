@@ -5,8 +5,8 @@ import pytest
 from PIL import Image
 
 from app.config.config_types import LLMProvider
-from app.machine_learning.visual_llm.VisualLLMProtocol import ChatMessage
 from app.machine_learning.visual_llm.get_llm import get_llm_by_provider
+from app.machine_learning.visual_llm.visual_llm_protocol import ChatMessage
 
 
 @pytest.mark.parametrize("llm_provider", [

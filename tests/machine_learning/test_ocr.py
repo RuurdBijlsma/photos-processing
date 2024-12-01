@@ -2,7 +2,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from app.machine_learning.ocr.ResnetTesseractOCR import ResnetTesseractOCR
+from app.machine_learning.ocr.resnet_tesseract_ocr import ResnetTesseractOCR
 from app.machine_learning.utils import draw_bounding_box
 
 
