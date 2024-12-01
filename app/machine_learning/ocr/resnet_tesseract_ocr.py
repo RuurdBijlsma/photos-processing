@@ -12,7 +12,7 @@ from transformers import (
 
 from app.config.app_config import app_config
 from app.data.interfaces.ml_types import OCRBox
-from app.machine_learning.ocr.OCRProtocol import OCRProtocol
+from app.machine_learning.ocr.ocr_protocol import OCRProtocol
 from app.machine_learning.utils import coordinate_to_proportional
 
 

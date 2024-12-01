@@ -2,9 +2,10 @@
 
 * Python
     * add tests
-    * make modules out of pipelines so i can get timing stats for them (which is slowe)
+    * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * fix logspam
+    * make base clusterer for consistency
     * make all embedding types ndarray (difficult, can't be a type in pydantic basemodel)
     * face embedding new points support (dont just recluster for every new photo)
     * add tests for classification
@@ -21,7 +22,6 @@
         * start and end date of photos
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * periodically recluster faces
-      * when reclustering, how do i keep user labels for cluster labels? (compare embeddings of centroids)
     * allow user to change cluster params, then rerun clustering
     * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
       * input: image file path

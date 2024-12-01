@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.app_config import app_config
 from app.data.image_models import ImageModel, GeoLocationModel, OCRBoxModel, \
     FaceBoxModel, ObjectBoxModel, VisualInformationModel
-from app.data.interfaces.image_info_types import WeatherImageInfo
-from app.data.interfaces.visual_information import ObjectsVisualInformation
+from app.data.interfaces.image_data import WeatherData
+from app.data.interfaces.visual_data import ObjectsData
 from app.processing.processing.process_utils import clean_object
 
 
@@ -30,8 +30,8 @@ async def delete_image(relative_path: Path, session: AsyncSession) -> None:
 
 
 async def store_image(
-    image_info: WeatherImageInfo,
-    visual_infos: list[ObjectsVisualInformation],
+    image_info: WeatherData,
+    visual_infos: list[ObjectsData],
     user_id: int,
     session: AsyncSession
 ) -> ImageModel:

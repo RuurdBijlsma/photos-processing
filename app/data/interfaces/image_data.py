@@ -8,7 +8,7 @@ from app.data.enums.weather_condition import WeatherCondition
 from app.data.interfaces.location_types import GeoLocation
 
 
-class BaseImageInfo(BaseModel):
+class ImageData(BaseModel):
     id: str
     filename: str
     relative_path: Path
@@ -22,7 +22,7 @@ class BaseImageInfo(BaseModel):
         from_attributes = True
 
 
-class ExifImageInfo(BaseImageInfo):
+class ExifData(ImageData):
     width: int
     height: int
     duration: float | None
@@ -47,11 +47,11 @@ class ExifImageInfo(BaseImageInfo):
     matroska: dict[str, Any] | None
 
 
-class DataUrlImageInfo(ExifImageInfo):
+class DataUrlData(ExifData):
     data_url: str
 
 
-class GpsImageInfo(DataUrlImageInfo):
+class GpsData(DataUrlData):
     latitude: float | None = None
     longitude: float | None = None
     altitude: float | None = None
@@ -59,14 +59,14 @@ class GpsImageInfo(DataUrlImageInfo):
     location: GeoLocation | None = None
 
 
-class TimeImageInfo(GpsImageInfo):
+class TimeData(GpsData):
     datetime_local: datetime
     datetime_source: str
     timezone_name: str | None
     timezone_offset: timedelta | None
 
 
-class WeatherImageInfo(TimeImageInfo):
+class WeatherData(TimeData):
     weather_recorded_at: datetime | None = None
     weather_temperature: float | None = None
     weather_dewpoint: float | None = None

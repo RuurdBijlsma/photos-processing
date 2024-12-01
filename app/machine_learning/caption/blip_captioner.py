@@ -3,7 +3,7 @@ from functools import lru_cache
 from PIL.Image import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 
-from app.machine_learning.caption.CaptionerProtocol import CaptionerProtocol
+from app.machine_learning.caption.captioner_protocol import CaptionerProtocol
 
 
 @lru_cache

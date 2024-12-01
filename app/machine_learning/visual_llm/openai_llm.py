@@ -7,10 +7,8 @@ from PIL.Image import Image
 from openai import OpenAI, Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
-from app.machine_learning.visual_llm.MiniCPMLLM import MiniCPMLLM
-from app.machine_learning.visual_llm.VisualLLMProtocol import (
-    ChatMessage, ChatRole,
-)
+from app.machine_learning.visual_llm.mini_cpm_llm import MiniCPMLLM
+from app.machine_learning.visual_llm.visual_llm_protocol import ChatMessage, ChatRole
 
 
 def to_base64_url(image: Image, max_size: int = 720) -> str:

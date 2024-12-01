@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from app.data.interfaces.image_info_types import BaseImageInfo
+from app.data.interfaces.image_data import ImageData
 from app.data.interfaces.location_types import GeoLocationSmall
 
 
-class GridImageInfo(BaseImageInfo):
+class GridImageData(ImageData):
     """Image info representation for frontend."""
 
     width: int

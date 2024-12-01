@@ -4,8 +4,8 @@ import numpy as np
 from scipy.special import softmax
 from sklearn.metrics.pairwise import cosine_similarity
 
-from app.machine_learning.classifier.BaseClassifier import BaseClassifier
-from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
+from app.machine_learning.classifier.base_classifier import BaseClassifier
+from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 
 embedder = CLIPEmbedder()
 

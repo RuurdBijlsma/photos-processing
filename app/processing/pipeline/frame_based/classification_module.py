@@ -15,10 +15,11 @@ from app.data.enums.people_type import PeopleType
 from app.data.enums.scene_type import SceneType
 from app.data.enums.weather_condition import WeatherCondition, \
     weather_condition_descriptions
-from app.data.interfaces.visual_information import EmbeddingVisualInformation, \
-    ClassificationVisualInformation
-from app.machine_learning.classifier.CLIPClassifier import CLIPClassifier
-from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
+from app.data.interfaces.visual_data import ClassificationData, EmbeddingData, \
+    VisualData
+from app.machine_learning.classifier.clip_classifier import CLIPClassifier
+from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
+from app.processing.pipeline.base_module import VisualModule
 
 classifier = CLIPClassifier()
 
@@ -178,40 +179,39 @@ def experiment():
         print(binary_dict)
 
 
-def frame_classification(
-    visual_info: EmbeddingVisualInformation,
-    _: Image
-) -> ClassificationVisualInformation:
-    (
-        people_type,
-        animal_type,
-        document_type,
-        object_type,
-        activity_type,
-        event_type,
-        weather_type,
-        is_outside,
-        is_landscape,
-        is_cityscape,
-        is_travel
-    ) = binary_classifications(np.array(visual_info.embedding))
-    scene, conf = classify_image_scene(np.array(visual_info.embedding))
+class ClassificationModule(VisualModule):
+    def process(self, data: VisualData, image: Image) -> ClassificationData:
+        assert isinstance(data, EmbeddingData)
+        (
+            people_type,
+            animal_type,
+            document_type,
+            object_type,
+            activity_type,
+            event_type,
+            weather_type,
+            is_outside,
+            is_landscape,
+            is_cityscape,
+            is_travel
+        ) = binary_classifications(np.array(data.embedding))
+        scene, conf = classify_image_scene(np.array(data.embedding))
 
-    return ClassificationVisualInformation(
-        **visual_info.model_dump(),
-        people_type=people_type,
-        animal_type=animal_type,
-        document_type=document_type,
-        object_type=object_type,
-        activity_type=activity_type,
-        event_type=event_type,
-        weather_condition=weather_type,
-        is_outside=is_outside,
-        is_landscape=is_landscape,
-        is_cityscape=is_cityscape,
-        is_travel=is_travel,
-        scene_type=scene,
-    )
+        return ClassificationData(
+            **data.model_dump(),
+            people_type=people_type,
+            animal_type=animal_type,
+            document_type=document_type,
+            object_type=object_type,
+            activity_type=activity_type,
+            event_type=event_type,
+            weather_condition=weather_type,
+            is_outside=is_outside,
+            is_landscape=is_landscape,
+            is_cityscape=is_cityscape,
+            is_travel=is_travel,
+            scene_type=scene,
+        )
 
 
 if __name__ == "__main__":

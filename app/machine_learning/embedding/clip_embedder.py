@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from PIL.Image import Image
 from transformers import CLIPModel, CLIPProcessor, PreTrainedModel
 
-from app.machine_learning.embedding.EmbedderProtocol import EmbedderProtocol
+from app.machine_learning.embedding.embedder_protocol import EmbedderProtocol
 
 
 @lru_cache

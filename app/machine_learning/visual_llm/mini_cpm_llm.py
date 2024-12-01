@@ -10,11 +10,8 @@ from transformers import (
     PreTrainedTokenizerFast,
 )
 
-from app.machine_learning.visual_llm.VisualLLMProtocol import (
-    VisualLLMProtocol,
-    ChatMessage,
-    ChatRole,
-)
+from app.machine_learning.visual_llm.visual_llm_protocol import VisualLLMProtocol, \
+    ChatMessage, ChatRole
 
 
 @lru_cache

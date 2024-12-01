@@ -7,7 +7,7 @@ from transformers import (
 )
 
 from app.data.interfaces.ml_types import ObjectBox
-from app.machine_learning.object_detection.ObjectDetectionProtocol import \
+from app.machine_learning.object_detection.object_detection_protocol import \
     ObjectDetectionProtocol
 from app.machine_learning.utils import coordinate_to_proportional
 

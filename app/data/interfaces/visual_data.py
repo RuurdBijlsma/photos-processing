@@ -11,15 +11,15 @@ from app.data.enums.weather_condition import WeatherCondition
 from app.data.interfaces.ml_types import OCRBox, FaceBox, ObjectBox
 
 
-class BaseVisualInformation(BaseModel):
+class VisualData(BaseModel):
     frame_percentage: int
 
 
-class EmbeddingVisualInformation(BaseVisualInformation):
+class EmbeddingData(VisualData):
     embedding: list[float]
 
 
-class ClassificationVisualInformation(EmbeddingVisualInformation):
+class ClassificationData(EmbeddingData):
     scene_type: SceneType
     people_type: PeopleType | None
     animal_type: AnimalType | None
@@ -34,24 +34,24 @@ class ClassificationVisualInformation(EmbeddingVisualInformation):
     is_travel: bool
 
 
-class OCRVisualInformation(ClassificationVisualInformation):
+class OCRData(ClassificationData):
     has_legible_text: bool
     ocr_text: str | None
     document_summary: str | None
     ocr_boxes: list[OCRBox]
 
 
-class FacesVisualInformation(OCRVisualInformation):
+class FacesData(OCRData):
     faces: list[FaceBox]
 
 
-class TextSummaryVisualInformation(FacesVisualInformation):
+class SummaryData(FacesData):
     summary: str | None
 
 
-class CaptionVisualInformation(TextSummaryVisualInformation):
+class CaptionData(SummaryData):
     caption: str
 
 
-class ObjectsVisualInformation(CaptionVisualInformation):
+class ObjectsData(CaptionData):
     objects: list[ObjectBox]

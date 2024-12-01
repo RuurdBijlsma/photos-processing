@@ -9,7 +9,7 @@ from app.processing.cleanup.cleanup_entries import cleanup_entries
 from app.processing.cleanup.drop_images_without_thumbnails import (
     drop_images_without_thumbnails,
 )
-from app.processing.pipelines.scan_image import scan_image
+from app.processing.pipeline.pipeline import run_metadata_pipeline
 from app.processing.post_processing.fix_timezone import fill_timezone_gaps
 from app.processing.processing.generate_thumbnails import generate_photo_thumbnails, \
     generate_video_thumbnails
@@ -61,7 +61,7 @@ async def process_user_images(
             print(f"Skipping {image_path}, the thumbnail for it failed.")
             continue
         image_hash = hash_image(image_path)
-        image_info, frames = scan_image(
+        image_info, frames = run_metadata_pipeline(
             image_path,
             image_hash,
             get_thumbnail_paths(image_path, image_hash)

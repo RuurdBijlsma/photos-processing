@@ -3,11 +3,12 @@ from datetime import timezone, timedelta, datetime
 
 import pytz
 
-from app.data.interfaces.image_info_types import GpsImageInfo, TimeImageInfo
+from app.data.interfaces.image_data import GpsData, TimeData, ImageData
+from app.processing.pipeline.base_module import ImageModule
 from app.processing.post_processing.timezone_finder import timezone_finder
 
 
-def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
+def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
     def f1() -> tuple[datetime, str]:
         assert image_info.exif
         datetime_taken = datetime.strptime(
@@ -71,7 +72,7 @@ def get_local_datetime(image_info: GpsImageInfo) -> tuple[datetime, str]:
 
 
 def get_timezone_info(
-    image_info: GpsImageInfo, date: datetime
+    image_info: GpsData, date: datetime
 ) -> tuple[datetime | None, str | None, timedelta | None]:
     """Gets timezone name and offset from latitude, longitude, and date."""
     if not image_info.latitude or not image_info.longitude:
@@ -93,20 +94,22 @@ def get_timezone_info(
     return datetime_utc, timezone_name, timezone_offset
 
 
-def image_time_taken(image_info: GpsImageInfo) -> TimeImageInfo:
-    datetime_taken, datetime_source = get_local_datetime(image_info)
-    datetime_utc, timezone_name, timezone_offset = get_timezone_info(
-        image_info, datetime_taken
-    )
-    if datetime_utc is not None:
-        datetime_utc = datetime_utc.replace(tzinfo=None)
-    image_info.datetime_utc = datetime_utc
-    datetime_taken = datetime_taken.replace(tzinfo=None)
+class TimeModule(ImageModule):
+    def process(self, data: ImageData) -> TimeData:
+        assert isinstance(data, GpsData)
+        datetime_taken, datetime_source = get_local_datetime(data)
+        datetime_utc, timezone_name, timezone_offset = get_timezone_info(
+            data, datetime_taken
+        )
+        if datetime_utc is not None:
+            datetime_utc = datetime_utc.replace(tzinfo=None)
+        data.datetime_utc = datetime_utc
+        datetime_taken = datetime_taken.replace(tzinfo=None)
 
-    return TimeImageInfo(
-        **image_info.model_dump(),
-        datetime_local=datetime_taken,
-        datetime_source=datetime_source,
-        timezone_name=timezone_name,
-        timezone_offset=timezone_offset,
-    )
+        return TimeData(
+            **data.model_dump(),
+            datetime_local=datetime_taken,
+            datetime_source=datetime_source,
+            timezone_name=timezone_name,
+            timezone_offset=timezone_offset,
+        )
