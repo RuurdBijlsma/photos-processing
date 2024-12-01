@@ -5,6 +5,7 @@
     * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * fix logspam
+    * add integration test
     * make base clusterer for consistency
     * make all embedding types ndarray (difficult, can't be a type in pydantic basemodel)
     * face embedding new points support (dont just recluster for every new photo)
