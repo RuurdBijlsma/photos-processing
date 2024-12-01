@@ -83,4 +83,5 @@ def perform_clustering(
         invalidate_cache(get_cached_clusterer, cache_file)
         joblib.dump(clusterer, cache_file)
     cluster_list = cluster_labels.tolist()
+    assert isinstance(cluster_list, list)
     return cluster_list

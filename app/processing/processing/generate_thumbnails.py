@@ -3,7 +3,7 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import pyvips  # type: ignore
+import pyvips
 from parsed_ffmpeg import run_ffmpeg, run_ffprobe, FfmpegError
 from tqdm import tqdm
 

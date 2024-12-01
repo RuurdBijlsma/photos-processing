@@ -13,7 +13,7 @@ from app.data.image_models import VisualInformationModel, ImageModel
 from app.machine_learning.clustering.hdbscan_clustering import perform_clustering
 
 
-async def experiment():
+async def experiment() -> None:
     async with get_session() as session:
         frames = (await session.execute(
             select(VisualInformationModel, ImageModel.relative_path)

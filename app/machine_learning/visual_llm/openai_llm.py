@@ -93,7 +93,7 @@ class OpenAILLM(MiniCPMLLM):
             stream=True
         )
         for chunk in response:
-            chunk_content: str | None = chunk.choices[0].delta.content
+            chunk_content: str | None = chunk.choices[0].delta.content  # type: ignore
             if chunk_content is not None:
                 yield chunk_content
 

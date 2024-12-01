@@ -1,4 +1,4 @@
-from os import PathLike
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -16,7 +16,7 @@ def coordinate_to_proportional(
 def draw_bounding_box(
     box: BaseBoundingBox,
     pil_image: Image,
-    out_path: str | PathLike
+    out_path: str | Path
 ) -> None:
     image_np = np.array(pil_image)
     image_cv2 = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)

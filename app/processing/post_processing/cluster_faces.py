@@ -11,8 +11,7 @@ from app.config.app_config import app_config
 from app.data.database.database import get_session
 from app.data.image_models import FaceBoxModel, VisualInformationModel, ImageModel, \
     UniqueFaceModel
-from app.machine_learning.clustering.hdbscan_clustering import perform_clustering, \
-    predict_new_point
+from app.machine_learning.clustering.hdbscan_clustering import perform_clustering
 
 
 def index_of_closest_embedding(
@@ -26,10 +25,11 @@ def index_of_closest_embedding(
 
 
 def cluster_new_face(face_embedding: np.ndarray) -> int:
-    return predict_new_point(
-        face_embedding,
-        app_config.cluster_cache_file
-    )
+    return 1
+    # return predict_new_point(
+    #     face_embedding,
+    #     app_config.cluster_cache_file
+    # )
 
 
 async def re_cluster_faces(session: AsyncSession) -> None:
@@ -86,7 +86,7 @@ async def re_cluster_faces(session: AsyncSession) -> None:
     await session.commit()
 
 
-async def experiment(draw_face_experiment: bool = False):
+async def experiment(draw_face_experiment: bool = False) -> None:
     if not draw_face_experiment:
         async with get_session() as session:
             await re_cluster_faces(session)

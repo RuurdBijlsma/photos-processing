@@ -2,6 +2,7 @@
 
 * Python
     * add tests
+    * fix mypy types
     * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * fix logspam
@@ -11,7 +12,7 @@
     * face embedding new points support (dont just recluster for every new photo)
     * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
-    * is panorama, is selfie, is night sight, etc is all not being set yet.
+    * is panorama, is selfie, is night sight, etc. is all not being set yet.
     * Cluster images!
       * werkt best leuk, ik krijg allemaal poekie images
     * add short captions per image so albums can get an automatic title from that 

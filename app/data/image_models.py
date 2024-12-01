@@ -21,12 +21,12 @@ from app.data.enums.activity_type import ActivityType
 from app.data.enums.animal_type import AnimalType
 from app.data.enums.document_type import DocumentType
 from app.data.enums.event_type import EventType
+from app.data.enums.face_sex import FaceSex
 from app.data.enums.object_type import ObjectType
 from app.data.enums.people_type import PeopleType
 from app.data.enums.scene_type import SceneType
+from app.data.enums.user_role import Role
 from app.data.enums.weather_condition import WeatherCondition
-from app.data.interfaces.auth_types import Role
-from app.data.interfaces.ml_types import FaceSex
 
 
 class Base(AsyncAttrs, DeclarativeBase):

@@ -28,7 +28,9 @@ classifier = CLIPClassifier()
 def get_scenes() -> dict[str, str]:
     scenes_path = Path(__file__).parents[2] / "assets/scenes.json"
     with open(scenes_path, 'r') as f:
-        return json.load(f)
+        result = json.load(f)
+    assert isinstance(result, dict)
+    return result
 
 
 def classify_image_scene(image_embedding: np.ndarray) -> tuple[SceneType, float]:
@@ -44,7 +46,11 @@ def classify_image_scene(image_embedding: np.ndarray) -> tuple[SceneType, float]
     return best_label, confidence
 
 
-def binary_classifications(image_embedding: np.ndarray):
+def binary_classifications(image_embedding: np.ndarray) -> tuple[
+    PeopleType | None, AnimalType | None, DocumentType | None, ObjectType | None,
+    ActivityType | None, EventType | None, WeatherCondition | None,
+    bool, bool, bool, bool
+]:
     people_type = classifier.classify_to_enum_with_descriptions(
         image_embedding,
         "This image contains people or a person.",
@@ -167,7 +173,7 @@ def binary_classifications(image_embedding: np.ndarray):
     )
 
 
-def experiment():
+def experiment() -> None:
     embedder = CLIPEmbedder()
     with PIL.Image.open("media/images/1/IMG_20190717_172849.jpg") as img:
         image_embedding = embedder.embed_image(img)

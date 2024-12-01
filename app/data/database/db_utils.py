@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
+from app.data.enums.user_role import Role
 from app.data.image_models import UserModel
-from app.data.interfaces.auth_types import Role
 from app.routers.auth.auth_model import get_password_hash
 
 

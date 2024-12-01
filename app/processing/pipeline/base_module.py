@@ -1,40 +1,43 @@
 import time
 from abc import ABC, abstractmethod
+from typing import TypeVar
 
 from PIL.Image import Image
 
 from app.data.interfaces.image_data import ImageData
 from app.data.interfaces.visual_data import VisualData
 
+T = TypeVar("T")
+
 
 class BaseModule(ABC):
     run_times: list[float]
     name: str
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.name = self.__class__.__name__
         self.run_times = []
-
-    def base_run(self, func, *args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        self.run_times.append(time.time() - start_time)
-        return result
 
 
 class ImageModule(BaseModule):
     def run(self, data: ImageData) -> ImageData:
-        return self.base_run(self.process, data)
+        start_time = time.time()
+        result = self.process(data)
+        self.run_times.append(time.time() - start_time)
+        return result
 
     @abstractmethod
     def process(self, data: ImageData) -> ImageData:
-        pass
+        ...
 
 
 class VisualModule(BaseModule):
     def run(self, data: VisualData, image: Image) -> VisualData:
-        return self.base_run(self.process, data, image)
+        start_time = time.time()
+        result = self.process(data, image)
+        self.run_times.append(time.time() - start_time)
+        return result
 
     @abstractmethod
     def process(self, data: VisualData, image: Image) -> VisualData:
-        pass
+        ...
