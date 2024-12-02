@@ -138,4 +138,4 @@ async def experiment(draw_face_experiment: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(experiment(draw_face_experiment=False))
+    asyncio.run(experiment(draw_face_experiment=True))

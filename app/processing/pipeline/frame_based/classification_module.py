@@ -6,14 +6,14 @@ import PIL
 import numpy as np
 from PIL.Image import Image
 
-from app.data.enums.activity_type import ActivityType
-from app.data.enums.animal_type import AnimalType
-from app.data.enums.document_type import DocumentType
-from app.data.enums.event_type import EventType
-from app.data.enums.object_type import ObjectType
-from app.data.enums.people_type import PeopleType
-from app.data.enums.scene_type import SceneType
-from app.data.enums.weather_condition import WeatherCondition, \
+from app.data.enums.classification.activity_type import ActivityType
+from app.data.enums.classification.animal_type import AnimalType
+from app.data.enums.classification.document_type import DocumentType
+from app.data.enums.classification.event_type import EventType
+from app.data.enums.classification.object_type import ObjectType
+from app.data.enums.classification.people_type import PeopleType
+from app.data.enums.classification.scene_type import SceneType
+from app.data.enums.classification.weather_condition import WeatherCondition, \
     weather_condition_descriptions
 from app.data.interfaces.visual_data import ClassificationData, EmbeddingData, \
     VisualData

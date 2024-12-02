@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from meteostat import Hourly, Point
 
-from app.data.enums.weather_condition import WeatherCondition
+from app.data.enums.classification.weather_condition import WeatherCondition
 from app.data.interfaces.image_data import TimeData, WeatherData, ImageData
 from app.processing.pipeline.base_module import ImageModule
 
