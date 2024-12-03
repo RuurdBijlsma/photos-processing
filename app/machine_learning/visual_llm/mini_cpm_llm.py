@@ -99,8 +99,8 @@ class MiniCPMLLM(VisualLLMProtocol):
 
         if convert_images:
             rgb_image = image.convert("RGB") if image is not None else None
-            for message in history:
-                message.images = [image.convert("RGB") for image in message.images]
+            for msg in history:
+                msg.images = [image.convert("RGB") for image in msg.images]
             message.images = [image.convert("RGB") for image in message.images]
         else:
             rgb_image = image

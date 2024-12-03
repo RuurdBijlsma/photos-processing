@@ -12,8 +12,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
 from app.data.database.database import SessionDep
-from app.data.interfaces.auth_types import TokenData, Token
 from app.data.image_models import UserModel
+from app.data.interfaces.auth_types import TokenData, Token
 
 logging.getLogger("passlib").setLevel(logging.ERROR)
 
@@ -94,8 +94,8 @@ async def get_current_user(session: SessionDep, token: TokenDep) -> UserModel:
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except InvalidTokenError:
-        raise credentials_exception
+    except InvalidTokenError as e:
+        raise credentials_exception from e
     assert token_data.username is not None
     user = await get_user(session, username=token_data.username)
     if user is None:

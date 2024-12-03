@@ -1,8 +1,10 @@
 import asyncio
 import os
+from typing import Any
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 from scipy.spatial.distance import cdist
 from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,21 +17,13 @@ from app.machine_learning.clustering.hdbscan_clustering import perform_clusterin
 
 
 def index_of_closest_embedding(
-    embedding: np.ndarray,
-    embedding_list: np.ndarray
+    embedding: NDArray[Any],
+    embedding_list: NDArray[Any]
 ) -> int:
     embedding = embedding[np.newaxis, :]  # Add batch dimension
     similarities = 1 - cdist(embedding, embedding_list, metric='cosine')
     closest_index = np.argmax(similarities)
     return int(closest_index)
-
-
-def cluster_new_face(face_embedding: np.ndarray) -> int:
-    return 1
-    # return predict_new_point(
-    #     face_embedding,
-    #     app_config.cluster_cache_file
-    # )
 
 
 async def re_cluster_faces(session: AsyncSession) -> None:
@@ -90,12 +84,6 @@ async def experiment(draw_face_experiment: bool = False) -> None:
     if not draw_face_experiment:
         async with get_session() as session:
             await re_cluster_faces(session)
-        f = (await session.execute(
-            select(FaceBoxModel)
-            .order_by(FaceBoxModel.id)
-        )).scalars().all()
-        new_face_label = cluster_new_face(f[56].embedding.to_numpy())
-        print(new_face_label)
         return
 
     async with get_session() as session:
@@ -117,7 +105,7 @@ async def experiment(draw_face_experiment: bool = False) -> None:
             if image is None:
                 print(f"SKIP: {relative_path}")
                 continue
-            height, width, channels = image.shape
+            height, width, _ = image.shape
             x1 = int(face.position[0] * width)
             y1 = int(face.position[1] * height)
             x2 = int((face.position[0] + face.width) * width)

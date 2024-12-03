@@ -3,7 +3,7 @@ from functools import lru_cache
 import torch
 from PIL.Image import Image
 from transformers import (
-    DetrImageProcessor, DetrForObjectDetection,
+    DetrImageProcessor, DetrForObjectDetection, PreTrainedModel,
 )
 
 from app.data.interfaces.ml_types import ObjectBox
@@ -14,7 +14,7 @@ from app.machine_learning.utils import coordinate_to_proportional
 
 @lru_cache
 def get_model_and_processor() -> tuple[
-    DetrImageProcessor, DetrForObjectDetection
+    DetrImageProcessor, PreTrainedModel
 ]:
     processor = DetrImageProcessor.from_pretrained(
         "facebook/detr-resnet-50", revision="no_timm"
@@ -38,7 +38,7 @@ class ResnetObjectDetection(ObjectDetectionProtocol):
         target_sizes = torch.tensor([image.size[::-1]])
         results = processor.post_process_object_detection(
             outputs,
-            target_sizes=target_sizes,
+            target_sizes=target_sizes,  # noqa
             threshold=0.8
         )[0]
 

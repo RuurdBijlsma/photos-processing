@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.image_models import UserModel
 from app.processing.cleanup.cleanup_thumbnails import cleanup_thumbnails
-from app.processing.processing.process_user import process_user_images
 from app.processing.post_processing.cluster_faces import re_cluster_faces
+from app.processing.processing.process_user import process_user_images
 
 
 async def process_all(session: AsyncSession) -> None:

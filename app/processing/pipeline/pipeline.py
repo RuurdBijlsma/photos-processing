@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import PIL.Image
-import pillow_avif  # noqa: F401
+import pillow_avif  # noqa
 
 from app.config.app_config import app_config
 from app.data.database.db_utils import rel_path

@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 from app.data.enums.face_sex import FaceSex
@@ -18,7 +17,6 @@ class ObjectBox(BaseBoundingBox):
 
 class OCRBox(BaseBoundingBox):
     text: str
-
 
 
 class FaceBox(BaseBoundingBox):

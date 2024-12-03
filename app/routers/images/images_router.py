@@ -17,7 +17,7 @@ async def get_at_date(
     _: UserDep,
     session: SessionDep,
     lower_date: datetime = Query(default_factory=lambda: datetime(1970, 1, 1, 1, 1, 1)),
-    date: datetime = Query(default_factory=lambda: datetime.now()),
+    date: datetime = Query(default_factory=datetime.now),
     upper_date: datetime = Query(
         default_factory=lambda: datetime.now() + timedelta(days=1)
     ),

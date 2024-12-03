@@ -2,7 +2,7 @@ import base64
 from io import BytesIO
 
 import PIL
-import pillow_avif  # noqa: F401
+import pillow_avif  # noqa
 
 from app.config.app_config import app_config
 from app.data.interfaces.image_data import ImageData, DataUrlData

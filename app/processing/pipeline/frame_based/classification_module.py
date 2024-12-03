@@ -1,10 +1,12 @@
 import json
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 import PIL
 import numpy as np
 from PIL.Image import Image
+from numpy.typing import NDArray
 
 from app.data.enums.classification.activity_type import ActivityType
 from app.data.enums.classification.animal_type import AnimalType
@@ -27,17 +29,18 @@ classifier = CLIPClassifier()
 @lru_cache
 def get_scenes() -> dict[str, str]:
     scenes_path = Path(__file__).parents[2] / "assets/scenes.json"
-    with open(scenes_path, 'r') as f:
+    # todo: is this encoding right?
+    with open(scenes_path, 'r', encoding="utf-8") as f:
         result = json.load(f)
     assert isinstance(result, dict)
     return result
 
 
-def classify_image_scene(image_embedding: np.ndarray) -> tuple[SceneType, float]:
+def classify_image_scene(image_embedding: NDArray[Any]) -> tuple[SceneType, float]:
     scenes = get_scenes()
     best_index, confidence = classifier.classify_image(
         image_embedding,
-        [prompt for prompt in scenes.values()]
+        list(scenes.values())
     )
     # confidence threshold 0.003 or something could be good
     best_label = SceneType(list(scenes.keys())[best_index])
@@ -46,7 +49,7 @@ def classify_image_scene(image_embedding: np.ndarray) -> tuple[SceneType, float]
     return best_label, confidence
 
 
-def binary_classifications(image_embedding: np.ndarray) -> tuple[
+def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
     PeopleType | None, AnimalType | None, DocumentType | None, ObjectType | None,
     ActivityType | None, EventType | None, WeatherCondition | None,
     bool, bool, bool, bool
@@ -201,7 +204,7 @@ class ClassificationModule(VisualModule):
             is_cityscape,
             is_travel
         ) = binary_classifications(np.array(data.embedding))
-        scene, conf = classify_image_scene(np.array(data.embedding))
+        scene, _ = classify_image_scene(np.array(data.embedding))
 
         return ClassificationData(
             **data.model_dump(),

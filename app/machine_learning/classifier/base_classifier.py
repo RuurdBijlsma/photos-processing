@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import StrEnum, Enum
-from typing import TypeVar
+from typing import TypeVar, Any
 
-import numpy as np
+from numpy.typing import NDArray
 
 TStrEnum = TypeVar("TStrEnum", bound=StrEnum)
 TEnum = TypeVar("TEnum", bound=Enum)
@@ -12,7 +12,7 @@ class BaseClassifier(ABC):
     @abstractmethod
     def classify_image(
         self,
-        image_embedding: np.ndarray,
+        image_embedding: NDArray[Any],
         classes: list[str]
     ) -> tuple[int, float]:
         ...
@@ -20,7 +20,7 @@ class BaseClassifier(ABC):
     @abstractmethod
     def binary_classify_image(
         self,
-        image_embedding: np.ndarray,
+        image_embedding: NDArray[Any],
         positive_prompt: str,
         negative_prompt: str
     ) -> tuple[bool, float]:
@@ -28,7 +28,7 @@ class BaseClassifier(ABC):
 
     def classify_to_enum_with_descriptions(
         self,
-        image_embedding: np.ndarray,
+        image_embedding: NDArray[Any],
         positive_prompt: str | None,
         negative_prompt: str | None,
         class_descriptions: dict[TEnum, str]
@@ -50,7 +50,7 @@ class BaseClassifier(ABC):
 
     def classify_to_enum(
         self,
-        image_embedding: np.ndarray,
+        image_embedding: NDArray[Any],
         positive_prompt: str,
         negative_prompt: str,
         enum_type: type[TStrEnum]

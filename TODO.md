@@ -8,7 +8,7 @@
     * fix logspam
     * add integration test
     * make base clusterer for consistency
-    * make all embedding types ndarray (difficult, can't be a type in pydantic basemodel)
+    * make all embedding types NDArray[Any] (difficult, can't be a type in pydantic basemodel)
     * face embedding new points support (dont just recluster for every new photo)
     * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel

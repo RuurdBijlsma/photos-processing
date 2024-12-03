@@ -87,7 +87,7 @@ async def at_date(
     upper_date: datetime,
     limit: int,
 ) -> Sequence[ImageModel]:
-    if not (lower_date < date < upper_date):
+    if not lower_date < date < upper_date:
         raise HTTPException(status_code=422, detail="Date not between given ranges")
     up_images, down_images = await asyncio.gather(
         scroll_up(session, date, upper_date, limit // 2),

@@ -37,7 +37,7 @@ async def cleanup_entries(
     locations_without_images = (
         await session.execute(
             select(GeoLocationModel)
-            .outerjoin(ImageModel, GeoLocationModel.id.__eq__(ImageModel.location_id))
+            .outerjoin(ImageModel, GeoLocationModel.id == ImageModel.location_id)
             .filter(ImageModel.id.is_(None))
         )
     ).scalars().all()

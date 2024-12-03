@@ -159,7 +159,7 @@ async def generate_generic_thumbnails(image_path: Path, image_hash: str) -> bool
             image_path,
             get_thumbnail_paths(image_path, image_hash)
         )
-    elif image_path.suffix in app_config.video_suffixes:
+    if image_path.suffix in app_config.video_suffixes:
         return await generate_single_video_thumbnails(
             image_path,
             app_config.web_video_height_and_quality,

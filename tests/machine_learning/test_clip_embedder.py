@@ -1,8 +1,10 @@
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
 from PIL import Image
+from numpy.typing import NDArray
 
 from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 
@@ -10,7 +12,7 @@ from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 @pytest.fixture(scope="module")
 def setup_embedder(
     assets_folder: Path,
-) -> tuple[CLIPEmbedder, list[Image.Image], np.ndarray]:
+) -> tuple[CLIPEmbedder, list[Image.Image], NDArray[Any]]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
@@ -35,11 +37,13 @@ def setup_embedder(
     ],
 )
 def test_clip_embedder(
-    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], np.ndarray],
+    setup_embedder: tuple[
+        CLIPEmbedder, list[Image.Image], NDArray[Any]
+    ],
     query: str,
     img_index: int,
 ) -> None:
-    embedder, images, images_embedding = setup_embedder
+    embedder, _, images_embedding = setup_embedder
 
     text_embedding = embedder.embed_text(query)
     # Calculate cosine similarities between text and each image

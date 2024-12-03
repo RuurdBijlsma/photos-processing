@@ -48,6 +48,7 @@ class OpenAILLM(MiniCPMLLM):
     client: OpenAI
 
     def __init__(self, model_name: str = "gpt-4o-mini"):
+        super().__init__()
         self.model_name = model_name
         self.client = OpenAI()
 
