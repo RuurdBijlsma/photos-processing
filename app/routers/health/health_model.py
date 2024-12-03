@@ -13,5 +13,5 @@ async def check_health(session: AsyncSession) -> HealthStatus:
     try:
         await session.execute(text("SELECT 1"))
         return HealthStatus(status="ok")
-    except OperationalError:
-        raise HTTPException(status_code=503, detail="Database connection error")
+    except OperationalError as e:
+        raise HTTPException(status_code=503, detail="Database connection error") from e

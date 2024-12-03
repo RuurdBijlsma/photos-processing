@@ -1,6 +1,7 @@
 import torch
 from PIL import Image
 from transformers import AutoImageProcessor, AutoModelForImageClassification
+from unstructured.partition.image import partition_image
 
 model = AutoModelForImageClassification.from_pretrained(
     "miguelcarv/resnet-152-text-detector",
@@ -24,7 +25,6 @@ if not has_legible_text:
     print("Image has no legible text!")
 else:
     print("Image has legible text!")
-    from unstructured.partition.image import partition_image
 
     # Returns a List[Element] present in the pages of the parsed image document
     elements = partition_image(image_path)

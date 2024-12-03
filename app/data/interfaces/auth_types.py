@@ -1,11 +1,6 @@
-import enum
-
 from pydantic import BaseModel
 
-
-class Role(enum.Enum):
-    ADMIN = 1
-    USER = 2
+from app.data.enums.user_role import Role
 
 
 class Token(BaseModel):

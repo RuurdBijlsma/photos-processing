@@ -14,9 +14,6 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
 
       - name: Set up Python
         run: uv python install
@@ -30,7 +27,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Run ruff for linting and auto-fix
+      - name: Run ruff
         run: uv run ruff check .
 
       - name: Type check main app

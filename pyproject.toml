@@ -14,9 +14,11 @@ dependencies = [
     "asyncpg>=0.30.0",
     "bitsandbytes>=0.44.1",
     "fastapi[standard]>=0.115.5",
+    "hdbscan>=0.8.40",
     "insightface>=0.7.3",
     "meteostat>=1.6.8",
     "onnxruntime>=1.20.0",
+    "openai>=1.54.5",
     "opencv-python>=4.10.0.84",
     "parsed-ffmpeg>=0.2.3",
     "passlib[bcrypt]>=1.7.4",
@@ -30,6 +32,7 @@ dependencies = [
     "pytesseract>=0.3.13",
     "python-multipart>=0.0.17",
     "pytz>=2024.2",
+    "pyvips>=2.2.3",
     "reverse-geocode>=1.6.5",
     "sentencepiece>=0.2.0",
     "sqlalchemy>=2.0.36",
@@ -44,6 +47,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.13.0",
+    "pylint>=3.3.2",
     "pytest>=8.3.3",
     "ruff>=0.7.4",
     "types-passlib>=1.7.7.20240819",
@@ -53,8 +57,7 @@ dev = [
 
 [tool.uv.sources]
 torch = [
-  { index = "pytorch_gpu", marker = "sys_platform != 'linux'" },
-  { index = "pytorch_gpu", marker = "sys_platform == 'linux'" },
+    { index = "pytorch_gpu", marker = "sys_platform != 'darwin'" },
 ]
 
 [[tool.uv.index]]
@@ -62,7 +65,5 @@ name = "pytorch_gpu"
 url = "https://download.pytorch.org/whl/cu124"
 explicit = true
 
-[[tool.uv.index]]
-name = "pytorch_cpu"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true
+[tool.uv.workspace]
+members = ["scripts"]

@@ -1,22 +1,24 @@
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
 from PIL import Image
+from numpy.typing import NDArray
 
-from app.machine_learning.embedding.CLIPEmbedder import CLIPEmbedder
+from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 
 
 @pytest.fixture(scope="module")
 def setup_embedder(
-    tests_folder: Path,
-) -> tuple[CLIPEmbedder, list[Image.Image], list[list[float]]]:
+    assets_folder: Path,
+) -> tuple[CLIPEmbedder, list[Image.Image], NDArray[Any]]:
     embedder = CLIPEmbedder()
 
     # Load images and create embeddings
-    cat_img = Image.open(tests_folder / "assets/cat.jpg")
-    cluster_img = Image.open(tests_folder / "assets/cluster.jpg")
-    sunset_img = Image.open(tests_folder / "assets/sunset.jpg")
+    cat_img = Image.open(assets_folder / "cat.jpg")
+    cluster_img = Image.open(assets_folder / "cluster.jpg")
+    sunset_img = Image.open(assets_folder / "sunset.jpg")
     images: list[Image.Image] = [cat_img, cluster_img, sunset_img]
     images_embedding = embedder.embed_images(images)
 
@@ -35,14 +37,16 @@ def setup_embedder(
     ],
 )
 def test_clip_embedder(
-    setup_embedder: tuple[CLIPEmbedder, list[Image.Image], list[list[float]]],
+    setup_embedder: tuple[
+        CLIPEmbedder, list[Image.Image], NDArray[Any]
+    ],
     query: str,
     img_index: int,
 ) -> None:
-    embedder, images, images_embedding = setup_embedder
+    embedder, _, images_embedding = setup_embedder
 
     text_embedding = embedder.embed_text(query)
     # Calculate cosine similarities between text and each image
-    similarities = np.array(images_embedding) @ np.array(text_embedding)
+    similarities = images_embedding @ np.array(text_embedding)
     # Assert the highest similarity index matches the expected image index
     assert np.argmax(similarities).item() == img_index
