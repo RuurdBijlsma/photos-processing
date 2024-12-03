@@ -30,7 +30,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Run ruff for linting and auto-fix
+      - name: Run ruff
         run: uv run ruff check .
 
       # Run pylint and check the score
@@ -38,8 +38,9 @@ jobs:
         id: pylint
         run: |
           uv run pylint --disable=C0114,C0115,C0116,R0903,C0415,E1101,E1102,R0917,R0913,C0103,R0901,C0411 app/**/*.py tests/**/*.py > pylint-output.txt || true
-          tail -n 10 pylint-output.txt
-          SCORE=$(tail -n 2 pylint-output.txt | grep "Your code has been rated" | awk '{print $7}' | cut -d'/' -f1)
+          cat pylint-output.txt
+          SCORE=$(tail -n 1 pylint-output.txt | awk -F'at ' '{print $2}' | awk '{print $1}' | sed 's/\/10//')
+          echo "score=$SCORE"
           echo "score=$SCORE" >> $GITHUB_ENV
 
       # Fail if score is below 9.5

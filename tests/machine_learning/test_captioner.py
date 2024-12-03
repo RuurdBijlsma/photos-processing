@@ -9,6 +9,7 @@ from app.machine_learning.caption.blip_captioner import BlipCaptioner
 from app.machine_learning.caption.llm_captioner import LLMCaptioner
 
 
+@pytest.mark.cuda
 def test_blip_captioner(
     assets_folder: Path,
 ) -> None:
