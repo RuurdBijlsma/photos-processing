@@ -48,6 +48,7 @@ dependencies = [
 dev = [
     "mypy>=1.13.0",
     "pylint>=3.3.2",
+    "pyscan-rs>=0.1.6",
     "pytest>=8.3.3",
     "ruff>=0.7.4",
     "types-passlib>=1.7.7.20240819",
