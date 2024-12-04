@@ -2,38 +2,33 @@
 
 * Python
     * add tests
-    * fix mypy types
     * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * fix logspam
     * add integration test
     * make base clusterer for consistency
-    * make all embedding types NDArray[Any] (difficult, can't be a type in pydantic basemodel)
     * face embedding new points support (dont just recluster for every new photo)
     * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
     * is panorama, is selfie, is night sight, etc. is all not being set yet.
     * Cluster images!
       * werkt best leuk, ik krijg allemaal poekie images
-    * add short captions per image so albums can get an automatic title from that 
       * (ask llm to make album title based on many 2-3 word descriptions of images)
-      * give more info than that^
-        * locations (countries/cities)
-        * duration of from start to end of album (weekend/year/day)
-        * names of people in photos (unique faces labels)
-        * start and end date of photos
+        * give more info than that^
+          * locations (countries/cities)
+          * duration of from start to end of album (weekend/year/day)
+          * names of people in photos (unique faces labels)
+          * start and end date of photos
     * PIL heeft exif_transpose, dit ga ik waarschijnlijk ook nodig hebben
     * periodically recluster faces
     * allow user to change cluster params, then rerun clustering
-    * when processing is finished, make it into a package (everything that can be done on 1 foto at least)
-      * input: image file path
-      * output: everything that's in an image db row. (apart from timezone fixes and facial recognition probably)
     * check if watchdog works
     * use nginx for image hosting instead of fastapi endpoints
     * add table: failed images, so it doesn't try to process them again?
     * add button [optimize library], to convert all source images to full size avif, and all videos to vp9 codec (av1 in the future?) (video is less important it's already h265)
-    * make .env file for user to set base photos dir
+    * make .env file for user to set base photos dir? set it in ui?
     * Get exiftool and ffmpeg binaries automatically?
+      * put it in dockerfile
 * Add albums
     * very important
     * Shared albums between servers (shared secret to access other server's album)
