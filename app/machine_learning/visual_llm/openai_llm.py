@@ -4,11 +4,10 @@ from io import BytesIO
 from typing import Any
 
 from PIL.Image import Image
-from openai import OpenAI, Stream
-from openai.types.chat import ChatCompletion, ChatCompletionChunk
+from openai import OpenAI
 
+from app.machine_learning.visual_llm.base_visual_llm import ChatMessage
 from app.machine_learning.visual_llm.mini_cpm_llm import MiniCPMLLM
-from app.machine_learning.visual_llm.visual_llm_protocol import ChatMessage, ChatRole
 
 
 def to_base64_url(image: Image, max_size: int = 720) -> str:
@@ -52,63 +51,13 @@ class OpenAILLM(MiniCPMLLM):
         self.model_name = model_name
         self.client = OpenAI()
 
-    def chat(
-        self,
-        message: ChatMessage,
-        history: list[ChatMessage] | None = None,
-        image: Image | None = None,
-        convert_images: bool = True,
-        temperature: float = 0.7,
-        max_tokens: int = 500,
-    ) -> tuple[str, list[ChatMessage]]:
-        if history is None:
-            history = []
-        messages = history + [message]
-
-        response = self._chat_openai(
-            message,
-            history,
-            temperature,
-            max_tokens,
-            stream=False
-        )
-        assert isinstance(response, ChatCompletion)
-        answer = response.choices[0].message.content
-        assert answer is not None
-        return answer, messages + [ChatMessage(message=answer, role=ChatRole.ASSISTANT)]
-
     def stream_chat(
         self,
-        message: ChatMessage,
-        history: list[ChatMessage] | None = None,
-        image: Image | None = None,
+        messages: list[ChatMessage],
         convert_images: bool = True,
         temperature: float = 0.7,
         max_tokens: int = 500,
     ) -> Generator[str, None, None]:
-        response = self._chat_openai(
-            message,
-            history,
-            temperature,
-            max_tokens,
-            stream=True
-        )
-        for chunk in response:
-            chunk_content: str | None = chunk.choices[0].delta.content  # type: ignore
-            if chunk_content is not None:
-                yield chunk_content
-
-    def _chat_openai(
-        self,
-        message: ChatMessage,
-        history: list[ChatMessage] | None = None,
-        temperature: float = 0.7,
-        max_tokens: int = 500,
-        stream: bool = False,
-    ) -> ChatCompletion | Stream[ChatCompletionChunk]:
-        if history is None:
-            history = []
-        messages = history + [message]
         dict_messages = list(map(chat_to_dict, messages))
 
         response = self.client.chat.completions.create(
@@ -116,7 +65,10 @@ class OpenAILLM(MiniCPMLLM):
             messages=dict_messages,  # type: ignore
             max_tokens=max_tokens,
             temperature=temperature,
-            stream=stream,
+            stream=True,
         )
 
-        return response
+        for chunk in response:
+            chunk_content: str | None = chunk.choices[0].delta.content  # type: ignore
+            if chunk_content is not None:
+                yield chunk_content

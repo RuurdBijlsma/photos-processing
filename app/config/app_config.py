@@ -17,7 +17,7 @@ class AppConfig(BaseSettings):
     connection_string: str = (
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
-    media_languages: list[str] = ["nld", "eng"]
+    media_languages: tuple[str, ...] = ("nld", "eng")
 
     captions_provider: CaptionerProvider = CaptionerProvider.BLIP
     llm_provider: LLMProvider = LLMProvider.OPENAI
@@ -48,9 +48,9 @@ class AppConfig(BaseSettings):
 
     images_dir: Path = Path("media/images")
     thumbnails_dir: Path = Path("media/thumbnails")
-    thumbnail_heights: list[int] = [200, 250, 300, 400, 500, 750, 1080]
-    video_screenshot_percentages: list[int] = [1, 33, 66, 95]
-    web_video_height_and_quality: list[tuple[int, int]] = [(360, 40), (1080, 35)]
+    thumbnail_heights: tuple[int,...] = (200, 250, 300, 400, 500, 750, 1080)
+    video_screenshot_percentages: tuple[int,...] = (1, 33, 66, 95)
+    web_video_height_and_quality: tuple[tuple[int, int],...] = ((360, 40), (1080, 35))
     photo_suffixes: tuple[str, ...] = (
         ".png",
         ".jpg",
