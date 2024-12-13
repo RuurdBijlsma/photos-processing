@@ -13,16 +13,15 @@ class AppConfig(BaseSettings):
 
     debug: bool = True
     host_thumbnails: bool = True
-    multithreaded_processing: bool = False
     connection_string: str = (
         "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
     )
     media_languages: tuple[str, ...] = ("nld", "eng")
 
     captions_provider: CaptionerProvider = CaptionerProvider.BLIP
-    llm_provider: LLMProvider = LLMProvider.OPENAI
+    llm_provider: LLMProvider = LLMProvider.MINICPM
     enable_text_summary: bool = Field(
-        default=False,
+        default=True,
         description="A text summary can be generate of an image or video with an LLM, "
                     "improving search capabilities."
                     "This operation requires a CUDA gpu and can take a lot of time "
