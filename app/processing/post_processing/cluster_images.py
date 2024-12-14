@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shutil
 from pathlib import Path
 
 import cv2
@@ -22,18 +23,13 @@ async def experiment() -> None:
         embeddings = np.vstack([frame[0].embedding.to_numpy() for frame in frames])
         cluster_labels = perform_clustering(
             embeddings,
-            min_samples=2,
+            min_samples=1,
             min_cluster_size=3,
             cluster_selection_method='leaf',
-            cluster_selection_epsilon=0.1
+            cluster_selection_epsilon=0.3
         )
 
         for i, (frame, relative_path) in tqdm(enumerate(frames), total=len(frames)):
-            image = cv2.imread(app_config.images_dir / relative_path)
-            if image is None:
-                print(f"SKIP: {relative_path}")
-                continue
-
             label = cluster_labels[i]
             if label == -1:
                 label = 9999
@@ -42,8 +38,8 @@ async def experiment() -> None:
             if not out_folder.exists():
                 out_folder.mkdir(parents=True)
 
-            out_path = out_folder / f"{i}_{os.path.basename(relative_path)}.jpg"
-            cv2.imwrite(str(out_path), image)
+            out_path = out_folder / f"{i}_{os.path.basename(relative_path)}"
+            shutil.copy(app_config.images_dir / relative_path, out_path)
 
 
 if __name__ == "__main__":

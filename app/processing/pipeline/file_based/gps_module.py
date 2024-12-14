@@ -4,16 +4,16 @@ import reverse_geocode
 
 from app.data.interfaces.image_data import GpsData, ExifData, ImageData
 from app.data.interfaces.location_types import GeoLocation
-from app.processing.pipeline.base_module import ImageModule
+from app.processing.pipeline.base_module import FileModule
 
 
-class GpsModule(ImageModule):
+class GpsModule(FileModule):
     def process(self, data: ImageData) -> GpsData:
         assert isinstance(data, ExifData)
         if (
-            not data.composite
-            or "GPSLatitude" not in data.composite
-            or "GPSLongitude" not in data.composite
+                not data.composite
+                or "GPSLatitude" not in data.composite
+                or "GPSLongitude" not in data.composite
         ):
             return GpsData(**data.model_dump())
 

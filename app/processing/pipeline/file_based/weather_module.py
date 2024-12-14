@@ -5,16 +5,16 @@ from meteostat import Hourly, Point
 
 from app.data.enums.classification.weather_condition import WeatherCondition
 from app.data.interfaces.image_data import TimeData, WeatherData, ImageData
-from app.processing.pipeline.base_module import ImageModule
+from app.processing.pipeline.base_module import FileModule
 
 
-class WeatherModule(ImageModule):
+class WeatherModule(FileModule):
     def process(self, data: ImageData) -> WeatherData:
         assert isinstance(data, TimeData)
         if (
-            not data.datetime_utc
-            or not data.latitude
-            or not data.longitude
+                not data.datetime_utc
+                or not data.latitude
+                or not data.longitude
         ):
             return WeatherData(**data.model_dump())
         meteo_data = Hourly(

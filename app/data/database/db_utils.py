@@ -26,12 +26,12 @@ async def add_user(
     ).scalar_one_or_none()
     if user_exists:
         return
-    admin = UserModel(
+    user = UserModel(
         username=username,
         hashed_password=get_password_hash(password),
         role=role,
     )
-    session.add(admin)
+    session.add(user)
     await session.commit()
 
 

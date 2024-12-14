@@ -1,4 +1,5 @@
 import logging
+import warnings
 from collections.abc import Callable, Awaitable
 
 from fastapi import FastAPI
@@ -12,13 +13,18 @@ from app.routers.images.images_router import images_router
 from app.server.lifespan import lifespan
 
 logging.basicConfig()
-logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.CRITICAL)
+logging.getLogger("meteostat").setLevel(logging.CRITICAL)
+logging.getLogger("pandas").setLevel(logging.CRITICAL)
+logging.getLogger("transformers").setLevel(logging.CRITICAL)
+logging.getLogger("insightface").setLevel(logging.CRITICAL)
+warnings.simplefilter(action='ignore', category=FutureWarning)
 app = FastAPI(lifespan=lifespan)
 
 
 @app.middleware("http")
 async def log_exceptions(
-    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
 ) -> Response:
     try:
         return await call_next(request)

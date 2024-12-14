@@ -6,7 +6,7 @@ from exiftool import ExifToolHelper
 
 from app.config.app_config import app_config
 from app.data.interfaces.image_data import ImageData, ExifData
-from app.processing.pipeline.base_module import ImageModule
+from app.processing.pipeline.base_module import FileModule
 
 
 def parse_duration(duration_str: str) -> float:
@@ -56,9 +56,9 @@ def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
 
     for key, value in exiftool_dict.items():
         if (
-            isinstance(value, str)
-            and "(Binary data" in value
-            and "use -b option" in value
+                isinstance(value, str)
+                and "(Binary data" in value
+                and "use -b option" in value
         ):
             continue  # Ignore binary data keys
 
@@ -77,14 +77,14 @@ def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
     return nested_dict
 
 
-class ExifModule(ImageModule):
+class ExifModule(FileModule):
     def process(self, data: ImageData) -> ExifData:
         with ExifToolHelper() as et:
             result = et.execute_json(app_config.images_dir / data.relative_path)
             if (
-                result is None
-                or not isinstance(result, list)
-                or not isinstance(result[0], dict)
+                    result is None
+                    or not isinstance(result, list)
+                    or not isinstance(result[0], dict)
             ):
                 raise ValueError(
                     f"Exiftool can't handle this file {data.relative_path}."

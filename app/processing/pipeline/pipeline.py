@@ -10,20 +10,20 @@ from app.config.app_config import app_config
 from app.data.database.db_utils import rel_path
 from app.data.interfaces.image_data import WeatherData, ImageData
 from app.data.interfaces.visual_data import ObjectsData, VisualData
-from app.processing.pipeline.base_module import ImageModule, VisualModule
-from app.processing.pipeline.frame_based.caption_module import CaptionModule
-from app.processing.pipeline.frame_based.classification_module import \
+from app.processing.pipeline.base_module import FileModule, VisualModule
+from app.processing.pipeline.file_based.data_url_module import DataUrlModule
+from app.processing.pipeline.file_based.exif_module import ExifModule
+from app.processing.pipeline.file_based.gps_module import GpsModule
+from app.processing.pipeline.file_based.time_module import TimeModule
+from app.processing.pipeline.file_based.weather_module import WeatherModule
+from app.processing.pipeline.visual_based.caption_module import CaptionModule
+from app.processing.pipeline.visual_based.classification_module import \
     ClassificationModule
-from app.processing.pipeline.frame_based.embedding_module import EmbeddingModule
-from app.processing.pipeline.frame_based.face_detection_module import FacesModule
-from app.processing.pipeline.frame_based.object_detection_module import ObjectsModule
-from app.processing.pipeline.frame_based.ocr_module import OCRModule
-from app.processing.pipeline.frame_based.summary_module import SummaryModule
-from app.processing.pipeline.image_based.data_url_module import DataUrlModule
-from app.processing.pipeline.image_based.exif_module import ExifModule
-from app.processing.pipeline.image_based.gps_module import GpsModule
-from app.processing.pipeline.image_based.time_module import TimeModule
-from app.processing.pipeline.image_based.weather_module import WeatherModule
+from app.processing.pipeline.visual_based.embedding_module import EmbeddingModule
+from app.processing.pipeline.visual_based.face_detection_module import FacesModule
+from app.processing.pipeline.visual_based.object_detection_module import ObjectsModule
+from app.processing.pipeline.visual_based.ocr_module import OCRModule
+from app.processing.pipeline.visual_based.summary_module import SummaryModule
 from app.processing.processing.process_utils import pil_to_jpeg, \
     ImageThumbnails
 
@@ -36,7 +36,7 @@ class ScannableFrame:
     snapshot_time_ms: int = 0
 
 
-image_pipeline: list[ImageModule] = [
+image_pipeline: list[FileModule] = [
     ExifModule(),
     DataUrlModule(),
     GpsModule(),
@@ -56,11 +56,10 @@ visual_pipeline: list[VisualModule] = [
 
 
 def run_metadata_pipeline(
-    image_path: Path,
-    image_hash: str,
-    thumbnails: ImageThumbnails
+        image_path: Path,
+        image_hash: str,
+        thumbnails: ImageThumbnails
 ) -> tuple[WeatherData, list[ObjectsData]]:
-    print(f"{image_path.name.ljust(35)}")
     image_data = ImageData(
         id=uuid.uuid4().hex,
         relative_path=rel_path(image_path),

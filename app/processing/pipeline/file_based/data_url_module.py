@@ -6,11 +6,11 @@ import pillow_avif  # noqa
 
 from app.config.app_config import app_config
 from app.data.interfaces.image_data import ImageData, DataUrlData
-from app.processing.pipeline.base_module import ImageModule
+from app.processing.pipeline.base_module import FileModule
 from app.processing.processing.process_utils import get_thumbnail_paths
 
 
-class DataUrlModule(ImageModule):
+class DataUrlModule(FileModule):
     def process(self, data: ImageData) -> DataUrlData:
         thumbnail_paths = get_thumbnail_paths(
             app_config.images_dir / data.relative_path,
@@ -19,7 +19,7 @@ class DataUrlModule(ImageModule):
 
         tiny_height = 6
         with PIL.Image.open(
-            thumbnail_paths.thumbnails[min(thumbnail_paths.thumbnails.keys())]
+                thumbnail_paths.thumbnails[min(thumbnail_paths.thumbnails.keys())]
         ) as pil_image:
             img = pil_image.resize((
                 int(pil_image.width / pil_image.height * tiny_height),

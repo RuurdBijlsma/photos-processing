@@ -4,7 +4,7 @@ from datetime import timezone, timedelta, datetime
 import pytz
 
 from app.data.interfaces.image_data import GpsData, TimeData, ImageData
-from app.processing.pipeline.base_module import ImageModule
+from app.processing.pipeline.base_module import FileModule
 from app.processing.post_processing.timezone_finder import timezone_finder
 
 
@@ -72,7 +72,7 @@ def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
 
 
 def get_timezone_info(
-    image_info: GpsData, date: datetime
+        image_info: GpsData, date: datetime
 ) -> tuple[datetime | None, str | None, timedelta | None]:
     """Gets timezone name and offset from latitude, longitude, and date."""
     if not image_info.latitude or not image_info.longitude:
@@ -94,7 +94,7 @@ def get_timezone_info(
     return datetime_utc, timezone_name, timezone_offset
 
 
-class TimeModule(ImageModule):
+class TimeModule(FileModule):
     def process(self, data: ImageData) -> TimeData:
         assert isinstance(data, GpsData)
         datetime_taken, datetime_source = get_local_datetime(data)

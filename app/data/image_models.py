@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pgvecto_rs.sqlalchemy import VECTOR
-from pgvecto_rs.types import Vector
+from pgvecto_rs.types import Vector, IndexOption, Hnsw
 from sqlalchemy import (
     Integer,
     String,
@@ -11,7 +11,7 @@ from sqlalchemy import (
     Interval,
     UniqueConstraint,
     Enum,
-    Boolean, Text, ARRAY,
+    Boolean, Text, ARRAY, Index,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
@@ -99,6 +99,10 @@ class ImageModel(Base):
     user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     owner: Mapped[UserModel] = relationship("UserModel", back_populates="images")
 
+    __table_args__ = (
+        Index('idx_datetime_local_utc', 'datetime_local', 'datetime_utc'),
+    )
+
 
 class VisualInformationModel(Base):
     __tablename__ = "visual_information"
@@ -164,6 +168,18 @@ class VisualInformationModel(Base):
     #   --
     summary = mapped_column(String, nullable=True)
     caption = mapped_column(String, nullable=False)
+
+    __table_args__ = (
+        Index(
+            "emb_idx_2",
+            "embedding",
+            postgresql_using="vectors",
+            postgresql_with={
+                "options": f"$${IndexOption(index=Hnsw()).dumps()}$$"
+            },
+            postgresql_ops={"embedding": "vector_l2_ops"},
+        ),
+    )
 
 
 class ObjectBoxModel(Base):
@@ -237,6 +253,18 @@ class FaceBoxModel(Base):
     # Embedding
     embedding: Mapped[Vector] = mapped_column(VECTOR(512), nullable=False)
 
+    __table_args__ = (
+        Index(
+            "face_emb_index",
+            "embedding",
+            postgresql_using="vectors",
+            postgresql_with={
+                "options": f"$${IndexOption(index=Hnsw()).dumps()}$$"
+            },
+            postgresql_ops={"embedding": "vector_l2_ops"},
+        ),
+    )
+
 
 class UniqueFaceModel(Base):
     __tablename__ = "unique_faces"
@@ -248,6 +276,18 @@ class UniqueFaceModel(Base):
     # One-to-many relationship with FaceBox
     faces: Mapped[list[FaceBoxModel]] = relationship(
         FaceBoxModel, back_populates="unique_face"
+    )
+
+    __table_args__ = (
+        Index(
+            "centroid_index",
+            "centroid",
+            postgresql_using="vectors",
+            postgresql_with={
+                "options": f"$${IndexOption(index=Hnsw()).dumps()}$$"
+            },
+            postgresql_ops={"centroid": "vector_l2_ops"},
+        ),
     )
 
 

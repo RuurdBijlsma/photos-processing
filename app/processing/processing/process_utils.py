@@ -93,15 +93,19 @@ async def image_needs_processing(image_path: Path, session: AsyncSession) -> boo
 
     assert image_model.hash is not None
     # Check for each resolution
-    for size in app_config.thumbnail_heights:
-        file_path = app_config.thumbnails_dir / image_model.hash / f"{size}p.avif"
-        if not file_path.exists():
+    thumbnail_paths = get_thumbnail_paths(image_path, image_model.hash)
+    for thumb_path in thumbnail_paths.thumbnails.values():
+        if not thumb_path.exists():
             return True
 
-    if image_path.suffix in app_config.video_suffixes:
-        vid_path = app_config.thumbnails_dir / image_model.hash / "vid.webm"
-        if not vid_path.exists():
+    for frame_path in thumbnail_paths.frames.values():
+        if not frame_path.exists():
             return True
+
+    if thumbnail_paths.webm_videos is not None:
+        for vid in thumbnail_paths.webm_videos.values():
+            if not vid.exists():
+                return True
 
     return False
 

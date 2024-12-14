@@ -19,7 +19,7 @@ class BaseModule(ABC):
         self.run_times = []
 
 
-class ImageModule(BaseModule):
+class FileModule(BaseModule):
     def run(self, data: ImageData) -> ImageData:
         start_time = time.time()
         result = self.process(data)
