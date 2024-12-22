@@ -2,13 +2,14 @@ from functools import lru_cache
 
 import cv2
 import numpy as np
-from PIL.Image import Image
 from insightface.app import FaceAnalysis
+from PIL.Image import Image
 
 from app.data.enums.face_sex import FaceSex
 from app.data.interfaces.ml_types import FaceBox
-from app.machine_learning.facial_recognition.facial_recognition_protocol import \
-    FacialRecognitionProtocol
+from app.machine_learning.facial_recognition.facial_recognition_protocol import (
+    FacialRecognitionProtocol,
+)
 from app.machine_learning.utils import coordinate_to_proportional
 
 
@@ -23,10 +24,10 @@ def get_app() -> FaceAnalysis:
 
 
 class InsightFacialRecognition(FacialRecognitionProtocol):
-
     def get_faces(self, image: Image) -> list[FaceBox]:
         cv_image = np.array(image)
-        if cv_image.shape[2] == 3:
+        dims_in_image = 3
+        if cv_image.shape[2] == dims_in_image:
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
         app = get_app()
         faces = app.get(cv_image)

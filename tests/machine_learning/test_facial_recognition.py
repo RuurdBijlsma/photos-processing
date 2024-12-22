@@ -4,8 +4,9 @@ import numpy as np
 from PIL import Image
 from scipy.spatial.distance import cosine
 
-from app.machine_learning.facial_recognition.insight_facial_recognition import \
-    InsightFacialRecognition
+from app.machine_learning.facial_recognition.insight_facial_recognition import (
+    InsightFacialRecognition,
+)
 from app.machine_learning.utils import draw_bounding_box
 
 
@@ -15,7 +16,8 @@ def test_insight_facial_detection(assets_folder: Path) -> None:
 
     faces = facial_recognition.get_faces(image)
 
-    assert len(faces) == 15
+    faces_amount = 15
+    assert len(faces) == faces_amount
 
 
 def test_insight_facial_recognition(assets_folder: Path) -> None:
@@ -37,9 +39,7 @@ def test_insight_facial_recognition(assets_folder: Path) -> None:
     faces = [face1_a, face1_b, face2_a, face2_b]
     for face in faces:
         other_faces = [f for f in faces if f != face]
-        distances = [
-            cosine(face.embedding, other_face.embedding) for other_face in other_faces
-        ]
+        distances = [cosine(face.embedding, other_face.embedding) for other_face in other_faces]
         min_index = np.argmin(distances)
         closest_face = other_faces[min_index]
         if face in walter:

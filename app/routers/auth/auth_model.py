@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
 import jwt
@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.app_config import app_config
 from app.data.database.database import SessionDep
 from app.data.image_models import UserModel
-from app.data.interfaces.auth_types import TokenData, Token
+from app.data.interfaces.auth_types import Token, TokenData
 
 logging.getLogger("passlib").setLevel(logging.ERROR)
 
@@ -38,13 +38,13 @@ def get_password_hash(password: str) -> str:
 async def get_user(session: AsyncSession, username: str) -> UserModel | None:
     return (
         await session.execute(
-            select(UserModel).filter(UserModel.username.ilike(username))
+            select(UserModel).filter(UserModel.username.ilike(username)),
         )
     ).scalar_one_or_none()
 
 
 async def authenticate_user(
-    session: AsyncSession, username: str, password: str
+    session: AsyncSession, username: str, password: str,
 ) -> UserModel | None:
     user = await get_user(session, username)
     if not user or not user.hashed_password:
@@ -64,22 +64,18 @@ async def get_user_token(session: AsyncSession, username: str, password: str) ->
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username}, expires_delta=access_token_expires,
     )
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(access_token=access_token, token_type="bearer") #noqa: S106
 
 
 def create_access_token(
-    data: dict[str, Any], expires_delta: timedelta | None = None
+    data: dict[str, Any], expires_delta: timedelta | None = None,
 ) -> str:
     to_encode: dict[str, Any] = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    expire = datetime.now(UTC) + expires_delta if expires_delta else datetime.now(UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, app_config.password_secret, algorithm=ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, app_config.password_secret, algorithm=ALGORITHM)
 
 
 async def get_current_user(session: SessionDep, token: TokenDep) -> UserModel:

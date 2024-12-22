@@ -1,7 +1,8 @@
-from alembic import command
-from alembic.config import Config
 from sqlalchemy import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
+
+from alembic import command
+from alembic.config import Config
 
 __config_path__ = "alembic.ini"
 __migration_path__ = "alembic"

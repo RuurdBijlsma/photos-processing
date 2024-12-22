@@ -1,7 +1,7 @@
-from typing import Protocol, Any
+from typing import Any, Protocol
 
-from PIL.Image import Image
 from numpy.typing import NDArray
+from PIL.Image import Image
 
 
 class EmbedderProtocol(Protocol):

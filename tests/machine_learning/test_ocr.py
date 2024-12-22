@@ -23,7 +23,8 @@ def test_resnet_tesseract_ocr_boxes(assets_folder: Path) -> None:
     boxes = ocr.get_boxes(image)
     for box in boxes:
         draw_bounding_box(box, image, f"test_img_out/{box.text}_out_ocr.jpg")
-    assert len(boxes) > 50
+    required_boxes_amount = 50
+    assert len(boxes) > required_boxes_amount
     found_spaghetti = False
     for box in boxes:
         if "SPAGHETTI" in box.text:

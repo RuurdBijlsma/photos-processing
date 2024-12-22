@@ -1,9 +1,9 @@
 import re
-from datetime import timezone, timedelta, datetime
+from datetime import datetime, timedelta, timezone
 
 import pytz
 
-from app.data.interfaces.image_data import GpsData, TimeData, ImageData
+from app.data.interfaces.image_data import GpsData, ImageData, TimeData
 from app.processing.pipeline.base_module import FileModule
 from app.processing.post_processing.timezone_finder import timezone_finder
 
@@ -11,7 +11,7 @@ from app.processing.post_processing.timezone_finder import timezone_finder
 def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
     def f1() -> tuple[datetime, str]:
         assert image_info.exif
-        datetime_taken = datetime.strptime(
+        datetime_taken = datetime.strptime(  # noqa: DTZ007
             image_info.exif["DateTimeOriginal"],
             "%Y:%m:%d %H:%M:%S",
         )
@@ -24,7 +24,8 @@ def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
     def f2() -> tuple[datetime, str]:
         assert image_info.longitude and image_info.latitude
         tz_name = timezone_finder.timezone_at(
-            lng=image_info.longitude, lat=image_info.latitude
+            lng=image_info.longitude,
+            lat=image_info.latitude,
         )
         assert tz_name is not None
         assert image_info.datetime_utc
@@ -34,14 +35,15 @@ def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
 
     def f3() -> tuple[datetime, str]:
         assert image_info.exif
-        result = datetime.strptime(
-            image_info.exif["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S"
+        result = datetime.strptime(  # noqa: DTZ007
+            image_info.exif["DateTimeOriginal"],
+            "%Y:%m:%d %H:%M:%S",
         )
         return result, "DateTimeOriginal"
 
     def f4() -> tuple[datetime, str]:
         assert image_info.exif
-        result = datetime.strptime(image_info.exif["CreateDate"], "%Y:%m:%d %H:%M:%S")
+        result = datetime.strptime(image_info.exif["CreateDate"], "%Y:%m:%d %H:%M:%S")  # noqa: DTZ007
         return result, "DateTimeOriginal"
 
     def f5() -> tuple[datetime, str]:
@@ -51,15 +53,17 @@ def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
             date_str = match.group(1)
             time_str = match.group(2)
             return (
-                datetime.strptime(f"{date_str} {time_str}", "%Y%m%d %H%M%S"),
+                datetime.strptime(f"{date_str} {time_str}", "%Y%m%d %H%M%S"),  # noqa: DTZ007
                 "Filename",
             )
         raise ValueError(f"Could not parse {image_info.filename}")
 
     def f6() -> tuple[datetime, str]:
-        assert image_info.file and "FileModifyDate" in image_info.file
+        assert image_info.file
+        assert "FileModifyDate" in image_info.file
         result = datetime.strptime(
-            image_info.file["FileModifyDate"], "%Y:%m:%d %H:%M:%S%z"
+            image_info.file["FileModifyDate"],
+            "%Y:%m:%d %H:%M:%S%z",
         )
         return result, "ModificationDate"
 
@@ -72,14 +76,16 @@ def get_local_datetime(image_info: GpsData) -> tuple[datetime, str]:
 
 
 def get_timezone_info(
-        image_info: GpsData, date: datetime
+    image_info: GpsData,
+    date: datetime,
 ) -> tuple[datetime | None, str | None, timedelta | None]:
     """Gets timezone name and offset from latitude, longitude, and date."""
     if not image_info.latitude or not image_info.longitude:
         return None, None, None
 
     timezone_name = timezone_finder.timezone_at(
-        lat=image_info.latitude, lng=image_info.longitude
+        lat=image_info.latitude,
+        lng=image_info.longitude,
     )
     if not timezone_name:
         return None, None, None
@@ -99,7 +105,8 @@ class TimeModule(FileModule):
         assert isinstance(data, GpsData)
         datetime_taken, datetime_source = get_local_datetime(data)
         datetime_utc, timezone_name, timezone_offset = get_timezone_info(
-            data, datetime_taken
+            data,
+            datetime_taken,
         )
         if datetime_utc is not None:
             datetime_utc = datetime_utc.replace(tzinfo=None)

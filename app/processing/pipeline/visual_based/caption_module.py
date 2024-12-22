@@ -14,5 +14,5 @@ class CaptionModule(VisualModule):
 
         return CaptionData(
             **data.model_dump(),
-            caption=caption
+            caption=caption,
         )

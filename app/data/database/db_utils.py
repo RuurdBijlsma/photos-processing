@@ -19,7 +19,7 @@ def path_str(path: Path) -> str:
 
 
 async def add_user(
-    session: AsyncSession, username: str, password: str, role: Role
+    session: AsyncSession, username: str, password: str, role: Role,
 ) -> None:
     user_exists = (
         await session.execute(select(UserModel).filter_by(username=username))

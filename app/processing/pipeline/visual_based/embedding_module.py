@@ -1,6 +1,6 @@
 from PIL.Image import Image
 
-from app.data.interfaces.visual_data import VisualData, EmbeddingData
+from app.data.interfaces.visual_data import EmbeddingData, VisualData
 from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 from app.processing.pipeline.base_module import VisualModule
 
@@ -12,5 +12,5 @@ class EmbeddingModule(VisualModule):
         embedding = embedder.embed_image(image)
         return EmbeddingData(
             **data.model_dump(),
-            embedding=embedding.tolist()
+            embedding=embedding.tolist(),
         )

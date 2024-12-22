@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from app.config.config_types import LLMProvider, CaptionerProvider
+from app.config.config_types import CaptionerProvider, LLMProvider
 
 
 class AppConfig(BaseSettings):
@@ -25,24 +25,24 @@ class AppConfig(BaseSettings):
         description="A text summary can be generate of an image or video with an LLM, "
                     "improving search capabilities."
                     "This operation requires a CUDA gpu and can take a lot of time "
-                    "if a local LLM is used."
+                    "if a local LLM is used.",
     )
     enable_document_summary: bool = Field(
         default=True,
         description="If a document is detected, a summary can be made using an LLM. "
                     "This operation requires a CUDA gpu and can take a lot of time "
-                    "if a local LLM is used."
+                    "if a local LLM is used.",
     )
     document_detection_threshold: int = Field(
         default=65,
         description="How many characters should be recognized before classifying "
-                    "it as a document and making a summary."
+                    "it as a document and making a summary.",
     )
     face_detection_threshold: float = Field(
         default=0.7,
         description="The minimum confidence threshold for detecting a face. "
                     "Values should be between 0 and 1. Higher values mean higher "
-                    "confidence in the detection."
+                    "confidence in the detection.",
     )
 
     images_dir: Path = Path("media/images")

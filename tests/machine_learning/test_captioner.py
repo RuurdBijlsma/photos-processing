@@ -17,16 +17,20 @@ def test_blip_captioner(
     blip = BlipCaptioner()
     caption = blip.caption(image)
     assert isinstance(caption, str)
-    assert len(caption) > 3
+    min_caption_length=3
+    assert len(caption) > min_caption_length
 
 
-@pytest.mark.parametrize("llm_provider", [
-    pytest.param(LLMProvider.MINICPM, marks=pytest.mark.cuda),
-    LLMProvider.OPENAI
-])
+@pytest.mark.parametrize(
+    "llm_provider",
+    [
+        pytest.param(LLMProvider.MINICPM, marks=pytest.mark.cuda),
+        LLMProvider.OPENAI,
+    ],
+)
 def test_minicpm_captioner(
     assets_folder: Path,
-    llm_provider: LLMProvider
+    llm_provider: LLMProvider,
 ) -> None:
     if llm_provider == LLMProvider.OPENAI and os.environ.get("OPENAI_API_KEY") is None:
         # Only run test if OPENAI_API_KEY is set.
@@ -37,4 +41,5 @@ def test_minicpm_captioner(
     caption = llm.caption(image)
     print(caption)
     assert isinstance(caption, str)
-    assert len(caption) > 3
+    min_caption_length = 3
+    assert len(caption) > min_caption_length

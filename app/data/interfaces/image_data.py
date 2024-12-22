@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from pydantic import field_serializer, BaseModel
+from pydantic import BaseModel, field_serializer
 
 from app.data.enums.classification.weather_condition import WeatherCondition
 from app.data.interfaces.location_types import GeoLocation

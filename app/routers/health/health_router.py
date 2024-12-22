@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.data.database.database import SessionDep
-from app.routers.health.health_model import check_health, HealthStatus
+from app.routers.health.health_model import HealthStatus, check_health
 
 health_router = APIRouter(prefix="/health", tags=["health"])
 

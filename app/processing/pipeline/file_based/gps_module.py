@@ -2,7 +2,7 @@ from datetime import datetime
 
 import reverse_geocode
 
-from app.data.interfaces.image_data import GpsData, ExifData, ImageData
+from app.data.interfaces.image_data import ExifData, GpsData, ImageData
 from app.data.interfaces.location_types import GeoLocation
 from app.processing.pipeline.base_module import FileModule
 
@@ -27,8 +27,8 @@ class GpsModule(FileModule):
         if "GPSDateTime" in data.composite:
             for date_fmt in ["%Y:%m:%d %H:%M:%S.%fZ", "%Y:%m:%d %H:%M:%SZ"]:
                 try:
-                    gps_datetime = datetime.strptime(
-                        data.composite["GPSDateTime"], date_fmt
+                    gps_datetime = datetime.strptime(  # noqa: DTZ007
+                        data.composite["GPSDateTime"], date_fmt,
                     )
                     if gps_datetime is not None:
                         break

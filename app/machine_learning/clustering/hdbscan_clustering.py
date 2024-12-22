@@ -11,7 +11,7 @@ def get_clusterer(
     min_samples: int,
     min_cluster_size: int,
     prediction_data: bool,
-    cluster_selection_method: str = 'eom',
+    cluster_selection_method: str = "eom",
     cluster_selection_epsilon: float = 0.0,
 ) -> hdbscan.HDBSCAN:
     return hdbscan.HDBSCAN(
@@ -20,7 +20,7 @@ def get_clusterer(
         prediction_data=prediction_data,
         cluster_selection_epsilon=cluster_selection_epsilon,
         cluster_selection_method=cluster_selection_method,
-        metric="euclidean"
+        metric="euclidean",
     )
 
 
@@ -28,7 +28,7 @@ def perform_clustering(
     embeddings: NDArray[Any],
     min_samples: int = 5,
     min_cluster_size: int = 10,
-    cluster_selection_method: str = 'eom',
+    cluster_selection_method: str = "eom",
     cluster_selection_epsilon: float = 0.0,
 ) -> list[int]:
     # l2 normalize, so that euclidean metric will work similar to cosine metric would

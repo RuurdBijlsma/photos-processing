@@ -3,8 +3,8 @@ from collections.abc import Generator
 from io import BytesIO
 from typing import Any
 
-from PIL.Image import Image
 from openai import OpenAI
+from PIL.Image import Image
 
 from app.machine_learning.visual_llm.base_visual_llm import ChatMessage
 from app.machine_learning.visual_llm.mini_cpm_llm import MiniCPMLLM
@@ -25,28 +25,24 @@ def chat_to_dict(chat: ChatMessage) -> dict[str, Any]:
             "content": chat.message,
         }
 
-    images = [
-        {"type": "image_url", "image_url": {"url": to_base64_url(image)}}
-        for image in chat.images
-    ]
-    result = {
+    images = [{"type": "image_url", "image_url": {"url": to_base64_url(image)}} for image in chat.images]
+    return {
         "role": "user",
         "content": [
             {
                 "type": "text",
                 "text": chat.message,
             },
-            *images
-        ]
+            *images,
+        ],
     }
-    return result
 
 
 class OpenAILLM(MiniCPMLLM):
     model_name: str
     client: OpenAI
 
-    def __init__(self, model_name: str = "gpt-4o-mini"):
+    def __init__(self, model_name: str = "gpt-4o-mini") -> None:
         super().__init__()
         self.model_name = model_name
         self.client = OpenAI()
@@ -54,7 +50,7 @@ class OpenAILLM(MiniCPMLLM):
     def stream_chat(
         self,
         messages: list[ChatMessage],
-        convert_images: bool = True,
+        convert_images: bool = True, #noqa: ARG002
         temperature: float = 0.7,
         max_tokens: int = 500,
     ) -> Generator[str, None, None]:
@@ -62,13 +58,13 @@ class OpenAILLM(MiniCPMLLM):
 
         response = self.client.chat.completions.create(
             model=self.model_name,
-            messages=dict_messages,  # type: ignore
+            messages=dict_messages,
             max_tokens=max_tokens,
             temperature=temperature,
             stream=True,
         )
 
         for chunk in response:
-            chunk_content: str | None = chunk.choices[0].delta.content  # type: ignore
+            chunk_content: str | None = chunk.choices[0].delta.content
             if chunk_content is not None:
                 yield chunk_content

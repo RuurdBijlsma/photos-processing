@@ -5,8 +5,14 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
-from app.data.image_models import ImageModel, GeoLocationModel, OCRBoxModel, \
-    FaceBoxModel, ObjectBoxModel, VisualInformationModel
+from app.data.image_models import (
+    FaceBoxModel,
+    GeoLocationModel,
+    ImageModel,
+    ObjectBoxModel,
+    OCRBoxModel,
+    VisualInformationModel,
+)
 from app.data.interfaces.image_data import WeatherData
 from app.data.interfaces.visual_data import ObjectsData
 from app.processing.processing.process_utils import clean_object
@@ -18,7 +24,7 @@ async def delete_image(relative_path: Path, session: AsyncSession) -> None:
 
     model = (
         await session.execute(
-            select(ImageModel).filter_by(relative_path=relative_path.as_posix())
+            select(ImageModel).filter_by(relative_path=relative_path.as_posix()),
         )
     ).scalar_one_or_none()
 
@@ -33,7 +39,7 @@ async def store_image(
     image_info: WeatherData,
     visual_infos: list[ObjectsData],
     user_id: int,
-    session: AsyncSession
+    session: AsyncSession,
 ) -> ImageModel:
     cleaned_dict = clean_object(image_info.model_dump())
     assert isinstance(cleaned_dict, dict)
@@ -47,7 +53,7 @@ async def store_image(
                     city=image_info.location.city,
                     province=image_info.location.province,
                     country=image_info.location.country,
-                )
+                ),
             )
         ).scalar()
         if not location_model:

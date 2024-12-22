@@ -1,8 +1,9 @@
 from PIL.Image import Image
 
-from app.data.interfaces.visual_data import VisualData, ObjectsData
-from app.machine_learning.object_detection.resnet_object_detection import \
-    ResnetObjectDetection
+from app.data.interfaces.visual_data import ObjectsData, VisualData
+from app.machine_learning.object_detection.resnet_object_detection import (
+    ResnetObjectDetection,
+)
 from app.processing.pipeline.base_module import VisualModule
 
 detector = ResnetObjectDetection()
@@ -14,5 +15,5 @@ class ObjectsModule(VisualModule):
 
         return ObjectsData(
             **data.model_dump(),
-            objects=objects
+            objects=objects,
         )

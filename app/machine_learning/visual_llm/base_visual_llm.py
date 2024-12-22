@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum, auto
 
 from PIL.Image import Image

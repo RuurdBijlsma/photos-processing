@@ -1,11 +1,11 @@
 from collections import defaultdict
 from typing import Any
 
-from PIL.ExifTags import TAGS
 from exiftool import ExifToolHelper
+from PIL.ExifTags import TAGS
 
 from app.config.app_config import app_config
-from app.data.interfaces.image_data import ImageData, ExifData
+from app.data.interfaces.image_data import ExifData, ImageData
 from app.processing.pipeline.base_module import FileModule
 
 
@@ -18,7 +18,7 @@ def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
     all_exif: defaultdict[str, dict[str, Any]] = defaultdict(dict)
 
     # Loop over the different IFD (Image File Directory) sections
-    for ifd in exif_dict:
+    for ifd, ifd_data in exif_dict.items():
         if ifd == "0th":
             section_name = "Image"
         elif ifd == "Exif":
@@ -30,14 +30,14 @@ def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
         else:
             section_name = ifd
 
-        if not isinstance(exif_dict[ifd], dict):
+        if not isinstance(ifd_data, dict):
             continue
-        for tag, value in exif_dict[ifd].items():
+        for tag, value in ifd_data.items():
             # Convert the tag number to human-readable name if possible
             tag_name = TAGS.get(tag, tag)
             if isinstance(value, bytes):
                 try:
-                    value = value.decode("utf-8")
+                    value = value.decode("utf-8")  # noqa: PLW2901
                 except UnicodeDecodeError:
                     # Ignore value if it can't be turned into string
                     continue
@@ -49,17 +49,14 @@ def get_all_exif(exif_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
 def structure_exiftool_dict(exiftool_dict: dict[str, Any]) -> dict[str, Any]:
     """Exiftool keys are structured as 'File:FileName'.
 
-    This function transforms that to a nested dict."""
+    This function transforms that to a nested dict.
+    """
     del exiftool_dict["SourceFile"]
     del exiftool_dict["File:Directory"]
     nested_dict = {}
 
     for key, value in exiftool_dict.items():
-        if (
-                isinstance(value, str)
-                and "(Binary data" in value
-                and "use -b option" in value
-        ):
+        if isinstance(value, str) and "(Binary data" in value and "use -b option" in value:
             continue  # Ignore binary data keys
 
         key_parts = key.split(":")
@@ -81,13 +78,9 @@ class ExifModule(FileModule):
     def process(self, data: ImageData) -> ExifData:
         with ExifToolHelper() as et:
             result = et.execute_json(app_config.images_dir / data.relative_path)
-            if (
-                    result is None
-                    or not isinstance(result, list)
-                    or not isinstance(result[0], dict)
-            ):
+            if result is None or not isinstance(result, list) or not isinstance(result[0], dict):
                 raise ValueError(
-                    f"Exiftool can't handle this file {data.relative_path}."
+                    f"Exiftool can't handle this file {data.relative_path}.",
                 )
             exif_dict = structure_exiftool_dict(result[0])
 
@@ -97,10 +90,10 @@ class ExifModule(FileModule):
             # ref = 1 means below sea level
             # LG G4 produces ref = 1.8 for some reason when above sea level
             #   (maybe also below?)
-            if alt_ref != 1 and alt_ref != 0 and alt_ref is not None:
+            if alt_ref not in {0, 1, None}:
                 if "GPSAltitude" in exif_dict["Composite"]:
                     exif_dict["Composite"]["GPSAltitude"] = abs(
-                        exif_dict["Composite"]["GPSAltitude"]
+                        exif_dict["Composite"]["GPSAltitude"],
                     )
                 exif_dict["EXIF"]["GPSAltitudeRef"] = 0
 

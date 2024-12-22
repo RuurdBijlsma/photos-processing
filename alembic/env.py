@@ -1,11 +1,10 @@
 import asyncio
 from logging.config import fileConfig
 
-from alembic import context
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from alembic import context
 from app.data.image_models import Base
 
 config = context.config
@@ -23,7 +22,7 @@ def run_migrations_online():
                 prefix="sqlalchemy.",
                 poolclass=pool.NullPool,
                 future=True,
-            )
+            ),
         )
 
     if isinstance(connectable, AsyncEngine):

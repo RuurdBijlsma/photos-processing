@@ -4,7 +4,7 @@ from datetime import timedelta
 from meteostat import Hourly, Point
 
 from app.data.enums.classification.weather_condition import WeatherCondition
-from app.data.interfaces.image_data import TimeData, WeatherData, ImageData
+from app.data.interfaces.image_data import ImageData, TimeData, WeatherData
 from app.processing.pipeline.base_module import FileModule
 
 
@@ -33,7 +33,7 @@ class WeatherModule(FileModule):
             weather_temperature=None if math.isnan(weather.temp) else weather.temp,
             weather_dewpoint=None if math.isnan(weather.dwpt) else weather.dwpt,
             weather_relative_humidity=None if math.isnan(
-                weather.rhum
+                weather.rhum,
             ) else weather.rhum,
             weather_precipitation=None if math.isnan(weather.prcp) else weather.prcp,
             weather_wind_gust=None if math.isnan(weather.wpgt) else weather.wpgt,

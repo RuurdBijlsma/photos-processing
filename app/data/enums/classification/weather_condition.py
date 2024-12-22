@@ -105,5 +105,5 @@ weather_condition_descriptions: dict[WeatherCondition, str] = {
                                          "hail or strong winds.",
     WeatherCondition.STORM: "Extreme weather with strong winds, heavy precipitation, "
                             "and dramatic skies. Can include rain, snow, or hail, "
-                            "often with low visibility."
+                            "often with low visibility.",
 }

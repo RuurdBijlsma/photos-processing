@@ -21,7 +21,7 @@ class CLIPClassifier(BaseClassifier):
     def classify_image(
         self,
         image_embedding: NDArray[Any],
-        classes: list[str]
+        classes: list[str],
     ) -> tuple[int, float]:
         text_embeddings = [cached_embed_text(c) for c in classes]
         similarities = cosine_similarity([image_embedding], text_embeddings)
@@ -34,10 +34,10 @@ class CLIPClassifier(BaseClassifier):
         self,
         image_embedding: NDArray[Any],
         positive_prompt: str,
-        negative_prompt: str
+        negative_prompt: str,
     ) -> tuple[bool, float]:
         index, confidence = self.classify_image(
             image_embedding,
-            [negative_prompt, positive_prompt]
+            [negative_prompt, positive_prompt],
         )
         return bool(index), confidence

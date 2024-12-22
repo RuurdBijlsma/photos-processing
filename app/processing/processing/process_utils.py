@@ -25,10 +25,7 @@ class ImageThumbnails:
 
 def get_thumbnail_paths(image_path: Path, image_hash: str) -> ImageThumbnails:
     thumb_folder = app_config.thumbnails_dir / image_hash
-    thumbnails = {
-        height: thumb_folder / f"{height}p.avif"
-        for height in app_config.thumbnail_heights
-    }
+    thumbnails = {height: thumb_folder / f"{height}p.avif" for height in app_config.thumbnail_heights}
     if image_path.suffix in app_config.video_suffixes:
         return ImageThumbnails(
             folder=thumb_folder,
@@ -38,21 +35,20 @@ def get_thumbnail_paths(image_path: Path, image_hash: str) -> ImageThumbnails:
                 for percentage in app_config.video_screenshot_percentages
             },
             webm_videos={
-                height: thumb_folder / f"{height}p.webm"
-                for height, _ in app_config.web_video_height_and_quality
+                height: thumb_folder / f"{height}p.webm" for height, _ in app_config.web_video_height_and_quality
             },
         )
     return ImageThumbnails(
         folder=thumb_folder,
         thumbnails=thumbnails,
-        frames={0: thumb_folder / f"{max(app_config.thumbnail_heights)}p.avif"}
+        frames={0: thumb_folder / f"{max(app_config.thumbnail_heights)}p.avif"},
     )
 
 
 def pil_to_jpeg(pil_image: Image) -> Image:
     # Weird conversion to jpg so pytesseract can handle the image
     img_byte_arr = io.BytesIO()
-    pil_image.save(img_byte_arr, format='JPEG')
+    pil_image.save(img_byte_arr, format="JPEG")
     img_byte_arr.seek(0)
     jpeg_data = img_byte_arr.getvalue()
     return PIL.Image.open(io.BytesIO(jpeg_data))
@@ -61,7 +57,8 @@ def pil_to_jpeg(pil_image: Image) -> Image:
 def readable_bytes(num: int, suffix: str = "B") -> str:
     fnum = float(num)
     for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
-        if abs(fnum) < 1024.0:
+        si_unit_max = 1024.0
+        if abs(fnum) < si_unit_max:
             return f"{fnum:3.1f}{unit}{suffix}"
         fnum /= 1024.0
     return f"{fnum:.1f}Yi{suffix}"
@@ -85,7 +82,7 @@ def clean_object(obj: dict[str, Any]) -> dict[str, Any] | list[Any] | str:
 async def image_needs_processing(image_path: Path, session: AsyncSession) -> bool:
     image_model = (
         await session.execute(
-            select(ImageModel).filter_by(relative_path=path_str(image_path))
+            select(ImageModel).filter_by(relative_path=path_str(image_path)),
         )
     ).scalar_one_or_none()
     if image_model is None:

@@ -2,11 +2,11 @@ import asyncio
 from pathlib import Path
 
 from watchdog.events import (
-    FileSystemEventHandler,
-    FileCreatedEvent,
     DirCreatedEvent,
     DirDeletedEvent,
+    FileCreatedEvent,
     FileDeletedEvent,
+    FileSystemEventHandler,
 )
 
 from app.config.app_config import app_config

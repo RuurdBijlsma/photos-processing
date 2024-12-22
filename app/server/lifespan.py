@@ -53,8 +53,8 @@ async def on_startup(app: FastAPI) -> None:
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     try:
         await on_startup(app)
-    except Exception as e:
+    except Exception:
         logging.exception("Exception in lifespan:startup!")
-        raise e
+        raise
     yield
     print("Closing server :(")

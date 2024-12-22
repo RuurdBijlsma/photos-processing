@@ -2,9 +2,9 @@ from functools import lru_cache
 from typing import Any
 
 import torch
-import torch.nn.functional as F
-from PIL.Image import Image
+import torch.nn.functional as F  # noqa: N812
 from numpy.typing import NDArray
+from PIL.Image import Image
 from transformers import CLIPModel, CLIPProcessor, PreTrainedModel
 
 from app.machine_learning.embedding.embedder_protocol import EmbedderProtocol
@@ -19,7 +19,6 @@ def get_model_and_processor() -> tuple[PreTrainedModel, CLIPProcessor]:
 
 
 class CLIPEmbedder(EmbedderProtocol):
-
     def embed_text(self, text: str) -> NDArray[Any]:
         result: NDArray[Any] = self.embed_texts([text])[0]
         return result

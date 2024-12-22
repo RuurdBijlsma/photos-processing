@@ -8,7 +8,7 @@ from app.data.enums.classification.object_type import ObjectType
 from app.data.enums.classification.people_type import PeopleType
 from app.data.enums.classification.scene_type import SceneType
 from app.data.enums.classification.weather_condition import WeatherCondition
-from app.data.interfaces.ml_types import OCRBox, FaceBox, ObjectBox
+from app.data.interfaces.ml_types import FaceBox, ObjectBox, OCRBox
 
 
 class VisualData(BaseModel):

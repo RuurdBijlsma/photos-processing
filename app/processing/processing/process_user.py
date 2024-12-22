@@ -1,4 +1,4 @@
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from tqdm import tqdm
@@ -11,16 +11,24 @@ from app.processing.cleanup.drop_images_without_thumbnails import (
 )
 from app.processing.pipeline.pipeline import run_metadata_pipeline
 from app.processing.post_processing.fix_timezone import fill_timezone_gaps
-from app.processing.processing.generate_thumbnails import generate_photo_thumbnails, \
-    generate_video_thumbnails
-from app.processing.processing.process_utils import image_needs_processing, hash_image, \
-    get_thumbnail_paths
+from app.processing.processing.generate_thumbnails import (
+    generate_photo_thumbnails,
+    generate_video_thumbnails,
+)
+from app.processing.processing.process_utils import (
+    get_thumbnail_paths,
+    hash_image,
+    image_needs_processing,
+)
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 async def process_user_images(
     user_id: int,
     username: str,
-    session: AsyncSession
+    session: AsyncSession,
 ) -> None:
     """Check all images for processing."""
     directory = app_config.images_dir / str(user_id)
@@ -48,8 +56,8 @@ async def process_user_images(
     failed_videos = await generate_video_thumbnails(videos_to_process)
 
     to_process_zip = (
-        list(zip(photos_to_process, failed_photos)) +
-        list(zip(videos_to_process, failed_videos))
+        list(zip(photos_to_process, failed_photos, strict=False)) +
+        list(zip(videos_to_process, failed_videos, strict=False))
     )
 
     for image_path, has_thumbnails in tqdm(
@@ -64,7 +72,7 @@ async def process_user_images(
         image_info, frames = run_metadata_pipeline(
             image_path,
             image_hash,
-            get_thumbnail_paths(image_path, image_hash)
+            get_thumbnail_paths(image_path, image_hash),
         )
         await store_image(image_info, frames, user_id, session)
 

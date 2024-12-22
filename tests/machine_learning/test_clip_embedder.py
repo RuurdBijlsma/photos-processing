@@ -3,8 +3,8 @@ from typing import Any
 
 import numpy as np
 import pytest
-from PIL import Image
 from numpy.typing import NDArray
+from PIL import Image
 
 from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 
@@ -26,7 +26,7 @@ def setup_embedder(
 
 
 @pytest.mark.parametrize(
-    "query, img_index",
+    ("query", "img_index"),
     [
         ("A sunset over naples.", 2),  # Index 2 corresponds to sunset_img
         ("A cat sleeping in a bed.", 0),  # Index 0 corresponds to cat_img
@@ -38,7 +38,7 @@ def setup_embedder(
 )
 def test_clip_embedder(
     setup_embedder: tuple[
-        CLIPEmbedder, list[Image.Image], NDArray[Any]
+        CLIPEmbedder, list[Image.Image], NDArray[Any],
     ],
     query: str,
     img_index: int,

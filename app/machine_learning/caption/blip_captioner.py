@@ -1,7 +1,8 @@
 from functools import lru_cache
+from typing import ClassVar
 
 from PIL.Image import Image
-from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import BlipForConditionalGeneration, BlipProcessor
 
 from app.machine_learning.caption.captioner_protocol import CaptionerProtocol
 
@@ -9,14 +10,13 @@ from app.machine_learning.caption.captioner_protocol import CaptionerProtocol
 @lru_cache
 def get_processor_and_model() -> tuple[BlipProcessor, BlipForConditionalGeneration]:
     processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
-    model = BlipForConditionalGeneration.from_pretrained(
-        "Salesforce/blip-image-captioning-large").to("cuda")
+    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large").to("cuda")
     return processor, model
 
 
 class BlipCaptioner(CaptionerProtocol):
     # dumbass blip captioner comes up with the word arafed or araffe sometimes.
-    hallucinated_words = ["arafed", "araffe"]
+    hallucinated_words: ClassVar[list[str]] = ["arafed", "araffe"]
 
     def caption(self, image: Image) -> str:
         caption = self.raw_caption(image)

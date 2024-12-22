@@ -1,19 +1,21 @@
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from async_lru import alru_cache
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
-    create_async_engine,
-    async_sessionmaker,
     AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
 
 from app.config.app_config import app_config
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 
 @alru_cache

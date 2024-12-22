@@ -1,6 +1,6 @@
 import logging
 import warnings
-from collections.abc import Callable, Awaitable
+from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,19 +18,19 @@ logging.getLogger("meteostat").setLevel(logging.CRITICAL)
 logging.getLogger("pandas").setLevel(logging.CRITICAL)
 logging.getLogger("transformers").setLevel(logging.CRITICAL)
 logging.getLogger("insightface").setLevel(logging.CRITICAL)
-warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
 app = FastAPI(lifespan=lifespan)
 
 
 @app.middleware("http")
 async def log_exceptions(
-        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        request: Request, call_next: Callable[[Request], Awaitable[Response]],
 ) -> Response:
     try:
         return await call_next(request)
-    except Exception as e:
-        logging.exception("Unhandled exception occurred")
-        raise e
+    except Exception:
+        logging.exception("Unhandled exception occurred during call to endpoint.")
+        raise
 
 
 app.add_middleware(

@@ -1,4 +1,3 @@
-from pgvecto_rs.types import IndexOption, Hnsw
 
 
 def upgrade(op):

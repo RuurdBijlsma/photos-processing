@@ -1,8 +1,9 @@
 from PIL.Image import Image
 
-from app.data.interfaces.visual_data import VisualData, FacesData
-from app.machine_learning.facial_recognition.insight_facial_recognition import \
-    InsightFacialRecognition
+from app.data.interfaces.visual_data import FacesData, VisualData
+from app.machine_learning.facial_recognition.insight_facial_recognition import (
+    InsightFacialRecognition,
+)
 from app.processing.pipeline.base_module import VisualModule
 
 facial_recognition = InsightFacialRecognition()
@@ -14,5 +15,5 @@ class FacesModule(VisualModule):
 
         return FacesData(
             **data.model_dump(),
-            faces=faces
+            faces=faces,
         )

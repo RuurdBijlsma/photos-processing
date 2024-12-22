@@ -3,10 +3,10 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-import PIL
 import numpy as np
-from PIL.Image import Image
+import PIL
 from numpy.typing import NDArray
+from PIL.Image import Image
 
 from app.data.enums.classification.activity_type import ActivityType
 from app.data.enums.classification.animal_type import AnimalType
@@ -15,10 +15,15 @@ from app.data.enums.classification.event_type import EventType
 from app.data.enums.classification.object_type import ObjectType
 from app.data.enums.classification.people_type import PeopleType
 from app.data.enums.classification.scene_type import SceneType
-from app.data.enums.classification.weather_condition import WeatherCondition, \
-    weather_condition_descriptions
-from app.data.interfaces.visual_data import ClassificationData, EmbeddingData, \
-    VisualData
+from app.data.enums.classification.weather_condition import (
+    WeatherCondition,
+    weather_condition_descriptions,
+)
+from app.data.interfaces.visual_data import (
+    ClassificationData,
+    EmbeddingData,
+    VisualData,
+)
 from app.machine_learning.classifier.clip_classifier import CLIPClassifier
 from app.machine_learning.embedding.clip_embedder import CLIPEmbedder
 from app.processing.pipeline.base_module import VisualModule
@@ -30,7 +35,7 @@ classifier = CLIPClassifier()
 def get_scenes() -> dict[str, str]:
     scenes_path = Path(__file__).parents[2] / "assets/scenes.json"
     # todo: is this encoding right?
-    with open(scenes_path, 'r', encoding="utf-8") as f:
+    with scenes_path.open(encoding="utf-8") as f:
         result = json.load(f)
     assert isinstance(result, dict)
     return result
@@ -40,32 +45,41 @@ def classify_image_scene(image_embedding: NDArray[Any]) -> tuple[SceneType, floa
     scenes = get_scenes()
     best_index, confidence = classifier.classify_image(
         image_embedding,
-        list(scenes.values())
+        list(scenes.values()),
     )
     # confidence threshold 0.003 or something could be good
     best_label = SceneType(list(scenes.keys())[best_index])
-    if confidence < 0.003:
+    pretty_low_confidence = 0.003
+    if confidence < pretty_low_confidence:
         best_label = SceneType.UNKNOWN
     return best_label, confidence
 
 
-def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
-    PeopleType | None, AnimalType | None, DocumentType | None, ObjectType | None,
-    ActivityType | None, EventType | None, WeatherCondition | None,
-    bool, bool, bool, bool
+def binary_classifications(
+    image_embedding: NDArray[Any],
+) -> tuple[
+    PeopleType | None,
+    AnimalType | None,
+    DocumentType | None,
+    ObjectType | None,
+    ActivityType | None,
+    EventType | None,
+    WeatherCondition | None,
+    bool,
+    bool,
+    bool,
+    bool,
 ]:
     people_type = classifier.classify_to_enum_with_descriptions(
         image_embedding,
         "This image contains people or a person.",
         "There are no people in this image.",
         {
-
-            PeopleType.SELFIE: "This is a selfie where a person holds the camera, "
-                               "showing their face prominently.",
+            PeopleType.SELFIE: "This is a selfie where a person holds the camera, showing their face prominently.",
             PeopleType.GROUP: "This is a group photo",
             PeopleType.PORTRAIT: "This is a portrait photo of a person or persons",
             PeopleType.CROWD: "This is a crowd of people",
-        }
+        },
     )
 
     animal_type = classifier.classify_to_enum(
@@ -85,19 +99,17 @@ def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
         {
             DocumentType.BOOK_OR_MAGAZINE: "This is a book or a magazine.",
             DocumentType.RECEIPT: "This is a receipt or proof of payment.",
-            DocumentType.SCREENSHOT: "This is a digital screenshot from a phone or a "
-                                     "computer.",
+            DocumentType.SCREENSHOT: "This is a digital screenshot from a phone or a computer.",
             DocumentType.TICKET: "This is an event ticket, with information about the "
-                                 "event and or the ticket holder.",
+            "event and or the ticket holder.",
             DocumentType.IDENTITY: "This is an identity document, such as an ID card, "
-                                   "passport, drivers license, or other identifiable "
-                                   "card.",
+            "passport, drivers license, or other identifiable "
+            "card.",
             DocumentType.NOTES: "This is a person's notes, notebook, or homework.",
-            DocumentType.PAYMENT_METHOD: "This is a payment method, such as a "
-                                         "credit card or debit card.",
+            DocumentType.PAYMENT_METHOD: "This is a payment method, such as a credit card or debit card.",
             DocumentType.MENU: "This is a restaurant menu.",
             DocumentType.RECIPE: "This is a recipe to create a meal.",
-        }
+        },
     )
 
     object_type = classifier.classify_to_enum(
@@ -105,7 +117,7 @@ def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
         "This is object-focused photo, such as food, a vehicle, artwork,"
         " a device, a piece of clothing, a drink, sports equipment, or a toy.",
         "The focus is not an object.",
-        ObjectType
+        ObjectType,
     )
 
     activity_type = classifier.classify_to_enum(
@@ -114,7 +126,7 @@ def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
         "sports, fitness, dancing, photography, writing, "
         "leisure activities, traveling, camping or water activities.",
         "No activity is actively performed in this image.",
-        ActivityType
+        ActivityType,
     )
 
     event_type = classifier.classify_to_enum(
@@ -124,41 +136,37 @@ def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
         "meeting, funeral, christmas, halloween, new years, a sports game, "
         "competition, marathon, protest, parade, carnival, trip or picnic.",
         "No specific event or celebration is happening.",
-        EventType
+        EventType,
     )
 
     is_outside, _ = classifier.binary_classify_image(
         image_embedding,
         "This is outside.",
-        "This is inside."
+        "This is inside.",
     )
     is_landscape, _ = classifier.binary_classify_image(
         image_embedding,
-        "This is a landscape featuring natural scenery such as mountains,"
-        " dunes, forests, or lakes.",
-        "This is not a landscape or does not feature natural scenery."
+        "This is a landscape featuring natural scenery such as mountains, dunes, forests, or lakes.",
+        "This is not a landscape or does not feature natural scenery.",
     )
     is_cityscape, _ = classifier.binary_classify_image(
         image_embedding,
         "This is a cityscape showing urban buildings, streets, or skylines.",
-        "This is not a cityscape or does not feature urban areas."
+        "This is not a cityscape or does not feature urban areas.",
     )
     is_travel, _ = classifier.binary_classify_image(
         image_embedding,
-        "This photo was taken during travel, featuring landmarks, "
-        "airports, campsites, or exotic locations..",
-        "This photo was not taken during travel or does not suggest "
-        "a travel context."
+        "This photo was taken during travel, featuring landmarks, airports, campsites, or exotic locations..",
+        "This photo was not taken during travel or does not suggest a travel context.",
     )
 
     weather_type: WeatherCondition | None = None
     if is_outside:
         weather_type = classifier.classify_to_enum_with_descriptions(
             image_embedding,
-            "The type of weather can be clearly determined "
-            "from this photo.",
+            "The type of weather can be clearly determined from this photo.",
             "The weather conditions in this photo can not be determined.",
-            weather_condition_descriptions
+            weather_condition_descriptions,
         )
 
     return (
@@ -172,7 +180,7 @@ def binary_classifications(image_embedding: NDArray[Any]) -> tuple[
         is_outside,
         is_landscape,
         is_cityscape,
-        is_travel
+        is_travel,
     )
 
 
@@ -189,7 +197,7 @@ def experiment() -> None:
 
 
 class ClassificationModule(VisualModule):
-    def process(self, data: VisualData, image: Image) -> ClassificationData:
+    def process(self, data: VisualData, _: Image) -> ClassificationData:
         assert isinstance(data, EmbeddingData)
         (
             people_type,
@@ -202,7 +210,7 @@ class ClassificationModule(VisualModule):
             is_outside,
             is_landscape,
             is_cityscape,
-            is_travel
+            is_travel,
         ) = binary_classifications(np.array(data.embedding))
         scene, _ = classify_image_scene(np.array(data.embedding))
 

@@ -13,7 +13,7 @@ class SummaryModule(VisualModule):
         if not app_config.enable_text_summary:
             return SummaryData(
                 **data.model_dump(),
-                summary=None
+                summary=None,
             )
         prompt = ("Describe this image in a way that captures all essential details "
                   "for a search database. Include the setting, key objects, actions, "
@@ -26,5 +26,5 @@ class SummaryModule(VisualModule):
 
         return SummaryData(
             **data.model_dump(),
-            summary=caption
+            summary=caption,
         )
