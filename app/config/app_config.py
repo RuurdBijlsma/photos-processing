@@ -21,14 +21,14 @@ class AppConfig(BaseSettings):
     captions_provider: CaptionerProvider = CaptionerProvider.BLIP
     llm_provider: LLMProvider = LLMProvider.MINICPM
     enable_text_summary: bool = Field(
-        default=True,
+        default=False,
         description="A text summary can be generate of an image or video with an LLM, "
                     "improving search capabilities."
                     "This operation requires a CUDA gpu and can take a lot of time "
                     "if a local LLM is used.",
     )
     enable_document_summary: bool = Field(
-        default=True,
+        default=False,
         description="If a document is detected, a summary can be made using an LLM. "
                     "This operation requires a CUDA gpu and can take a lot of time "
                     "if a local LLM is used.",

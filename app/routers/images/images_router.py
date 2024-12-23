@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from datetime import UTC, datetime
-from typing import Annotated
 
 from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, Query
@@ -20,19 +19,17 @@ def default_start_date(n_months: int) -> datetime:
 
 @images_router.get("/", response_model=list[GridImageData])
 async def get_at_date(
-        # _: UserDep,
-        session: SessionDep,
-        start_date: Annotated[datetime, Query(
-            default_factory=lambda: default_start_date(10),
-        )],
-        end_date: Annotated[datetime | None, Query(default=None)],
+    # _: UserDep,
+    session: SessionDep,
+    start_date: datetime = Query(default_factory=lambda: default_start_date(10)),
+    end_date: datetime | None = None,
 ) -> Sequence[ImageModel]:
     return await get_month_images(session, start_date, end_date)
 
 
 @images_router.get("/random", response_model=str)
 async def get_random_image(
-        # _: UserDep,
-        session: SessionDep,
+    # _: UserDep,
+    session: SessionDep,
 ) -> str:
     return await random_db_image(session)
