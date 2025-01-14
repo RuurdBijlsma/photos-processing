@@ -3,6 +3,8 @@
 * Python
     * add tests
     * gainmap photo
+    * Tags voor search toevoegen: ultrawide, vertical, square, bedenk meer
+    * Low quality/blurry detector
     * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * when clustering (faces and images), should i really consider different frames as new points?

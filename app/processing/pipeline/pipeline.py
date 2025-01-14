@@ -8,7 +8,7 @@ import pillow_avif  # noqa: F401
 from app.config.app_config import app_config
 from app.data.database.db_utils import rel_path
 from app.data.interfaces.image_data import ImageData, WeatherData
-from app.data.interfaces.visual_data import ObjectsData, VisualData
+from app.data.interfaces.visual_data import ImageQualityData, VisualData
 from app.processing.pipeline.base_module import FileModule, VisualModule
 from app.processing.pipeline.file_based.data_url_module import DataUrlModule
 from app.processing.pipeline.file_based.exif_module import ExifModule
@@ -23,6 +23,7 @@ from app.processing.pipeline.visual_based.embedding_module import EmbeddingModul
 from app.processing.pipeline.visual_based.face_detection_module import FacesModule
 from app.processing.pipeline.visual_based.object_detection_module import ObjectsModule
 from app.processing.pipeline.visual_based.ocr_module import OCRModule
+from app.processing.pipeline.visual_based.quality_detection_module import QualityDetectionModule
 from app.processing.pipeline.visual_based.summary_module import SummaryModule
 from app.processing.processing.process_utils import ImageThumbnails, pil_to_jpeg
 
@@ -51,6 +52,7 @@ visual_pipeline: list[VisualModule] = [
     SummaryModule(),
     CaptionModule(),
     ObjectsModule(),
+    QualityDetectionModule(),
 ]
 
 
@@ -58,7 +60,7 @@ def run_metadata_pipeline(
         image_path: Path,
         image_hash: str,
         thumbnails: ImageThumbnails,
-) -> tuple[WeatherData, list[ObjectsData]]:
+) -> tuple[WeatherData, list[ImageQualityData]]:
     image_data = ImageData(
         id=uuid.uuid4().hex,
         relative_path=rel_path(image_path),
@@ -70,7 +72,7 @@ def run_metadata_pipeline(
         image_data = image_module.run(image_data)
     assert isinstance(image_data, WeatherData)
 
-    visual_datas: list[ObjectsData] = []
+    visual_datas: list[ImageQualityData] = []
     for frame_percentage, frame_image_path in thumbnails.frames.items():
         with PIL.Image.open(frame_image_path) as frame_image:
             jpeg_image = pil_to_jpeg(frame_image)
@@ -78,7 +80,7 @@ def run_metadata_pipeline(
         visual_data = VisualData(frame_percentage=frame_percentage)
         for visual_module in visual_pipeline:
             visual_data = visual_module.run(visual_data, jpeg_image)
-        assert isinstance(visual_data, ObjectsData)
+        assert isinstance(visual_data, ImageQualityData)
         visual_datas.append(visual_data)
         jpeg_image.close()
 

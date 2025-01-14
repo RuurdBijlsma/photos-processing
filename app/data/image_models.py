@@ -80,7 +80,8 @@ class ImageModel(Base):
     altitude = mapped_column(Float, nullable=True)
     location_id = mapped_column(Integer, ForeignKey("geo_locations.id"), nullable=True)
     location: Mapped[GeoLocationModel | None] = relationship(
-        "GeoLocationModel", back_populates="images",
+        "GeoLocationModel",
+        back_populates="images",
     )
     # Weather https://dev.meteostat.net/formats.html#weather-condition-codes
     weather_recorded_at = mapped_column(DateTime(timezone=False), nullable=True)
@@ -102,17 +103,14 @@ class ImageModel(Base):
     user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     owner: Mapped[UserModel] = relationship("UserModel", back_populates="images")
 
-    __table_args__ = (
-        Index("idx_datetime_local_utc", "datetime_local", "datetime_utc"),
-    )
+    __table_args__ = (Index("idx_datetime_local_utc", "datetime_local", "datetime_utc"),)
 
 
 class VisualInformationModel(Base):
     __tablename__ = "visual_information"
     id = mapped_column(Integer, primary_key=True, autoincrement=True)
     image_id: Mapped[str] = mapped_column(String, ForeignKey("images.id"))
-    image: Mapped[ImageModel] = relationship("ImageModel",
-                                               back_populates="visual_information")
+    image: Mapped[ImageModel] = relationship("ImageModel", back_populates="visual_information")
     frame_percentage = mapped_column(Integer, nullable=False)
     # AI shit
     embedding: Mapped[Vector] = mapped_column(VECTOR(768), nullable=False)
@@ -136,28 +134,36 @@ class VisualInformationModel(Base):
     )
     # Classifications
     scene_type: Mapped[SceneType] = mapped_column(
-        Enum(SceneType), nullable=False,
+        Enum(SceneType),
+        nullable=False,
     )
     people_type: Mapped[PeopleType | None] = mapped_column(
-        Enum(PeopleType), nullable=True,
+        Enum(PeopleType),
+        nullable=True,
     )
     animal_type: Mapped[AnimalType | None] = mapped_column(
-        Enum(AnimalType), nullable=True,
+        Enum(AnimalType),
+        nullable=True,
     )
     document_type: Mapped[DocumentType | None] = mapped_column(
-        Enum(DocumentType), nullable=True,
+        Enum(DocumentType),
+        nullable=True,
     )
     object_type: Mapped[ObjectType | None] = mapped_column(
-        Enum(ObjectType), nullable=True,
+        Enum(ObjectType),
+        nullable=True,
     )
     activity_type: Mapped[ActivityType | None] = mapped_column(
-        Enum(ActivityType), nullable=True,
+        Enum(ActivityType),
+        nullable=True,
     )
     event_type: Mapped[EventType | None] = mapped_column(
-        Enum(EventType), nullable=True,
+        Enum(EventType),
+        nullable=True,
     )
     weather_condition: Mapped[WeatherCondition | None] = mapped_column(
-        Enum(WeatherCondition), nullable=True,
+        Enum(WeatherCondition),
+        nullable=True,
     )
     is_outside = mapped_column(Boolean, nullable=False)
     is_landscape = mapped_column(Boolean, nullable=False)
@@ -168,6 +174,14 @@ class VisualInformationModel(Base):
     has_legible_text = mapped_column(Boolean, nullable=False)
     ocr_text = mapped_column(Text, nullable=True)
     document_summary = mapped_column(Text, nullable=True)
+    # Quality measurements
+    measured_sharpness = mapped_column(Float)
+    measured_noise = mapped_column(Integer)
+    measured_brightness = mapped_column(Float)
+    measured_contrast = mapped_column(Float)
+    measured_clipping = mapped_column(Float)
+    measured_dynamic_range = mapped_column(Float)
+    quality_score = mapped_column(Float)
     #   --
     summary = mapped_column(String, nullable=True)
     caption = mapped_column(String, nullable=False)
@@ -245,10 +259,8 @@ class FaceBoxModel(Base):
     sex = mapped_column(Enum(FaceSex), nullable=False)
 
     # Facial feature points
-    mouth_left: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float),
-                                                            nullable=False)
-    mouth_right: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float),
-                                                             nullable=False)
+    mouth_left: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
+    mouth_right: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
     nose_tip: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
     eye_left: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
     eye_right: Mapped[tuple[float, float]] = mapped_column(ARRAY(Float), nullable=False)
@@ -278,7 +290,8 @@ class UniqueFaceModel(Base):
 
     # One-to-many relationship with FaceBox
     faces: Mapped[list[FaceBoxModel]] = relationship(
-        FaceBoxModel, back_populates="unique_face",
+        FaceBoxModel,
+        back_populates="unique_face",
     )
 
     __table_args__ = (
@@ -305,11 +318,10 @@ class GeoLocationModel(Base):
     longitude = mapped_column(Float, nullable=False)
     # One-to-many relationship with ImageLocation
     images: Mapped[list[ImageModel]] = relationship(
-        ImageModel, back_populates="location",
+        ImageModel,
+        back_populates="location",
     )
-    __table_args__ = (
-        UniqueConstraint("city", "province", "country", name="unique_location"),
-    )
+    __table_args__ = (UniqueConstraint("city", "province", "country", name="unique_location"),)
 
 
 class UserModel(Base):

@@ -49,7 +49,7 @@ dependencies = [
 [tool.ruff]
 line-length = 120
 exclude = ["scripts", "alembic"]
-lint.ignore = ['S101', 'INP001', 'T201', 'S311', 'TRY003', 'PT018']
+lint.ignore = ['S101', 'INP001', 'T201', 'S311', 'TRY003', 'PT018', 'PLR0913']
 lint.select = [
     "A", # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
     "ANN", # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
