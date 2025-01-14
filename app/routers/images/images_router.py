@@ -21,7 +21,7 @@ def default_start_date(n_months: int) -> datetime:
 async def get_at_date(
     # _: UserDep,
     session: SessionDep,
-    start_date: datetime = Query(default_factory=lambda: default_start_date(10)),
+    start_date: datetime = Query(default_factory=lambda: default_start_date(10)),  # noqa: B008
     end_date: datetime | None = None,
 ) -> Sequence[ImageModel]:
     return await get_month_images(session, start_date, end_date)

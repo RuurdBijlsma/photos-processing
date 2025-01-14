@@ -18,6 +18,7 @@ async def get_rows_count() -> int:
 
 
 async def random_db_image(session: AsyncSession) -> str:
+    # TODO: sometimes update get_row_count result (lru_cache)
     random_offset = random.randint(0, await get_rows_count() - 1)
     return (
         await session.execute(

@@ -2,6 +2,7 @@
 
 * Python
     * add tests
+    * gainmap photo
     * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * when clustering (faces and images), should i really consider different frames as new points?
