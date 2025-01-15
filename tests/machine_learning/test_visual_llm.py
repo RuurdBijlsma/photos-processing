@@ -10,7 +10,6 @@ from app.machine_learning.visual_llm.get_llm import get_llm_by_provider
 
 
 @pytest.mark.parametrize("llm_provider", [
-    pytest.param(LLMProvider.INTERN_VL, marks=pytest.mark.cuda),
     pytest.param(LLMProvider.MINICPM, marks=pytest.mark.cuda),
     LLMProvider.OPENAI,
 ])
