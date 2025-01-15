@@ -317,8 +317,8 @@ wheels = [
 
 [[package]]
 name = "diffusers"
-version = "0.32.1"
-source = { registry = "https://pypi.org/simple" }
+version = "0.33.0.dev0"
+source = { git = "https://github.com/huggingface/diffusers#c944f0651f679728d4ec7b6488120ac49c2f1315" }
 dependencies = [
     { name = "filelock" },
     { name = "huggingface-hub" },
@@ -328,10 +328,6 @@ dependencies = [
     { name = "regex" },
     { name = "requests" },
     { name = "safetensors" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/b3/c43ace020b7475df034eb1ef4c544f51ee40b71ea87f87f9992821b06a95/diffusers-0.32.1.tar.gz", hash = "sha256:d48c19a4bce612d225f857e2e5d4f6ee003b88234af46b44c20119ee23f1568c", size = 2612689 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/67/f9a02086faf52372ad36224c6d95616a867399e171e6919a5c326b75cd10/diffusers-0.32.1-py3-none-any.whl", hash = "sha256:ab2ed6efe9dd2364db55b94fae453ff149dc06693ec99702cadfbeeaaa00c9c1", size = 3224149 },
 ]
 
 [[package]]
@@ -1919,7 +1915,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "diffusers", specifier = ">=0.31.0" },
+    { name = "diffusers", git = "https://github.com/huggingface/diffusers" },
     { name = "einops", specifier = ">=0.8.0" },
     { name = "insightface", specifier = ">=0.7.3" },
     { name = "llama-cpp-python", specifier = ">=0.3.2" },
