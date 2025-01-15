@@ -14,7 +14,7 @@ from app.data.image_models import (
     VisualInformationModel,
 )
 from app.data.interfaces.image_data import WeatherData
-from app.data.interfaces.visual_data import ObjectsData
+from app.data.interfaces.visual_data import ImageQualityData
 from app.processing.processing.process_utils import clean_object
 
 
@@ -37,7 +37,7 @@ async def delete_image(relative_path: Path, session: AsyncSession) -> None:
 
 async def store_image(
     image_info: WeatherData,
-    visual_infos: list[ObjectsData],
+    visual_infos: list[ImageQualityData],
     user_id: int,
     session: AsyncSession,
 ) -> ImageModel:

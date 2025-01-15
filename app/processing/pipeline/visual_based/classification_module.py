@@ -212,7 +212,7 @@ class ClassificationModule(VisualModule):
             is_cityscape,
             is_travel,
         ) = binary_classifications(np.array(data.embedding))
-        scene, _ = classify_image_scene(np.array(data.embedding))
+        scene, _conf = classify_image_scene(np.array(data.embedding))
 
         return ClassificationData(
             **data.model_dump(),

@@ -35,7 +35,7 @@ def format_duration(milliseconds: int) -> str:
 
 async def generate_single_video_thumbnails(
     input_path: Path,
-    video_height_and_quality: list[tuple[int, int]],
+    video_height_and_quality: tuple[tuple[int, int], ...],
     thumbnails_out: ImageThumbnails,
     print_progress_bar: bool = True,
 ) -> bool:
@@ -58,15 +58,32 @@ async def generate_single_video_thumbnails(
         cmd: list[str | Path] = ["ffmpeg", "-y", "-i", str(input_path)]
         for height, quality in video_height_and_quality:
             cmd += [
-                "-vf", f"scale=-1:{height}", "-c:v", "libvpx-vp9", "-crf", str(quality),
-                "-b:v", "0", "-c:a", "libopus", "-b:a", "64k",
-                file_at_temp_dir(temp_path, thumbnails_out,
-                                 thumbnails_out.webm_videos[height]),
+                "-vf",
+                f"scale=-1:{height}",
+                "-c:v",
+                "libvpx-vp9",
+                "-crf",
+                str(quality),
+                "-b:v",
+                "0",
+                "-c:a",
+                "libopus",
+                "-b:a",
+                "64k",
+                file_at_temp_dir(temp_path, thumbnails_out, thumbnails_out.webm_videos[height]),
             ]
         for height, thumb_path in thumbnails_out.thumbnails.items():
             cmd += [
-                "-ss", "00:00:00.01", "-vf", f"scale=-1:{height}", "-frames:v", "1",
-                "-crf", "35", "-b:v", "0",
+                "-ss",
+                "00:00:00.01",
+                "-vf",
+                f"scale=-1:{height}",
+                "-frames:v",
+                "1",
+                "-crf",
+                "35",
+                "-b:v",
+                "0",
                 file_at_temp_dir(temp_path, thumbnails_out, thumb_path),
             ]
         for percentage, frame_path in thumbnails_out.frames.items():
@@ -74,13 +91,22 @@ async def generate_single_video_thumbnails(
                 int((percentage / 100) * probe_result.duration_ms),
             )
             cmd += [
-                "-ss", time_string, "-vf", "scale=-1:1080", "-frames:v", "1",
-                "-crf", "35", "-b:v", "0",
+                "-ss",
+                time_string,
+                "-vf",
+                "scale=-1:1080",
+                "-frames:v",
+                "1",
+                "-crf",
+                "35",
+                "-b:v",
+                "0",
                 file_at_temp_dir(temp_path, thumbnails_out, frame_path),
             ]
         try:
             await run_ffmpeg(
-                cmd, print_progress_bar=print_progress_bar,
+                cmd,
+                print_progress_bar=print_progress_bar,
                 progress_bar_description=input_path.name,
                 progress_bar_leave=False,
                 progress_bar_position=1,
@@ -102,12 +128,14 @@ async def generate_video_thumbnails(to_process: list[Path]) -> list[bool]:
         position=0,
     ):
         video_hash = hash_image(video_path)
-        results.append(await generate_single_video_thumbnails(
-            video_path,
-            app_config.web_video_height_and_quality,
-            get_thumbnail_paths(video_path, video_hash),
-            print_progress_bar=True,
-        ))
+        results.append(
+            await generate_single_video_thumbnails(
+                video_path,
+                app_config.web_video_height_and_quality,
+                get_thumbnail_paths(video_path, video_hash),
+                print_progress_bar=True,
+            ),
+        )
     return results
 
 
@@ -143,18 +171,20 @@ def generate_single_photo_thumbnails(
 
 def generate_photo_thumbnails(to_process: list[Path]) -> list[bool]:
     with ThreadPoolExecutor(max_workers=8) as executor:
-        return list(tqdm(
-            executor.map(
-                lambda file: generate_single_photo_thumbnails(
-                    file,
-                    get_thumbnail_paths(file, hash_image(file)),
+        return list(
+            tqdm(
+                executor.map(
+                    lambda file: generate_single_photo_thumbnails(
+                        file,
+                        get_thumbnail_paths(file, hash_image(file)),
+                    ),
+                    to_process,
                 ),
-                to_process,
+                total=len(to_process),
+                desc="Generate photo thumbnails",
+                unit="photo",
             ),
-            total=len(to_process),
-            desc="Generate photo thumbnails",
-            unit="photo",
-        ))
+        )
 
 
 async def generate_generic_thumbnails(image_path: Path, image_hash: str) -> bool:

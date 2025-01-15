@@ -14,7 +14,7 @@ def sharpness_measurement(image: npt.NDArray[np.uint8]) -> float:
     """
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     laplacian = cv2.Laplacian(gray_image, cv2.CV_64F)
-    return laplacian.var()
+    return float(laplacian.var())
 
 
 def exposure_measurement(image: npt.NDArray[np.uint8]) -> tuple[float, float]:
@@ -24,9 +24,9 @@ def exposure_measurement(image: npt.NDArray[np.uint8]) -> tuple[float, float]:
     - Check contrast (low contrast may indicate poor exposure).
     """
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    mean_brightness = np.mean(gray_image)
+    mean_brightness = np.mean(gray_image)  # type: ignore[arg-type]
     # Calculate contrast (standard deviation of pixel intensities)
-    contrast = np.std(gray_image)
+    contrast = np.std(gray_image)  # type: ignore[arg-type]
     return float(mean_brightness), float(contrast)
 
 
@@ -39,13 +39,13 @@ def noise_measurement(image: npt.NDArray[np.uint8]) -> int:
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
     diff = cv2.absdiff(gray_image, blurred_image)
-    return np.sum(diff)
+    return int(np.sum(diff))
 
 
-def calculate_dynamic_range(image: np.ndarray, sample_fraction: float = 0.1) -> float:
+def calculate_dynamic_range(image: npt.NDArray[np.uint8], sample_fraction: float = 0.1) -> float:
     """Calculate the dynamic range of an image using a sample of the darkest and brightest pixels."""
     # Convert to grayscale if the image is in color
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # type: ignore[assignment]
 
     # Flatten the image into a 1D array and sort the pixel values
     flattened = image.flatten()
@@ -59,14 +59,14 @@ def calculate_dynamic_range(image: np.ndarray, sample_fraction: float = 0.1) -> 
     darkest_mean = np.mean(sorted_pixels[:sample_size])
     brightest_mean = np.mean(sorted_pixels[-sample_size:])
 
-    return brightest_mean - darkest_mean
+    return float(brightest_mean - darkest_mean)
 
 
-def measure_clipping(image: np.ndarray) -> float:
+def measure_clipping(image: npt.NDArray[np.uint8]) -> float:
     """
     Calculate the percentage of pixels that are clipped (either 0 or 255) in a grayscale image.
     """
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # type: ignore[assignment]
 
     # Count the number of clipped pixels (0 or 255)
     total_pixels = image.size
@@ -75,7 +75,7 @@ def measure_clipping(image: np.ndarray) -> float:
     clipped_pixels = np.sum((image == clipped_black) | (image == clipped_white))
 
     # Calculate the percentage of clipped pixels
-    return clipped_pixels / total_pixels
+    return float(clipped_pixels / total_pixels)
 
 
 def composite_quality_score(
@@ -127,8 +127,8 @@ def composite_quality_score(
 
 class QualityDetectionModule(VisualModule):
     def process(self, data: VisualData, image: Image) -> ImageQualityData:
-        image_cv2 = np.array(image)
-        image_cv2 = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2BGR)
+        image_cv2: npt.NDArray[np.uint8] = np.array(image)
+        image_cv2 = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2BGR)  # type: ignore[assignment]
         mean_brightness, contrast = exposure_measurement(image_cv2)
         return ImageQualityData(
             **data.model_dump(),

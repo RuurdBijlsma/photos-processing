@@ -14,17 +14,18 @@ from app.data.image_models import ImageModel
 @alru_cache
 async def get_rows_count() -> int:
     async with get_session() as session:
-        return (await session.execute(select(func.count(ImageModel.id)))).scalar_one_or_none()
+        return (await session.execute(select(func.count(ImageModel.id)))).scalar_one()
 
 
 async def random_db_image(session: AsyncSession) -> str:
     # TODO: sometimes update get_row_count result (lru_cache)
     random_offset = random.randint(0, await get_rows_count() - 1)
-    return (
+    image_hash = (
         await session.execute(
             select(ImageModel.hash).offset(random_offset).limit(1),
         )
     ).scalar_one_or_none()
+    return str(image_hash)
 
 
 async def get_month_images(

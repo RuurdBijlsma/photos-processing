@@ -50,7 +50,7 @@ class ResnetObjectDetection(ObjectDetectionProtocol):
                 confidence=score.item(),
                 label=model.config.id2label[label.item()],
                 position=coordinate_to_proportional(
-                    (box[0].item(), box[1].item()),
+                    (float(box[0].item()), float(box[1].item())),
                     image,
                 ),
                 width=(box[2].item() - box[0].item()) / image.width,

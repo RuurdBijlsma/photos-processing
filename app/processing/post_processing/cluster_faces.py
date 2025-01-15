@@ -106,7 +106,7 @@ async def experiment(draw_face_experiment: bool = False) -> None:
 
         for i, (face, relative_path_str) in enumerate(faces):
             relative_path = Path(relative_path_str)
-            image = cv2.imread(app_config.images_dir / relative_path)
+            image = cv2.imread(str(app_config.images_dir / relative_path))
             if image is None:
                 print(f"SKIP: {relative_path}")
                 continue

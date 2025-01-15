@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from pathlib import Path
 
 import cv2
@@ -8,7 +9,7 @@ from app.data.interfaces.ml_types import BaseBoundingBox
 
 
 def coordinate_to_proportional(
-    coordinate: list[float | int], image: Image,
+    coordinate: Sequence[float | int], image: Image,
 ) -> tuple[float, float]:
     return coordinate[0] / image.width, coordinate[1] / image.height
 

@@ -50,7 +50,7 @@ class OpenAILLM(MiniCPMLLM):
     def stream_chat(
         self,
         messages: list[ChatMessage],
-        convert_images: bool = True, #noqa: ARG002
+        convert_images: bool = True,  # noqa: ARG002
         temperature: float = 0.7,
         max_tokens: int = 500,
     ) -> Generator[str, None, None]:
@@ -58,13 +58,13 @@ class OpenAILLM(MiniCPMLLM):
 
         response = self.client.chat.completions.create(
             model=self.model_name,
-            messages=dict_messages,
+            messages=dict_messages,  # type: ignore[arg-type]
             max_tokens=max_tokens,
             temperature=temperature,
             stream=True,
         )
 
         for chunk in response:
-            chunk_content: str | None = chunk.choices[0].delta.content
+            chunk_content: str | None = chunk.choices[0].delta.content # type: ignore[union-attr]
             if chunk_content is not None:
                 yield chunk_content

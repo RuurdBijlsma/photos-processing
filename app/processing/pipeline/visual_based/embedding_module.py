@@ -12,5 +12,5 @@ class EmbeddingModule(VisualModule):
         embedding = embedder.embed_image(image)
         return EmbeddingData(
             **data.model_dump(),
-            embedding=embedding.tolist(),
+            embedding=embedding.tolist(),  # type: ignore[arg-type]
         )
