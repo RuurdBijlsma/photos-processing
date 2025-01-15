@@ -1,7 +1,14 @@
 ## TODO
 
 * Python
-    * add tests
+    * add more tests
+    * fix mypy
+    * tags column toevoegen die voor full text search gebruikt wordt. Tag ideeen
+      * ultrawide
+      * portrait
+      * vertical
+      * square
+      * thinkg of more
     * gainmap photo
     * Tags voor search toevoegen: ultrawide, vertical, square, bedenk meer
     * Low quality/blurry detector
