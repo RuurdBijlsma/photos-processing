@@ -12,7 +12,7 @@ pipe.to("cuda")
 pipe.vae.to(torch.bfloat16)
 pipe.text_encoder.to(torch.bfloat16)
 
-prompt = 'a cyberpunk cat with a neon sign that says "Sana"'
+prompt = 'a cyberpunk cat with a neon sign that says "Gefeliciteerd"'
 image = pipe(
     prompt=prompt,
     height=1024,

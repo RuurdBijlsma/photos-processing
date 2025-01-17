@@ -1,4 +1,4 @@
-podman run `
+podman run --rm `
   --name pgvectors `
   -e POSTGRES_USER=postgres `
   -e POSTGRES_PASSWORD=flyingsquirrel `

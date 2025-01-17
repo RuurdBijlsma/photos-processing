@@ -1884,6 +1884,7 @@ name = "scripts"
 version = "0.1.0"
 source = { virtual = "scripts" }
 dependencies = [
+    { name = "accelerate" },
     { name = "diffusers" },
     { name = "einops" },
     { name = "insightface" },
@@ -1906,6 +1907,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "accelerate", specifier = ">=1.2.1" },
     { name = "diffusers", git = "https://github.com/huggingface/diffusers" },
     { name = "einops", specifier = ">=0.8.0" },
     { name = "insightface", specifier = ">=0.7.3" },
