@@ -1334,7 +1334,7 @@ requires-dist = [
     { name = "reverse-geocode", specifier = ">=1.6.5" },
     { name = "sentencepiece", specifier = ">=0.2.0" },
     { name = "sqlalchemy", specifier = ">=2.0.36" },
-    { name = "timezonefinder", specifier = ">=6.5.4" },
+    { name = "timezonefinder", specifier = ">=6.5.7" },
     { name = "timm", specifier = ">=1.0.12" },
     { name = "torch", marker = "sys_platform != 'darwin'", specifier = ">=2.5.1", index = "https://download.pytorch.org/whl/cu124" },
     { name = "torch", marker = "sys_platform == 'darwin'", specifier = ">=2.5.1" },
