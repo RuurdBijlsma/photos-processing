@@ -6,7 +6,7 @@ from fastapi import APIRouter, Query
 
 from app.data.database.database import SessionDep
 from app.data.image_models import ImageModel
-from app.data.interfaces.response_types import GridImageData
+from app.data.interfaces.response_types import ImageResponse
 from app.routers.images.images_model import get_month_images, random_db_image
 
 images_router = APIRouter(prefix="/images", tags=["images"])
@@ -14,10 +14,16 @@ images_router = APIRouter(prefix="/images", tags=["images"])
 
 def default_start_date(n_months: int) -> datetime:
     now = datetime.now(tz=UTC)
-    return (now - relativedelta(months=n_months)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    return (now - relativedelta(months=n_months)).replace(
+        day=1,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
 
 
-@images_router.get("/", response_model=list[GridImageData])
+@images_router.get("/", response_model=list[ImageResponse])
 async def get_at_date(
     # _: UserDep,
     session: SessionDep,

@@ -10,7 +10,9 @@ tf = TimezoneFinder()
 
 
 async def find_proximate_coordinate(
-    image: ImageModel, user_id: int, session: AsyncSession,
+    image: ImageModel,
+    user_id: int,
+    session: AsyncSession,
 ) -> None | tuple[float, float]:
     image_with_tz = (
         await session.execute(
@@ -26,17 +28,21 @@ async def find_proximate_coordinate(
             ),
         )
     ).scalar()
-    if image_with_tz is None or not (
-        image_with_tz.latitude and image_with_tz.longitude
-    ):
+    if image_with_tz is None or not (image_with_tz.latitude and image_with_tz.longitude):
         return None
     return float(image_with_tz.latitude), float(image_with_tz.longitude)
 
 
 async def fill_timezone_gaps(session: AsyncSession, user_id: int) -> None:
-    no_tz_images = (await session.execute(
-        select(ImageModel).where(ImageModel.timezone_name.is_(None)),
-    )).scalars().all()
+    no_tz_images = (
+        (
+            await session.execute(
+                select(ImageModel).where(ImageModel.timezone_name.is_(None)),
+            )
+        )
+        .scalars()
+        .all()
+    )
     closest_image_coordinates: list[tuple[float, float] | None] = [
         await find_proximate_coordinate(image, user_id, session)
         for image in tqdm(no_tz_images, desc="Finding image timezones", unit="image")
@@ -63,4 +69,5 @@ async def fill_timezone_gaps(session: AsyncSession, user_id: int) -> None:
         image.timezone_offset = local_dt.utcoffset()
         print(f"Fixed image: {image.filename}, {datetime_utc}")
     await session.commit()
-    # todo find out if try except is needed here and which exception is thrown, rollback if except happens
+    # todo find out if try except is needed here
+    # and which exception is thrown, rollback if except happens

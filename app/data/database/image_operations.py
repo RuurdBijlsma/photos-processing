@@ -1,21 +1,20 @@
 from pathlib import Path
-from typing import Any
 
+from media_analyzer.data.interfaces.api_io import MediaAnalyzerOutput
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.app_config import app_config
-from app.data.image_models import (
-    FaceBoxModel,
-    GeoLocationModel,
-    ImageModel,
-    ObjectBoxModel,
-    OCRBoxModel,
-    VisualInformationModel,
+from app.data.database.db_utils import (
+    fix_visual_information,
+    flatten_dataclass,
+    get_location_model,
+    rel_path,
 )
-from app.data.interfaces.image_data import WeatherData
-from app.data.interfaces.visual_data import ImageQualityData
-from app.processing.processing.process_utils import clean_object
+from app.data.image_models import (
+    ImageModel,
+)
+from app.processing.processing.process_utils import hash_image
 
 
 async def delete_image(relative_path: Path, session: AsyncSession) -> None:
@@ -36,48 +35,35 @@ async def delete_image(relative_path: Path, session: AsyncSession) -> None:
 
 
 async def store_image(
-    image_info: WeatherData,
-    visual_infos: list[ImageQualityData],
+    analyzer_output: MediaAnalyzerOutput,
     user_id: int,
     session: AsyncSession,
 ) -> ImageModel:
-    cleaned_dict = clean_object(image_info.model_dump())
-    assert isinstance(cleaned_dict, dict)
-    location = cleaned_dict.pop("location")
-    location_model = None
-    if location and image_info.location:
-        # Check if location exists already, else create it
-        location_model = (
-            await session.execute(
-                select(GeoLocationModel).filter_by(
-                    city=image_info.location.city,
-                    province=image_info.location.province,
-                    country=image_info.location.country,
-                ),
-            )
-        ).scalar()
-        if not location_model:
-            location_model = GeoLocationModel(**location)
+    image_data = flatten_dataclass(analyzer_output)
+    image_path = image_data.pop("path")
 
-    def fix_nested_visual_information(info: dict[str, Any]) -> dict[str, Any]:
-        overrides = {
-            "ocr_boxes": OCRBoxModel,
-            "faces": FaceBoxModel,
-            "objects": ObjectBoxModel,
-        }
-        for key, value in overrides.items():
-            info[key] = [value(**item) for item in info[key]]
-        return info
+    if "gps" in image_data:
+        image_data.pop("gps")
+    if "weather" in image_data:
+        image_data.pop("weather")
 
     image_model = ImageModel(
-        **cleaned_dict,
-        location=location_model,
-        visual_information=[
-            VisualInformationModel(**fix_nested_visual_information(info.model_dump()))
-            for info in visual_infos
-        ],
+        relative_path=rel_path(image_path).as_posix(),
+        hash=hash_image(image_path),
+        filename=image_path.name,
         user_id=user_id,
+        location=await get_location_model(session=session, image_dict=image_data),
+        visual_information=[
+            fix_visual_information(flatten_dataclass(frame), percentage)
+            for frame, percentage in zip(
+                image_data.pop("frame_data"),
+                app_config.video_screenshot_percentages,
+                strict=False,
+            )
+        ],
+        **image_data,
     )
+
     session.add(image_model)
     await session.commit()
     await session.refresh(image_model)

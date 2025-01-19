@@ -8,7 +8,9 @@ from app.data.image_models import GeoLocationModel, ImageModel
 
 
 async def cleanup_entries(
-    session: AsyncSession, user_id: int, image_files: list[Path],
+    session: AsyncSession,
+    user_id: int,
+    image_files: list[Path],
 ) -> None:
     """Delete images from db that don't have a corresponding image file.
     Also delete geolocation entries that no longer have any associated images.
@@ -20,9 +22,7 @@ async def cleanup_entries(
 
     """
     db_images = (
-        (await session.execute(select(ImageModel).filter_by(user_id=user_id)))
-        .scalars()
-        .all()
+        (await session.execute(select(ImageModel).filter_by(user_id=user_id))).scalars().all()
     )
 
     relative_paths = [path_str(path) for path in image_files]
@@ -30,17 +30,20 @@ async def cleanup_entries(
         if image_model.relative_path not in relative_paths:
             await session.delete(image_model)
             print(
-                f"Deleting {image_model.relative_path}, "
-                "the file does not exist anymore.",
+                f"Deleting {image_model.relative_path}, the file does not exist anymore.",
             )
 
     locations_without_images = (
-        await session.execute(
-            select(GeoLocationModel)
-            .outerjoin(ImageModel, GeoLocationModel.id == ImageModel.location_id)
-            .filter(ImageModel.id.is_(None)),
+        (
+            await session.execute(
+                select(GeoLocationModel)
+                .outerjoin(ImageModel, GeoLocationModel.id == ImageModel.location_id)
+                .filter(ImageModel.id.is_(None)),
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     for location in locations_without_images:
         print(f"Deleting {location}, the location has no images anymore.")

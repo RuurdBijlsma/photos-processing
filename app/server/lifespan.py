@@ -22,7 +22,6 @@ async def add_test_users(session: AsyncSession) -> None:
     await add_user(session, "Bijlsma", "squirrel", Role.USER)
 
 
-
 async def on_startup(app: FastAPI) -> None:
     if not app_config.disable_processing:
         if not app_config.thumbnails_dir.exists():
