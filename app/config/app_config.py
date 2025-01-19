@@ -1,9 +1,7 @@
 from pathlib import Path
 
-from pydantic import Field
+from media_analyzer import AnalyzerSettings, CaptionerProvider, LLMProvider
 from pydantic_settings import BaseSettings
-
-from app.config.config_types import CaptionerProvider, LLMProvider
 
 
 class AppConfig(BaseSettings):
@@ -14,33 +12,32 @@ class AppConfig(BaseSettings):
     debug: bool = True
     host_thumbnails: bool = True
     connection_string: str = "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
-    media_languages: tuple[str, ...] = ("nld", "eng")
 
-    captions_provider: CaptionerProvider = CaptionerProvider.BLIP
-    llm_provider: LLMProvider = LLMProvider.MINICPM
-    enable_text_summary: bool = Field(
-        default=False,
-        description="A text summary can be generate of an image or video with an LLM, "
-        "improving search capabilities."
-        "This operation requires a CUDA gpu and can take a lot of time "
-        "if a local LLM is used.",
-    )
-    enable_document_summary: bool = Field(
-        default=False,
-        description="If a document is detected, a summary can be made using an LLM. "
-        "This operation requires a CUDA gpu and can take a lot of time "
-        "if a local LLM is used.",
-    )
-    document_detection_threshold: int = Field(
-        default=65,
-        description="How many characters should be recognized before classifying "
-        "it as a document and making a summary.",
-    )
-    face_detection_threshold: float = Field(
-        default=0.7,
-        description="The minimum confidence threshold for detecting a face. "
-        "Values should be between 0 and 1. Higher values mean higher "
-        "confidence in the detection.",
+    analyzer_settings: AnalyzerSettings = AnalyzerSettings(
+        media_languages=("nld", "eng"),
+        captions_provider=CaptionerProvider.BLIP,
+        llm_provider=LLMProvider.MINICPM,
+        enable_text_summary=False,
+        enable_document_summary=False,
+        document_detection_threshold=65,
+        face_detection_threshold=0.7,
+        enabled_file_modules={
+            "DataUrlModule",
+            "ExifModule",
+            "GpsModule",
+            "TimeModule",
+            "WeatherModule",
+        },
+        enabled_visual_modules={
+            "CaptionModule",
+            "ClassificationModule",
+            "EmbeddingModule",
+            "FacesModule",
+            "ObjectsModule",
+            "OCRModule",
+            "QualityDetectionModule",
+            "SummaryModule",
+        },
     )
 
     images_dir: Path = Path("media/images")

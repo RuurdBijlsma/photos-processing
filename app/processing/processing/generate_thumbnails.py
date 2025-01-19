@@ -187,7 +187,7 @@ def generate_photo_thumbnails(to_process: list[Path]) -> list[bool]:
         )
 
 
-async def generate_generic_thumbnails(image_path: Path, image_hash: str) -> bool:
+async def generate_thumbnails(image_path: Path, image_hash: str) -> bool:
     if image_path.suffix in app_config.photo_suffixes:
         return generate_single_photo_thumbnails(
             image_path,

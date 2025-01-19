@@ -1,5 +1,19 @@
 from __future__ import annotations
 
+import base64
+import uuid
+
+from media_analyzer import (
+    ActivityType,
+    AnimalType,
+    DocumentType,
+    EventType,
+    FaceSex,
+    ObjectType,
+    PeopleType,
+    SceneType,
+    WeatherCondition,
+)
 from pgvecto_rs.sqlalchemy import VECTOR
 from pgvecto_rs.types import Hnsw, IndexOption, Vector
 from sqlalchemy import (
@@ -20,16 +34,11 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from app.data.enums.classification.activity_type import ActivityType
-from app.data.enums.classification.animal_type import AnimalType
-from app.data.enums.classification.document_type import DocumentType
-from app.data.enums.classification.event_type import EventType
-from app.data.enums.classification.object_type import ObjectType
-from app.data.enums.classification.people_type import PeopleType
-from app.data.enums.classification.scene_type import SceneType
-from app.data.enums.classification.weather_condition import WeatherCondition
-from app.data.enums.face_sex import FaceSex
 from app.data.enums.user_role import Role
+
+
+def short_uuid() -> str:
+    return base64.urlsafe_b64encode(uuid.uuid4().bytes).rstrip(b"=").decode("utf-8")
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -39,7 +48,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 class ImageModel(Base):
     __tablename__ = "images"
     # base info
-    id = mapped_column(String, primary_key=True, index=True)
+    id = mapped_column(String(36), primary_key=True, default=short_uuid)
     filename = mapped_column(String, nullable=False, index=True)
     relative_path = mapped_column(String, nullable=False, unique=True, index=True)
     hash = mapped_column(String, nullable=False)
@@ -281,6 +290,23 @@ class FaceBoxModel(Base):
     )
 
 
+class GeoLocationModel(Base):
+    __tablename__ = "geo_locations"
+
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    country = mapped_column(String, nullable=False)
+    province = mapped_column(String, nullable=True)
+    city = mapped_column(String, nullable=False)
+    latitude = mapped_column(Float, nullable=False)
+    longitude = mapped_column(Float, nullable=False)
+    # One-to-many relationship with ImageLocation
+    images: Mapped[list[ImageModel]] = relationship(
+        ImageModel,
+        back_populates="location",
+    )
+    __table_args__ = (UniqueConstraint("city", "province", "country", name="unique_location"),)
+
+
 class UniqueFaceModel(Base):
     __tablename__ = "unique_faces"
 
@@ -305,23 +331,6 @@ class UniqueFaceModel(Base):
             postgresql_ops={"centroid": "vector_l2_ops"},
         ),
     )
-
-
-class GeoLocationModel(Base):
-    __tablename__ = "geo_locations"
-
-    id = mapped_column(Integer, primary_key=True, autoincrement=True)
-    country = mapped_column(String, nullable=False)
-    province = mapped_column(String, nullable=True)
-    city = mapped_column(String, nullable=False)
-    latitude = mapped_column(Float, nullable=False)
-    longitude = mapped_column(Float, nullable=False)
-    # One-to-many relationship with ImageLocation
-    images: Mapped[list[ImageModel]] = relationship(
-        ImageModel,
-        back_populates="location",
-    )
-    __table_args__ = (UniqueConstraint("city", "province", "country", name="unique_location"),)
 
 
 class UserModel(Base):

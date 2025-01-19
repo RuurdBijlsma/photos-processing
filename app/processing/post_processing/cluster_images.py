@@ -9,15 +9,18 @@ from tqdm import tqdm
 from app.config.app_config import app_config
 from app.data.database.database import get_session
 from app.data.image_models import ImageModel, VisualInformationModel
-from app.machine_learning.clustering.hdbscan_clustering import perform_clustering
+from app.processing.hdbscan_clustering import perform_clustering
 
 
 async def experiment() -> None:
     async with get_session() as session:
-        frames = (await session.execute(
-            select(VisualInformationModel, ImageModel.relative_path)
-            .join(VisualInformationModel.image),
-        )).all()
+        frames = (
+            await session.execute(
+                select(VisualInformationModel, ImageModel.relative_path).join(
+                    VisualInformationModel.image,
+                ),
+            )
+        ).all()
         embeddings = np.vstack([frame[0].embedding.to_numpy() for frame in frames])
         cluster_labels = perform_clustering(
             embeddings,

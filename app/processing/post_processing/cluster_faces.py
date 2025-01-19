@@ -17,7 +17,7 @@ from app.data.image_models import (
     UniqueFaceModel,
     VisualInformationModel,
 )
-from app.machine_learning.clustering.hdbscan_clustering import perform_clustering
+from app.processing.hdbscan_clustering import perform_clustering
 
 
 def index_of_closest_embedding(
@@ -31,16 +31,26 @@ def index_of_closest_embedding(
 
 
 async def re_cluster_faces(session: AsyncSession) -> None:
-    existing_unique_faces = (await session.execute(
-        select(UniqueFaceModel)
-        .where(UniqueFaceModel.user_provided_label.isnot(None)),
-    )).scalars().all()
+    existing_unique_faces = (
+        (
+            await session.execute(
+                select(UniqueFaceModel).where(UniqueFaceModel.user_provided_label.isnot(None)),
+            )
+        )
+        .scalars()
+        .all()
+    )
     await session.execute(update(FaceBoxModel).values(unique_face_id=None))
     await session.execute(delete(UniqueFaceModel))
-    faces = (await session.execute(
-        select(FaceBoxModel)
-        .order_by(FaceBoxModel.id),
-    )).scalars().all()
+    faces = (
+        (
+            await session.execute(
+                select(FaceBoxModel).order_by(FaceBoxModel.id),
+            )
+        )
+        .scalars()
+        .all()
+    )
     if len(faces) < 1:
         return
     embeddings = np.vstack([face.embedding.to_numpy() for face in faces])
@@ -57,8 +67,11 @@ async def re_cluster_faces(session: AsyncSession) -> None:
         if label == -1:
             continue
         # Filter faces by label and get embeddings
-        label_faces = [face for face_label, face in
-                       zip(cluster_labels, faces, strict=False) if face_label == label]
+        label_faces = [
+            face
+            for face_label, face in zip(cluster_labels, faces, strict=False)
+            if face_label == label
+        ]
         label_embeddings = [face.embedding.to_numpy() for face in label_faces]
 
         unique_face = UniqueFaceModel(
@@ -77,9 +90,7 @@ async def re_cluster_faces(session: AsyncSession) -> None:
             existing_unique_face.centroid.to_numpy(),
             centroids,
         )
-        unique_faces[closest_i].user_provided_label = (
-            existing_unique_face.user_provided_label
-        )
+        unique_faces[closest_i].user_provided_label = existing_unique_face.user_provided_label
 
     await session.commit()
 
@@ -91,12 +102,14 @@ async def experiment(draw_face_experiment: bool = False) -> None:
         return
 
     async with get_session() as session:
-        faces = (await session.execute(
-            select(FaceBoxModel, ImageModel.relative_path)
-            .join(FaceBoxModel.visual_information)
-            .join(VisualInformationModel.image)
-            .order_by(FaceBoxModel.id),
-        )).all()
+        faces = (
+            await session.execute(
+                select(FaceBoxModel, ImageModel.relative_path)
+                .join(FaceBoxModel.visual_information)
+                .join(VisualInformationModel.image)
+                .order_by(FaceBoxModel.id),
+            )
+        ).all()
         embeddings = np.vstack([face[0].embedding.to_numpy() for face in faces])
         cluster_labels = perform_clustering(
             embeddings,
@@ -115,18 +128,18 @@ async def experiment(draw_face_experiment: bool = False) -> None:
             y1 = int(face.position[1] * height)
             x2 = int((face.position[0] + face.width) * width)
             y2 = int((face.position[1] + face.height) * height)
-            cv2.rectangle(image,
-                          (x1, y1),
-                          (x2, y2),
-                          (0, 255, 0),
-                          2)
+            cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
             print(f"Face ID: {face.id}, Image Relative Path: {relative_path}")
 
             label = cluster_labels[i]
+            root_out = Path("./test_img_out")
             if label == -1:
                 label = 9999
-            out_path = (f"./test_img_out/face_"
-                        f"{label}_i{i}_{relative_path.name}.jpg")
+            face_folder = root_out / str(label)
+            if not face_folder.exists():
+                face_folder.mkdir(parents=True)
+
+            out_path = str(face_folder / f"{i}_{relative_path.name}.jpg")
             cv2.imwrite(out_path, image)
 
 

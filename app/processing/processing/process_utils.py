@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import PIL
+from media_analyzer import MediaAnalyzer
 from PIL.Image import Image
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config.app_config import app_config
 from app.data.database.db_utils import path_str
 from app.data.image_models import ImageModel
+
+analyzer = MediaAnalyzer(config=app_config.analyzer_settings)
 
 
 @dataclass
@@ -25,7 +28,9 @@ class ImageThumbnails:
 
 def get_thumbnail_paths(image_path: Path, image_hash: str) -> ImageThumbnails:
     thumb_folder = app_config.thumbnails_dir / image_hash
-    thumbnails = {height: thumb_folder / f"{height}p.avif" for height in app_config.thumbnail_heights}
+    thumbnails = {
+        height: thumb_folder / f"{height}p.avif" for height in app_config.thumbnail_heights
+    }
     if image_path.suffix in app_config.video_suffixes:
         return ImageThumbnails(
             folder=thumb_folder,
@@ -35,7 +40,8 @@ def get_thumbnail_paths(image_path: Path, image_hash: str) -> ImageThumbnails:
                 for percentage in app_config.video_screenshot_percentages
             },
             webm_videos={
-                height: thumb_folder / f"{height}p.webm" for height, _ in app_config.web_video_height_and_quality
+                height: thumb_folder / f"{height}p.webm"
+                for height, _ in app_config.web_video_height_and_quality
             },
         )
     return ImageThumbnails(

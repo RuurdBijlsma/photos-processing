@@ -8,7 +8,8 @@ from app.data.image_models import ImageModel
 
 
 async def drop_images_without_thumbnails(
-    images_to_process: list[Path], session: AsyncSession,
+    images_to_process: list[Path],
+    session: AsyncSession,
 ) -> None:
     for image in images_to_process:
         # image is to be processed, but may already be in db (has no thumbnails)
