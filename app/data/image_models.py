@@ -58,12 +58,15 @@ class ImageModel(Base):
     duration = mapped_column(Float, nullable=True)
     format = mapped_column(String, nullable=False)
     size_bytes = mapped_column(Integer, nullable=False)
-    # frontend stuff
-    is_motion_photo = mapped_column(Boolean, nullable=False)
-    is_hdr = mapped_column(Boolean, nullable=False)
-    is_night_sight = mapped_column(Boolean, nullable=False)
-    is_selfie = mapped_column(Boolean, nullable=False)
+    # tags
     is_panorama = mapped_column(Boolean, nullable=False)
+    is_motion_photo = mapped_column(Boolean, nullable=False)
+    is_night_sight = mapped_column(Boolean, nullable=False)
+    is_hdr = mapped_column(Boolean, nullable=False)
+    is_360 = mapped_column(Boolean, nullable=False)
+    is_burst = mapped_column(Boolean, nullable=False)
+    is_timelapse = mapped_column(Boolean, nullable=False)
+    is_slowmotion = mapped_column(Boolean, nullable=False)
     # datetime
     datetime_local = mapped_column(DateTime(timezone=False), nullable=False, index=True)
     datetime_utc = mapped_column(DateTime(timezone=False), nullable=True, index=True)
@@ -81,6 +84,7 @@ class ImageModel(Base):
     jfif = mapped_column(JSONB, nullable=True)
     icc_profile = mapped_column(JSONB, nullable=True)
     gif = mapped_column(JSONB, nullable=True)
+    png = mapped_column(JSONB, nullable=True)
     quicktime = mapped_column(JSONB, nullable=True)
     matroska = mapped_column(JSONB, nullable=True)
     # GPS

@@ -2,6 +2,7 @@
 
 * Python
     * add more tests
+    * motion photo extract video beforehand
     * in photo ui, make quick selection (square) in photo an immidiatly search for that with embeddings when you release selection drag.
     * tags column toevoegen die voor full text search gebruikt wordt. Tag ideeen
       * ultrawide

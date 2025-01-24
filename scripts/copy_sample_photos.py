@@ -37,6 +37,7 @@ def copy_random_files(
 
 
 if __name__ == "__main__":
+    print("Starting copy operation...")
     from_path = "E:/Backup/Photos/photos/photos"
     to_path = "C:/Users/Ruurd/PycharmProjects/photos-backend/media/images/1"
     copy_random_files(from_path, to_path, 100)

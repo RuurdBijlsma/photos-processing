@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from media_analyzer import AnalyzerSettings, CaptionerProvider, LLMProvider
+from media_analyzer.data.enums.analyzer_module import FileModule, VisualModule
 from pydantic_settings import BaseSettings
 
 
@@ -22,21 +23,22 @@ class AppConfig(BaseSettings):
         document_detection_threshold=65,
         face_detection_threshold=0.7,
         enabled_file_modules={
-            "DataUrlModule",
-            "ExifModule",
-            "GpsModule",
-            "TimeModule",
-            "WeatherModule",
+            FileModule.DATA_URL,
+            FileModule.EXIF,
+            FileModule.GPS,
+            FileModule.TIME,
+            FileModule.TAGS,
+            FileModule.WEATHER,
         },
         enabled_visual_modules={
-            "CaptionModule",
-            "ClassificationModule",
-            "EmbeddingModule",
-            "FacesModule",
-            "ObjectsModule",
-            "OCRModule",
-            "QualityDetectionModule",
-            "SummaryModule",
+            VisualModule.CAPTION,
+            VisualModule.CLASSIFICATION,
+            VisualModule.EMBEDDING,
+            VisualModule.FACES,
+            VisualModule.OBJECTS,
+            VisualModule.OCR,
+            VisualModule.QUALITY_DETECTION,
+            VisualModule.SUMMARY,
         },
     )
 
