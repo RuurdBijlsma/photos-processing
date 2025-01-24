@@ -12,18 +12,14 @@
       * thinkg of more
     * gainmap photo
     * Tags voor search toevoegen: ultrawide, vertical, square, bedenk meer
-    * Low quality/blurry detector
     * Do something with pipelines (logging, capture running times, show in ui)
     * dont use pytz anymore
     * when clustering (faces and images), should i really consider different frames as new points?
         * a cluster is easily made this way from just one video.
     * fix logspam
     * add integration test
-    * make base clusterer for consistency
     * face embedding new points support (dont just recluster for every new photo)
-    * add tests for classification
     * rename visualinformationmodel to somethling like FrameInfoModel or FrameModel
-    * is panorama, is selfie, is night sight, etc. is all not being set yet.
     * Cluster images!
         * werkt best leuk, ik krijg allemaal poekie images
         * (ask llm to make album title based on many 2-3 word descriptions of images)
