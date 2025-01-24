@@ -788,6 +788,25 @@ wheels = [
 ]
 
 [[package]]
+name = "material-color-utilities"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/16/12/081dd0a9841e861f180c2dd79dd6e5b7529b8a2b63b7eac85803f77b2331/material_color_utilities-0.2.1.tar.gz", hash = "sha256:61595aceb69ef3461b5041e5fb4c676930cbd258c906e9efcd3ac468ce82b529", size = 5386925 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cf/aa/61ba8493c5c8ac2365f0e08c0d045c6408266a4a1a318f66f238d3dfdc91/material_color_utilities-0.2.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:964294782addffee463f6b3a9d153fce656a09206c08c5b5d67ecee9d3c94f4e", size = 267594 },
+    { url = "https://files.pythonhosted.org/packages/2b/bf/6ebee2038d85e990793b3fa4b4e81109922706489cc896cd78b9ff997794/material_color_utilities-0.2.1-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:ca17cf24755fabd4a6ae1415750293a66233ce2d80ba8d8d66495f653e9f6cc5", size = 358595 },
+    { url = "https://files.pythonhosted.org/packages/5d/2b/1ad66764d6b178b659f94ce4ffd5afa2f8b53ac9d12196af50de22f9ab16/material_color_utilities-0.2.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cd45ad9a2c8969a9495f48ce1fc23da87025bd77115f939ac9d0341581d5e303", size = 329142 },
+    { url = "https://files.pythonhosted.org/packages/32/5e/722d483381243e7d74439c9af34b59733de0403883a63f47215689130917/material_color_utilities-0.2.1-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:ee22bd73dfd73c0991a7959f3b55fac73ea81488bcb7f72a2a53def8f35beb79", size = 1440516 },
+    { url = "https://files.pythonhosted.org/packages/39/76/a801994609d6e7b981e07f4a325ef9d0c99534c1b0263312b169ee2c05d5/material_color_utilities-0.2.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:45ae9ef53d9b07920c9a504a1abbb6e4752c91ebdeea2bd333d923281d39df7d", size = 1312601 },
+    { url = "https://files.pythonhosted.org/packages/b1/35/9439bf7920b73f125273a02ef029834e800636a05eb5908a415d845b7f95/material_color_utilities-0.2.1-cp312-cp312-win32.whl", hash = "sha256:5148058882c515f62b109c304eb16a3fd55da6b0a699656ebcfa701846b33337", size = 213394 },
+    { url = "https://files.pythonhosted.org/packages/82/81/76c8b93010b7b0e52d89e5868263b45ba60af3223a7f3fb3049c7c3b0c14/material_color_utilities-0.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:1510210905fb53862b8cce34a1bba7abacf7198c9c4c99dc601e18d56cd9ee96", size = 246926 },
+]
+
+[[package]]
 name = "matplotlib"
 version = "3.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1367,15 +1386,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pkgconfig"
-version = "1.5.5"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c4/e0/e05fee8b5425db6f83237128742e7e5ef26219b687ab8f0d41ed0422125e/pkgconfig-1.5.5.tar.gz", hash = "sha256:deb4163ef11f75b520d822d9505c1f462761b4309b1bb713d08689759ea8b899", size = 6082 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/32/af/89487c7bbf433f4079044f3dc32f9a9f887597fe04614a37a292e373e16b/pkgconfig-1.5.5-py3-none-any.whl", hash = "sha256:d20023bbeb42ee6d428a0fac6e0904631f545985a10cdd71a20aa58bc47a4209", size = 6732 },
-]
-
-[[package]]
 name = "platformdirs"
 version = "4.3.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1644,7 +1654,6 @@ version = "2.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cffi" },
-    { name = "pkgconfig" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/7b/88/f73dae807ec68b228fba72507105e3ba80a561dc0bade0004ce24fd118fc/pyvips-2.2.3.tar.gz", hash = "sha256:43bceced0db492654c93008246a58a508e0373ae1621116b87b322f2ac72212f", size = 56626 }
 
@@ -1860,6 +1869,7 @@ dependencies = [
     { name = "einops" },
     { name = "insightface" },
     { name = "llama-cpp-python" },
+    { name = "material-color-utilities" },
     { name = "numpy" },
     { name = "onnxruntime" },
     { name = "opencv-python" },
@@ -1881,6 +1891,7 @@ requires-dist = [
     { name = "einops", specifier = ">=0.8.0" },
     { name = "insightface", specifier = ">=0.7.3" },
     { name = "llama-cpp-python", specifier = ">=0.3.2" },
+    { name = "material-color-utilities", specifier = ">=0.2.1" },
     { name = "numpy", specifier = ">=2.1.3" },
     { name = "onnxruntime", specifier = ">=1.20.0" },
     { name = "opencv-python", specifier = ">=4.10.0.84" },
