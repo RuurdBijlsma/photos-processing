@@ -1,4 +1,7 @@
 ## TODO
+* update imagemodel to support new fields from ColorData en TagData.
+* add theme to get random image endpoint (for wallpaper in frontend)
+* in rust doen????
 
 * Python
     * add more tests
