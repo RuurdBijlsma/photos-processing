@@ -7,18 +7,26 @@ model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 
 # Load and preprocess the image
-image = Image.open("media/images/1/20180812_150015.jpg")
+image = Image.open("../imgs/kampvuur.jpg")
 image_inputs = processor(images=image, return_tensors="pt")
-text_inputs = processor(
+text_input1 = processor(
     text="a pita with gyros in it", return_tensors="pt", padding=True, truncation=True
 )
+text_input2 = processor(
+    text="a campfire", return_tensors="pt", padding=True, truncation=True
+)
+
 
 # Get the image embedding
 with torch.no_grad():
     image_embedding = model.get_image_features(**image_inputs)
-    text_embedding = model.get_text_features(**text_inputs)
+    text_embedding1 = model.get_text_features(**text_input1)
+    text_embedding2 = model.get_text_features(**text_input2)
 
-text_embedding = text_embedding / text_embedding.norm(dim=-1, keepdim=True)
+text_embedding1 = text_embedding1 / text_embedding1.norm(dim=-1, keepdim=True)
+text_embedding2 = text_embedding2 / text_embedding2.norm(dim=-1, keepdim=True)
 
-similarity_score = cosine_similarity(text_embedding, image_embedding)
-print(similarity_score)
+similarity_score1 = cosine_similarity(text_embedding1, image_embedding)
+similarity_score2 = cosine_similarity(text_embedding2, image_embedding)
+print(similarity_score1)
+print(similarity_score2)
