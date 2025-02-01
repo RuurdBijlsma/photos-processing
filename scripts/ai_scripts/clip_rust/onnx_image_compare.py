@@ -42,25 +42,32 @@ def preprocess_image(image):
 # Load ONNX model
 ort_session = onnxruntime.InferenceSession("clip_vision.onnx")
 
-# Load and preprocess images
-input_names = ["campfire.jpg", "fire_basket.jpg", "market.jpg"]
-images = [Image.open("../../imgs/" + filename).convert("RGB") for filename in input_names]
 
-# Batch process images
-pixel_values = np.concatenate([preprocess_image(img) for img in images], axis=0)
+def encode_images(images: list[Image.Image]) -> np.ndarray:
+    # Batch process images
+    pixel_values = np.concatenate([preprocess_image(img) for img in images], axis=0)
 
-# Run inference with the corrected ONNX model
-ort_inputs = {'pixel_values': pixel_values.astype(np.float32)}
-ort_outputs = ort_session.run(None, ort_inputs)
+    # Run inference with the corrected ONNX model
+    ort_inputs = {'pixel_values': pixel_values.astype(np.float32)}
+    ort_outputs = ort_session.run(None, ort_inputs)[0]
+    return ort_outputs
 
-# Directly use the normalized embeddings
-image_embeddings = torch.from_numpy(ort_outputs[0])  # Now index 0
 
-# Calculate similarities (same as before)
-query_embedding = image_embeddings[0, :].reshape((1, -1))
-print(query_embedding[0,0:5])
-similarities = cosine_similarity(query_embedding, image_embeddings[1:, :])
+if __name__ == "__main__":
+    # Load and preprocess images
+    input_names = ["campfire.jpg", "fire_basket.jpg", "market.jpg"]
+    images = [Image.open("../../imgs/" + filename).convert("RGB") for filename in input_names]
 
-print(f"Query: {input_names[0]}")
-for similarity, other_image in zip(similarities, input_names[1:]):
-    print(f"Similarity to {other_image}: {similarity:.2f}")
+    embedding_ndarray = encode_images(images)
+
+    # Directly use the normalized embeddings
+    image_embeddings = torch.from_numpy(embedding_ndarray)
+
+    # Calculate similarities (same as before)
+    query_embedding = image_embeddings[0, :].reshape((1, -1))
+    print(query_embedding[0, 0:5])
+    similarities = cosine_similarity(query_embedding, image_embeddings[1:, :])
+
+    print(f"Query: {input_names[0]}")
+    for similarity, other_image in zip(similarities, input_names[1:]):
+        print(f"Similarity to {other_image}: {similarity:.2f}")
