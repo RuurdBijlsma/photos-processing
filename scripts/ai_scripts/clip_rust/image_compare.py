@@ -1,0 +1,26 @@
+import torch
+from PIL import Image
+from torch.nn.functional import cosine_similarity
+from transformers import CLIPProcessor, CLIPModel
+
+# Load the model and processor
+model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
+
+# Load and preprocess the image
+input_names = ["campfire.jpg", "fire_basket.jpg", "market.jpg"]
+inputs = [Image.open("../../imgs/" + filename) for filename in input_names]
+inputs_images = processor(
+    images=inputs, return_tensors="pt", padding=True
+)
+
+with torch.no_grad():
+    image_embeddings = model.get_image_features(**inputs_images)
+
+query_embedding = image_embeddings[0, :].reshape((1, -1))
+print(query_embedding[0,0:5])
+similarities = cosine_similarity(query_embedding, image_embeddings[1:, :])
+
+print(f"Query: {input_names[0]}")
+for similarity, other_image in zip(similarities, input_names[1:]):
+    print(f"Similarity to {other_image}: {similarity:.2f}")

@@ -1,6 +1,6 @@
 import torch
 from torch.nn.functional import cosine_similarity
-from transformers import CLIPProcessor, CLIPModel
+from transformers import CLIPProcessor, CLIPModel, CLIPImageProcessor
 
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
@@ -10,12 +10,10 @@ inputs = ["The weather outside is lovely.", "It's so sunny outside!", "She drove
 text_inputs = processor(
     text=inputs, return_tensors="pt", padding=True, truncation=True
 )
-
+a=CLIPImageProcessor
 # Get the image embedding
 with torch.no_grad():
     text_embeddings = model.get_text_features(**text_inputs)
-
-# text_embeddings = text_embeddings / text_embeddings.norm(dim=-1, keepdim=True)
 
 query_embedding = text_embeddings[0, :].reshape((1, -1))
 similarities = cosine_similarity(query_embedding, text_embeddings[1:, :])
