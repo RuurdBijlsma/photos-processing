@@ -15,21 +15,46 @@ text_inputs = processor(text=["This is a dummy text."], return_tensors="pt", pad
 dummy_image = Image.new("RGB", (224, 224), color="red")
 image_inputs = processor(images=[dummy_image], return_tensors="pt", padding=True)
 
-# Export text encoder
+
+# Export text encoder with projection and normalization
+class CLIPTextWrapper(torch.nn.Module):
+    def __init__(self, text_model, text_projection):
+        super().__init__()
+        self.text_model = text_model
+        self.text_projection = text_projection
+
+    def forward(self, input_ids, attention_mask):
+        # Forward through text model
+        text_outputs = self.text_model(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        pooled_output = text_outputs[1]  # pooler_output
+
+        # Project and normalize
+        projected = self.text_projection(pooled_output)
+        normalized = torch.nn.functional.normalize(projected, dim=-1)
+        return normalized
+
+
+# Create wrapped text model
+text_wrapper = CLIPTextWrapper(model.text_model, model.text_projection)
+
+# Export with wrapper
 torch.onnx.export(
-    model.text_model,
+    text_wrapper,
     (text_inputs["input_ids"], text_inputs["attention_mask"]),
     "clip_text.onnx",
-    opset_version=14,
+    opset_version=20,
     input_names=["input_ids", "attention_mask"],
-    output_names=["last_hidden_state", "pooler_output"],
+    output_names=["text_embeddings"],
     dynamic_axes={
         "input_ids": {0: "batch_size", 1: "sequence_length"},
         "attention_mask": {0: "batch_size", 1: "sequence_length"},
-        "last_hidden_state": {0: "batch_size", 1: "sequence_length"},
-        "pooler_output": {0: "batch_size"}
+        "text_embeddings": {0: "batch_size"}
     }
 )
+
 
 # Export image encoder
 # Export wrapper combining vision_model + projection + normalization
@@ -49,6 +74,7 @@ class CLIPVisionWrapper(torch.nn.Module):
         normalized = torch.nn.functional.normalize(projected, dim=-1)
         return normalized
 
+
 # Create the wrapped model
 vision_wrapper = CLIPVisionWrapper(model.vision_model, model.visual_projection)
 
@@ -57,7 +83,7 @@ torch.onnx.export(
     vision_wrapper,
     image_inputs["pixel_values"],
     "clip_vision.onnx",
-    opset_version=14,
+    opset_version=20,
     input_names=["pixel_values"],
     output_names=["image_embeddings"],
     dynamic_axes={

@@ -17,6 +17,7 @@ inputs_images = processor(
 with torch.no_grad():
     image_embeddings = model.get_image_features(**inputs_images)
 
+image_embeddings = image_embeddings / image_embeddings.norm(dim=-1, keepdim=True)
 query_embedding = image_embeddings[0, :].reshape((1, -1))
 print(query_embedding[0,0:5])
 similarities = cosine_similarity(query_embedding, image_embeddings[1:, :])

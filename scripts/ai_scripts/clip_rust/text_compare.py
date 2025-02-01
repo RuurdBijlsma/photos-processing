@@ -20,4 +20,4 @@ similarities = cosine_similarity(query_embedding, text_embeddings[1:, :])
 
 print(f"Query: {inputs[0]}")
 for similarity, other_text in zip(similarities, inputs[1:]):
-    print(f"Similarity to {other_text}: {similarity:.2f}")
+    print(f"Similarity to '{other_text}': {similarity:.2f}")
