@@ -55,8 +55,20 @@ def encode_images(images: list[Image.Image]) -> np.ndarray:
 
 if __name__ == "__main__":
     # Load and preprocess images
-    input_names = ["campfire.jpg", "fire_basket.jpg", "market.jpg"]
-    images = [Image.open("../../imgs/" + filename).convert("RGB") for filename in input_names]
+    input_names =[
+        "beach_rocks.jpg",
+        "beetle_car.jpg",
+        "cat_face.jpg",
+        "dark_sunset.jpg",
+        "palace.jpg",
+        "rocky_coast.jpg",
+        "stacked_plates.jpg",
+        "verdant_cliff.jpg",
+    ]
+    images = [
+        Image.open("../../imgs/clip_test_images/" + filename).convert("RGB")
+        for filename in input_names
+    ]
 
     embedding_ndarray = encode_images(images)
 
@@ -70,4 +82,4 @@ if __name__ == "__main__":
 
     print(f"Query: {input_names[0]}")
     for similarity, other_image in zip(similarities, input_names[1:]):
-        print(f"Similarity to {other_image}: {similarity:.2f}")
+        print(f"\tSimilarity to {other_image}: {similarity:.2f}")

@@ -8,10 +8,23 @@ model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 
 # Load and preprocess the image
-input_names = ["campfire.jpg", "fire_basket.jpg", "market.jpg"]
-inputs = [Image.open("../../imgs/" + filename) for filename in input_names]
+input_names = [
+    "beach_rocks.jpg",
+    "beetle_car.jpg",
+    "cat_face.jpg",
+    "dark_sunset.jpg",
+    "palace.jpg",
+    "rocky_coast.jpg",
+    "stacked_plates.jpg",
+    "verdant_cliff.jpg",
+]
+images = [
+    Image.open("../../imgs/clip_test_images/" + filename).convert("RGB")
+    for filename in input_names
+]
+
 inputs_images = processor(
-    images=inputs, return_tensors="pt", padding=True
+    images=images, return_tensors="pt", padding=True
 )
 
 with torch.no_grad():
@@ -24,4 +37,4 @@ similarities = cosine_similarity(query_embedding, image_embeddings[1:, :])
 
 print(f"Query: {input_names[0]}")
 for similarity, other_image in zip(similarities, input_names[1:]):
-    print(f"Similarity to {other_image}: {similarity:.2f}")
+    print(f"\tSimilarity to {other_image}: {similarity:.2f}")

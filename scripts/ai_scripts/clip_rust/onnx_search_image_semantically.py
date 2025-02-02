@@ -9,8 +9,8 @@ from ai_scripts.clip_rust.onnx_text_compare import encode_texts
 
 # Load and preprocess the image
 image_paths = list((Path(__file__).parents[2] / "imgs/clip_test_images").iterdir())
-text = "A beach with pebbles."
 images = [Image.open(x) for x in image_paths]
+text = "A beach with pebbles."
 
 text_embeds = encode_texts([text])
 images_embeds = encode_images(images)
