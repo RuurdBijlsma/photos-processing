@@ -58,15 +58,6 @@ class ImageModel(Base):
     duration = mapped_column(Float, nullable=True)
     format = mapped_column(String, nullable=False)
     size_bytes = mapped_column(Integer, nullable=False)
-    # tags
-    is_panorama = mapped_column(Boolean, nullable=False)
-    is_motion_photo = mapped_column(Boolean, nullable=False)
-    is_night_sight = mapped_column(Boolean, nullable=False)
-    is_hdr = mapped_column(Boolean, nullable=False)
-    is_360 = mapped_column(Boolean, nullable=False)
-    is_burst = mapped_column(Boolean, nullable=False)
-    is_timelapse = mapped_column(Boolean, nullable=False)
-    is_slowmotion = mapped_column(Boolean, nullable=False)
     # datetime
     datetime_local = mapped_column(DateTime(timezone=False), nullable=False, index=True)
     datetime_utc = mapped_column(DateTime(timezone=False), nullable=True, index=True)
@@ -81,6 +72,7 @@ class ImageModel(Base):
     composite = mapped_column(JSONB, nullable=False)
     exif = mapped_column(JSONB, nullable=True)
     xmp = mapped_column(JSONB, nullable=True)
+    mpf = mapped_column(JSONB, nullable=True)
     jfif = mapped_column(JSONB, nullable=True)
     icc_profile = mapped_column(JSONB, nullable=True)
     gif = mapped_column(JSONB, nullable=True)
@@ -106,6 +98,21 @@ class ImageModel(Base):
     weather_pressure = mapped_column(Float, nullable=True)
     weather_sun_hours = mapped_column(Float, nullable=True)
     weather_condition = mapped_column(Enum(WeatherCondition), nullable=True)
+    # Image tags
+    use_panorama_viewer = mapped_column(Boolean, nullable=False)
+    is_photosphere = mapped_column(Boolean, nullable=False)
+    projection_type = mapped_column(Boolean, nullable=True)
+    is_motion_photo = mapped_column(Boolean, nullable=False)
+    motion_photo_presentation_timestamp = mapped_column(Integer, nullable=True)
+    is_night_sight = mapped_column(Boolean, nullable=False)
+    is_hdr = mapped_column(Boolean, nullable=False)
+    is_burst = mapped_column(Boolean, nullable=False)
+    burst_id = mapped_column(String, nullable=True)
+    is_timelapse = mapped_column(Boolean, nullable=False)
+    is_slowmotion = mapped_column(Boolean, nullable=False)
+    is_video = mapped_column(Boolean, nullable=False)
+    capture_fps = mapped_column(Float, nullable=True)
+    video_fps = mapped_column(Float, nullable=True)
     # Relations
     visual_information: Mapped[list[VisualInformationModel]] = relationship(
         "VisualInformationModel",
@@ -195,6 +202,12 @@ class VisualInformationModel(Base):
     measured_clipping = mapped_column(Float)
     measured_dynamic_range = mapped_column(Float)
     quality_score = mapped_column(Float)
+    # Color info
+    themes = mapped_column(JSONB, nullable=False)
+    prominent_colors = mapped_column(ARRAY(String), nullable=False)
+    average_hue = mapped_column(Float, nullable=False)
+    average_saturation = mapped_column(Float, nullable=False)
+    average_lightness = mapped_column(Float, nullable=False)
     #   --
     summary = mapped_column(String, nullable=True)
     caption = mapped_column(String, nullable=False)

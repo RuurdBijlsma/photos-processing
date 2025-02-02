@@ -22,24 +22,8 @@ class AppConfig(BaseSettings):
         enable_document_summary=False,
         document_detection_threshold=65,
         face_detection_threshold=0.7,
-        enabled_file_modules={
-            FileModule.DATA_URL,
-            FileModule.EXIF,
-            FileModule.GPS,
-            FileModule.TIME,
-            FileModule.TAGS,
-            FileModule.WEATHER,
-        },
-        enabled_visual_modules={
-            VisualModule.CAPTION,
-            VisualModule.CLASSIFICATION,
-            VisualModule.EMBEDDING,
-            VisualModule.FACES,
-            VisualModule.OBJECTS,
-            VisualModule.OCR,
-            VisualModule.QUALITY_DETECTION,
-            VisualModule.SUMMARY,
-        },
+        enabled_file_modules=set(FileModule),
+        enabled_visual_modules=set(VisualModule),
     )
 
     images_dir: Path = Path("media/images")
