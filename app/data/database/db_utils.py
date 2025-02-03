@@ -46,14 +46,6 @@ async def add_user(
     await session.commit()
 
 
-TK = TypeVar("TK")
-TV = TypeVar("TV")
-
-
-def without(dictionary: dict[TK, TV], *keys_to_remove: list[str]) -> dict[TK, TV]:
-    return {key: value for key, value in dictionary.items() if key not in keys_to_remove}
-
-
 def flatten_dataclass(
     instance: object | dict[str, Any] | list[Any] | str | float,
 ) -> dict[str, Any]:
@@ -99,12 +91,13 @@ async def get_location_model(
             ),
         )
     ).scalar()
+
     if not location:
         return GeoLocationModel(
-            country=str(country),
-            province=str(province),
-            city=str(city),
-            latitude=float(latitude),
-            longitude=float(longitude),
+            country=country,
+            province=province,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
         )
     return location
