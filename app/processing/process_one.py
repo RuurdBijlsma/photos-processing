@@ -4,8 +4,8 @@ from media_analyzer import InputMedia
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.database.image_operations import store_image
-from app.processing.processing.generate_thumbnails import generate_thumbnails
-from app.processing.processing.process_utils import analyzer, get_thumbnail_paths, hash_image
+from app.processing.generate_thumbnails import generate_thumbnails
+from app.processing.process_utils import analyzer, get_thumbnail_paths, hash_image
 
 
 async def process_image(

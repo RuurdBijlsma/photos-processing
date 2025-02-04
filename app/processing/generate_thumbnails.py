@@ -1,6 +1,7 @@
 import shutil
 import tempfile
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import pyvips
@@ -8,7 +9,7 @@ from parsed_ffmpeg import FfmpegError, run_ffmpeg, run_ffprobe
 from tqdm import tqdm
 
 from app.config.app_config import app_config
-from app.processing.processing.process_utils import (
+from app.processing.process_utils import (
     ImageThumbnails,
     get_thumbnail_paths,
     hash_image,
@@ -119,7 +120,10 @@ async def generate_single_video_thumbnails(
     return True
 
 
-async def generate_video_thumbnails(to_process: list[Path]) -> list[bool]:
+async def generate_video_thumbnails(
+    to_process: list[Path],
+    on_process: Callable[[int], None]
+) -> list[bool]:
     results: list[bool] = []
     for video_path in tqdm(
         to_process,
@@ -136,6 +140,7 @@ async def generate_video_thumbnails(to_process: list[Path]) -> list[bool]:
                 print_progress_bar=True,
             ),
         )
+        on_process(len(results))
     return results
 
 
@@ -169,22 +174,29 @@ def generate_single_photo_thumbnails(
     return True
 
 
-def generate_photo_thumbnails(to_process: list[Path]) -> list[bool]:
+def generate_photo_thumbnails(
+    to_process: list[Path],
+    on_process: Callable[[int], None],
+) -> list[bool]:
+    results = []
     with ThreadPoolExecutor(max_workers=8) as executor:
-        return list(
-            tqdm(
-                executor.map(
-                    lambda file: generate_single_photo_thumbnails(
-                        file,
-                        get_thumbnail_paths(file, hash_image(file)),
-                    ),
-                    to_process,
-                ),
-                total=len(to_process),
-                desc="Generate photo thumbnails",
-                unit="photo",
-            ),
-        )
+        future_to_file = {
+            executor.submit(
+                generate_single_photo_thumbnails,
+                file,
+                get_thumbnail_paths(file, hash_image(file))
+            ): file for file in to_process
+        }
+
+        for count, future in enumerate(
+            tqdm(as_completed(future_to_file), total=len(future_to_file),
+                 desc="Generate photo thumbnails", unit="photo"),
+            start=1
+        ):
+            results.append(future.result())
+            on_process(count)
+
+    return results
 
 
 async def generate_thumbnails(image_path: Path, image_hash: str) -> bool:

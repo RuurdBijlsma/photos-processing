@@ -6,14 +6,6 @@ from pydantic_settings import BaseSettings
 
 
 class AppConfig(BaseSettings):
-    # todo make this secure
-    password_secret: str = "3df8944bf8afe568d4f0011db0d7fe1ef724f12227b6254116d128caf8c3bee5"  # noqa: S105
-
-    disable_processing: bool = False
-    debug: bool = True
-    host_thumbnails: bool = True
-    connection_string: str = "postgresql+asyncpg://postgres:flyingsquirrel@localhost/photos"
-
     analyzer_settings: AnalyzerSettings = AnalyzerSettings(
         media_languages=("nld", "eng"),
         captions_provider=CaptionerProvider.BLIP,
