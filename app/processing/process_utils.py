@@ -4,7 +4,7 @@ from pathlib import Path
 
 from media_analyzer import MediaAnalyzer
 
-from app.config.app_config import app_config
+from app.config import app_config
 
 analyzer = MediaAnalyzer(config=app_config.analyzer_settings)
 
@@ -40,6 +40,22 @@ def get_thumbnail_paths(image_path: Path, image_hash: str) -> ImageThumbnails:
         thumbnails=thumbnails,
         frames={0: thumb_folder / f"{max(app_config.thumbnail_heights)}p.avif"},
     )
+
+
+def has_all_thumbnails(thumbs: ImageThumbnails) -> bool:
+    if not thumbs.folder.exists():
+        return False
+    for path in thumbs.thumbnails.values():
+        if not path.exists():
+            return False
+    for path in thumbs.frames.values():
+        if not path.exists():
+            return False
+    if thumbs.webm_videos is not None:
+        for path in thumbs.webm_videos.values():
+            if not path.exists():
+                return False
+    return True
 
 
 def hash_image(image_path: Path, chunk_size: int = 65536) -> str:

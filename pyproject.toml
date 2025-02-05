@@ -8,83 +8,21 @@ authors = [
     { name = "Ruurd Bijlsma", email = "ruurd@bijlsma.dev" }
 ]
 dependencies = [
-    "alembic>=1.14.0",
-    "async-lru>=2.0.4",
-    "asyncpg>=0.30.0",
     "fastapi[standard]>=0.115.5",
-    "hdbscan>=0.8.40",
     "media-analyzer>=0.1.2",
-    "opencv-python>=4.10.0.84",
     "parsed-ffmpeg>=0.2.3",
-    "passlib[bcrypt]>=1.7.4",
-    "pgvecto-rs[sqlalchemy]>=0.2.2",
-    "pillow>=11.0.0",
-    "pillow-avif-plugin>=1.4.6",
     "pydantic>=2.9.2",
     "pydantic-settings>=2.6.1",
-    "pyexiftool>=0.5.6",
-    "pyjwt>=2.10.0",
     "python-multipart>=0.0.17",
-    "pytz>=2024.2",
     "pyvips>=2.2.3",
-    "sqlalchemy>=2.0.36",
-    "timezonefinder>=6.5.7",
     "tqdm>=4.67.0",
-    "watchdog>=6.0.0",
 ]
 
 [tool.ruff]
 line-length = 100
 exclude = ["scripts", "alembic"]
 lint.ignore = ['S101', 'INP001', 'T201', 'S311', 'TRY003', 'PT018', 'PLR0913', 'COM812']
-lint.select = [
-    "A", # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
-    "ANN", # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
-    "ARG", # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
-    "ASYNC", # https://docs.astral.sh/ruff/rules/#flake8-async-async
-    "B", # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
-    "BLE", # https://docs.astral.sh/ruff/rules/#flake8-blind-except-ble
-    "C4", # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
-    "C9", # https://docs.astral.sh/ruff/rules/#mccabe-c90
-    "COM", # https://docs.astral.sh/ruff/rules/#flake8-commas-com
-    "DJ", # https://docs.astral.sh/ruff/rules/#flake8-django-dj
-    "DTZ", # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
-    "E", # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
-    "ERA", # https://docs.astral.sh/ruff/rules/#eradicate-era
-    "EXE", # https://docs.astral.sh/ruff/rules/#flake8-executable-exe
-    "F", # https://docs.astral.sh/ruff/rules/#pyflakes-f
-    "FLY", # https://docs.astral.sh/ruff/rules/#flynt-fly
-    "G", # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
-    "I", # https://docs.astral.sh/ruff/rules/#isort-i
-    "ICN", # https://docs.astral.sh/ruff/rules/#flake8-import-conventions-icn
-    "INP", # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
-    "INT", # https://docs.astral.sh/ruff/rules/#flake8-gettext-int
-    "ISC", # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
-    "N", # https://docs.astral.sh/ruff/rules/#pep8-naming-n
-    "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
-    "PGH", # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
-    "PIE", # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
-    "PL", # https://docs.astral.sh/ruff/rules/#pylint-pl
-    "PT", # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
-    "PTH", # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
-    "PYI", # https://docs.astral.sh/ruff/rules/#flake8-pyi-pyi
-    "Q", # https://docs.astral.sh/ruff/rules/#flake8-quotes-q
-    "RET", # https://docs.astral.sh/ruff/rules/#flake8-return-ret
-    "RSE", # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
-    "RUF", # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-    "S", # https://docs.astral.sh/ruff/rules/#flake8-bandit-s
-    "SIM", # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
-    "SLF", # https://docs.astral.sh/ruff/rules/#flake8-self-slf
-    "SLOT", # https://docs.astral.sh/ruff/rules/#flake8-slots-slot
-    "T10", # https://docs.astral.sh/ruff/rules/#flake8-debugger-t10
-    "T20", # https://docs.astral.sh/ruff/rules/#flake8-print-t20
-    "TCH", # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
-    "TID", # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
-    "TRY", # https://docs.astral.sh/ruff/rules/#tryceratops-try
-    "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
-    "W", # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
-    "YTT", # https://docs.astral.sh/ruff/rules/#flake8-2020-ytt
-]
+lint.select = ["ALL"]
 
 [dependency-groups]
 dev = [
@@ -98,16 +36,3 @@ dev = [
     "types-pytz>=2024.2.0.20241003",
     "types-tqdm>=4.66.0.20240417",
 ]
-
-[tool.uv.sources]
-torch = [
-    { index = "pytorch_gpu", marker = "sys_platform != 'darwin'" },
-]
-
-[[tool.uv.index]]
-name = "pytorch_gpu"
-url = "https://download.pytorch.org/whl/cu124"
-explicit = true
-
-[tool.uv.workspace]
-members = ["scripts"]

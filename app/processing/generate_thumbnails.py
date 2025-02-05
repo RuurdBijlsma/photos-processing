@@ -8,7 +8,7 @@ import pyvips
 from parsed_ffmpeg import FfmpegError, run_ffmpeg, run_ffprobe
 from tqdm import tqdm
 
-from app.config.app_config import app_config
+from app.config import app_config
 from app.processing.process_utils import (
     ImageThumbnails,
     get_thumbnail_paths,

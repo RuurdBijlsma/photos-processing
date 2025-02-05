@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 
-from app.config.app_config import app_config
+from app.config import app_config
 from app.processing.generate_thumbnails import generate_photo_thumbnails, generate_video_thumbnails
 
 thumbnails_router = APIRouter(prefix="/thumbnails", tags=["thumbnails"])
