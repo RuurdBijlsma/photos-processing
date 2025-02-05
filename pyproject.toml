@@ -16,6 +16,7 @@ dependencies = [
     "python-multipart>=0.0.17",
     "pyvips>=2.2.3",
     "tqdm>=4.67.0",
+    "torch>=2.6.0",
 ]
 
 [tool.ruff]
@@ -36,3 +37,13 @@ dev = [
     "types-pytz>=2024.2.0.20241003",
     "types-tqdm>=4.66.0.20240417",
 ]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch_gpu", marker = "sys_platform != 'darwin'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch_gpu"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true

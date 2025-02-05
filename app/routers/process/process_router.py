@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 
 from fastapi import APIRouter, HTTPException, BackgroundTasks
@@ -33,12 +34,13 @@ async def start_job(job_id: str, image: ProcessingRequest) -> None:
     print(f"STARTING {image_path} {image_hash}")
     thumbnail_paths = get_thumbnail_paths(image_path, image_hash)
     if not has_all_thumbnails(thumbnail_paths):
-        await generate_thumbnails(image_path, image_hash)
+        await asyncio.to_thread(generate_thumbnails, image_path, image_hash)
     print(f"THUMBNAILS ARE DONE")
-    job_db[job_id].result = analyzer.analyze(InputMedia(
+    media = InputMedia(
         path=image_path,
         frames=list(thumbnail_paths.frames.values()),
-    ))
+    )
+    job_db[job_id].result = await asyncio.to_thread(analyzer.analyze, media)
     print(f"ALL DONE {job_id}")
     job_db[job_id].done = True
 
