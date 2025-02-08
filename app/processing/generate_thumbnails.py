@@ -121,8 +121,7 @@ async def generate_single_video_thumbnails(
 
 
 async def generate_video_thumbnails(
-    to_process: list[Path],
-    on_process: Callable[[int], None]
+    to_process: list[Path], on_process: Callable[[int], None]
 ) -> list[bool]:
     results: list[bool] = []
     for video_path in tqdm(
@@ -182,16 +181,19 @@ def generate_photo_thumbnails(
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_file = {
             executor.submit(
-                generate_single_photo_thumbnails,
-                file,
-                get_thumbnail_paths(file, hash_image(file))
-            ): file for file in to_process
+                generate_single_photo_thumbnails, file, get_thumbnail_paths(file, hash_image(file))
+            ): file
+            for file in to_process
         }
 
         for count, future in enumerate(
-            tqdm(as_completed(future_to_file), total=len(future_to_file),
-                 desc="Generate photo thumbnails", unit="photo"),
-            start=1
+            tqdm(
+                as_completed(future_to_file),
+                total=len(future_to_file),
+                desc="Generate photo thumbnails",
+                unit="photo",
+            ),
+            start=1,
         ):
             results.append(future.result())
             on_process(count)

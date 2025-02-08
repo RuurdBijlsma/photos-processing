@@ -22,7 +22,12 @@ dependencies = [
 [tool.ruff]
 line-length = 100
 exclude = ["scripts", "alembic"]
-lint.ignore = ['S101', 'INP001', 'T201', 'S311', 'TRY003', 'PT018', 'PLR0913', 'COM812']
+lint.ignore = [
+    'S101', 'INP001', 'T201',
+    'S311', 'TRY003', 'PT018',
+    'PLR0913', 'COM812', 'D',
+    'FBT00'
+]
 lint.select = ["ALL"]
 
 [dependency-groups]
