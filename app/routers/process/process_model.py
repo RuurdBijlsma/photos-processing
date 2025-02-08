@@ -30,7 +30,7 @@ async def start_job(job_id: str, image: ProcessingRequest) -> None:
     print(f"STARTING {image_path} {image_hash}")
     thumbnail_paths = get_thumbnail_paths(image_path, image_hash)
     if not has_all_thumbnails(thumbnail_paths):
-        await asyncio.to_thread(generate_thumbnails, image_path, image_hash)
+        await generate_thumbnails(image_path, image_hash)
     print("THUMBNAILS ARE DONE")
     media = InputMedia(
         path=image_path,

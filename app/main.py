@@ -10,7 +10,7 @@ from starlette.requests import Request
 
 from app.routers.health.health_router import health_router
 from app.routers.process.process_router import process_router
-from app.routers.thumbnails.thumbnails_router import thumbnails_router
+from app.routers.thumbnails.thumbnail_router import thumbnail_router
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.CRITICAL)
@@ -51,7 +51,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(health_router)
-app.include_router(thumbnails_router)
+app.include_router(thumbnail_router)
 app.include_router(process_router)
 
 

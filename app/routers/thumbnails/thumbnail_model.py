@@ -1,3 +1,5 @@
+import asyncio
+
 from pydantic import BaseModel, Field
 
 from app.config import app_config
@@ -8,10 +10,10 @@ class ThumbnailJob(BaseModel):
     job_id: str
     photos_done: int = 0
     photos_total: int
-    photos: list[bool] | None = None
+    photo_results: list[bool] | None = None
     videos_done: int = 0
     videos_total: int
-    videos: list[bool] | None = None
+    video_results: list[bool] | None = None
     done: bool = False
 
 
@@ -36,12 +38,13 @@ async def start_job(job_id: str, thumbnails: ThumbnailRequest) -> None:
     def on_video_process(done: int) -> None:
         job_db[job_id].videos_done = done
 
-    job_db[job_id].photos = generate_photo_thumbnails(
+    job_db[job_id].photo_results = await asyncio.to_thread(
+        generate_photo_thumbnails,
         [app_config.images_dir / relative_path for relative_path in thumbnails.photos],
         on_process=on_photo_process,
     )
 
-    job_db[job_id].videos = await generate_video_thumbnails(
+    job_db[job_id].video_results = await generate_video_thumbnails(
         [app_config.images_dir / relative_path for relative_path in thumbnails.videos],
         on_process=on_video_process,
     )
