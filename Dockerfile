@@ -31,3 +31,5 @@ ADD . /app
 # Sync the project
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
+
+CMD ["uv", "run", "fastapi", "run", "app/main.py"]
