@@ -1,7 +1,7 @@
 [project]
-name = "photos"
-version = "2.0.0"
-description = "Self-hosted photo and video management, including advanced search."
+name = "image-processing"
+version = "0.1.0"
+description = "FastAPI service to analyze images and generate thumbnails."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 authors = [
@@ -9,7 +9,7 @@ authors = [
 ]
 dependencies = [
     "fastapi[standard]>=0.115.5",
-    "media-analyzer>=0.1.2",
+    "media-analyzer>=0.3.2",
     "parsed-ffmpeg>=0.2.3",
     "pydantic>=2.9.2",
     "pydantic-settings>=2.6.1",
