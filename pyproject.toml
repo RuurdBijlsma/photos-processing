@@ -1,5 +1,5 @@
 [project]
-name = "image-processing"
+name = "photos-processing"
 version = "0.1.0"
 description = "FastAPI service to analyze images and generate thumbnails."
 readme = "README.md"
