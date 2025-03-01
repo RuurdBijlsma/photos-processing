@@ -1,16 +1,16 @@
 import logging
 import warnings
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.models import Response
 from starlette.requests import Request
 
-from app.routers.auth.auth_router import auth_router
 from app.routers.health.health_router import health_router
-from app.routers.images.images_router import images_router
-from app.server.lifespan import lifespan
+from app.routers.process.process_router import process_router
+from app.routers.thumbnails.thumbnail_router import thumbnail_router
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.CRITICAL)
@@ -19,6 +19,15 @@ logging.getLogger("pandas").setLevel(logging.CRITICAL)
 logging.getLogger("transformers").setLevel(logging.CRITICAL)
 logging.getLogger("insightface").setLevel(logging.CRITICAL)
 warnings.simplefilter(action="ignore", category=FutureWarning)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
+    print("Starting FastAPI server!")
+    yield
+    print("Closing FastAPI server :(")
+
+
 app = FastAPI(lifespan=lifespan)
 
 
@@ -41,9 +50,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(images_router)
 app.include_router(health_router)
-app.include_router(auth_router)
+app.include_router(thumbnail_router)
+app.include_router(process_router)
 
 
 def main() -> None:
