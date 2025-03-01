@@ -18,8 +18,8 @@ class AppConfig(BaseSettings):
         enabled_visual_modules=set(VisualModule),
     )
 
-    images_dir: Path = Path("media/images")
-    thumbnails_dir: Path = Path("media/thumbnails")
+    images_dir: Path = Path("../media/images")
+    thumbnails_dir: Path = Path("../media/thumbnails")
     thumbnail_heights: tuple[int, ...] = (200, 250, 300, 400, 500, 750, 1080)
     video_screenshot_percentages: tuple[int, ...] = (1, 33, 66, 95)
     web_video_height_and_quality: tuple[tuple[int, int], ...] = ((360, 40), (1080, 35))
